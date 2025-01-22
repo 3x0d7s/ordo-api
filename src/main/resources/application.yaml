@@ -1,6 +1,7 @@
 spring:
   application:
     name: ordo
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -19,3 +20,14 @@ spring:
     default-schema: public
     table: flyway_schema_history
     locations: classpath:db/migration
+
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: ${OATH2_GITHUB_CLIENT_ID}
+            clientSecret: ${OATH2_GITHUB_CLIENT_SECRET}
+          google:
+            client-id: ${OATH2_GOOGLE_CLIENT_ID}
+            client-secret: ${OATH2_GOOGLE_CLIENT_SECRET}
