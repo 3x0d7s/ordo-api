@@ -31,3 +31,9 @@ spring:
           google:
             client-id: ${OATH2_GOOGLE_CLIENT_ID}
             client-secret: ${OATH2_GOOGLE_CLIENT_SECRET}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+  api-docs:
+    path: /api-docs
