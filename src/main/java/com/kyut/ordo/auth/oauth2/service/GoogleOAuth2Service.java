@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class GoogleOAuth2ServiceImpl implements OAuth2Service {
+public class GoogleOAuth2Service {
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
 
@@ -25,7 +25,6 @@ public class GoogleOAuth2ServiceImpl implements OAuth2Service {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Override
     public OAuth2TokenResponse exchangeCodeOnToken(String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
