@@ -18,15 +18,6 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class OAuth2Controller {
 
-    @Value("${spring.security.oauth2.client.registration.google.client-id}")
-    private String clientId;
-
-    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
-    private String clientSecret;
-
-    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
-    private String redirectUri;
-
     private final GoogleOAuth2Service oAuth2Service;
 
     @PostMapping("/google")

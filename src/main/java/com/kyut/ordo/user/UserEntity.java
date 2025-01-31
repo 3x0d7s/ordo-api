@@ -1,6 +1,7 @@
 package com.kyut.ordo.user;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 import com.kyut.ordo.board.BoardMemberEntity;
@@ -18,6 +19,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Data
 @Entity
@@ -26,13 +29,16 @@ import lombok.Data;
            @UniqueConstraint(columnNames = "email"),
            @UniqueConstraint(columnNames = {"provider", "provider_id"})
        })
-public class UserEntity {
+public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     private String username;
+
+    @Column
+    private String password;
 
     @Column(nullable = false)
     private String email;
@@ -68,4 +74,15 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "createdBy")
     private List<CommentEntity> comments;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
 }
