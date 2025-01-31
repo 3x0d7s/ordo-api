@@ -1,5 +1,11 @@
 package com.kyut.ordo.auth.oauth2.service;
 
+import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
+import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
+import com.google.api.client.auth.oauth2.TokenResponse;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.kyut.ordo.auth.oauth2.dto.OAuth2TokenResponse;
 import com.kyut.ordo.auth.oauth2.dto.OAuth2UserInfo;
 import com.kyut.ordo.user.UserDTO;
@@ -9,6 +15,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Service
@@ -25,32 +32,29 @@ public class GoogleOAuth2Service {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public OAuth2TokenResponse exchangeCodeOnToken(String code) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
+    public OAuth2TokenResponse exchangeCodeOnToken(String code)  {
         String tokenUrl = "https://oauth2.googleapis.com/token";
-        String requestBody = String.format(
-                "code=%s&client_id=%s&client_secret=%s&redirect_uri=%s&grant_type=authorization_code",
-                code, clientId, clientSecret, redirectUri
-        );
 
-        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+        TokenResponse tokenResponse;
+        try {
+            tokenResponse = new AuthorizationCodeTokenRequest(
+                    new NetHttpTransport(),
+                    new GsonFactory(),
+                    new GenericUrl(tokenUrl),
+                    code)
+                    .setRedirectUri(redirectUri)
+                    .setClientAuthentication(new ClientParametersAuthentication(
+                            clientId,
+                            clientSecret
+                    )).execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        var tokenResponse = restTemplate.postForEntity(
-                tokenUrl,
-                request,
-                Map.class
-        );
-
-        Map<String, String> tokens = tokenResponse.getBody();
-
-        OAuth2TokenResponse response = OAuth2TokenResponse.builder()
-                .accessToken(tokens.get("access_token"))
-                .refreshToken(tokens.get("refresh_token"))
+        return OAuth2TokenResponse.builder()
+                .accessToken(tokenResponse.getAccessToken())
+                .refreshToken(tokenResponse.getRefreshToken())
                 .build();
-
-        return response;
     }
 
     public OAuth2UserInfo getUserInfo(OAuth2TokenResponse tokens) {

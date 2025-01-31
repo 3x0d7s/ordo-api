@@ -4,7 +4,6 @@ import com.kyut.ordo.auth.oauth2.dto.OAuth2UserInfo;
 import com.kyut.ordo.auth.oauth2.service.GoogleOAuth2Service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
