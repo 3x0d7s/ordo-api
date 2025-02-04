@@ -4,31 +4,31 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+import com.kyut.ordo.auth.oauth2.AuthProvider;
 import com.kyut.ordo.board.BoardMemberEntity;
 import com.kyut.ordo.comment.CommentEntity;
 import com.kyut.ordo.task.TaskEntity;
 import com.kyut.ordo.workspace.WorkspaceEntity;
 import com.kyut.ordo.workspace.WorkspaceMemberEntity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Data
 @Entity
+@Builder
 @Table(name = "users", 
        uniqueConstraints = {
            @UniqueConstraint(columnNames = "email"),
            @UniqueConstraint(columnNames = {"provider", "provider_id"})
        })
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,8 +43,10 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private String email;
 
-    private String provider;
-    private String providerId;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider", nullable = false)
+    private AuthProvider provider;
+
     private String imageUrl;
 
     @Column(name = "created_at")
