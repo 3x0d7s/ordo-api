@@ -1,4 +1,4 @@
-package com.kyut.ordo.auth.oauth2.service;
+package com.kyut.ordo.auth.oauth2;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
@@ -8,7 +8,6 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.kyut.ordo.auth.common.dto.LoginResponse;
-import com.kyut.ordo.auth.oauth2.AuthProvider;
 import com.kyut.ordo.auth.oauth2.dto.OAuth2TokenResponse;
 import com.kyut.ordo.auth.oauth2.dto.OAuth2UserInfo;
 import com.kyut.ordo.common.security.jwt.JwtService;

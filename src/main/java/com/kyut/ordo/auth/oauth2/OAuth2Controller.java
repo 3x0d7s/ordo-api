@@ -1,8 +1,5 @@
 package com.kyut.ordo.auth.oauth2;
 import com.kyut.ordo.auth.common.dto.LoginResponse;
-import com.kyut.ordo.auth.oauth2.dto.OAuth2TokenResponse;
-import com.kyut.ordo.auth.oauth2.dto.OAuth2UserInfo;
-import com.kyut.ordo.auth.oauth2.service.GoogleOAuth2Service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/auth/oauth2")
 public class OAuth2Controller {
 
     private final GoogleOAuth2Service oAuth2Service;

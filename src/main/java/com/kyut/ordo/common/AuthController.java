@@ -1,4 +1,4 @@
-package com.kyut.ordo.controller;
+package com.kyut.ordo.common;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
