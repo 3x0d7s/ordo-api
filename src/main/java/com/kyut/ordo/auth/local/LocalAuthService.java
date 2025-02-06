@@ -2,6 +2,7 @@ package com.kyut.ordo.auth.local;
 
 import com.kyut.ordo.auth.common.dto.LoginRequest;
 import com.kyut.ordo.auth.common.dto.LoginResponse;
+import com.kyut.ordo.auth.oauth2.AuthProvider;
 import com.kyut.ordo.common.security.jwt.JwtService;
 import com.kyut.ordo.user.UserMapper;
 import com.kyut.ordo.user.UserRepository;
@@ -34,11 +35,18 @@ public class LocalAuthService {
 
         UserEntity user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setProvider(AuthProvider.LOCAL);
         userRepository.save(user);
         return userMapper.toDto(user);
     }
 
     public LoginResponse authenticate(LoginRequest request) {
+        UserEntity user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+
+        if (!user.getProvider().equals(AuthProvider.LOCAL)) {
+            throw new RuntimeException();
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -46,10 +54,9 @@ public class LocalAuthService {
                 )
         );
 
-        userRepository.findByEmail(request.getEmail()).orElseThrow();
         String jwtToken = jwtService.generateToken(authentication);
 
-        UserEntity user = (UserEntity) authentication.getPrincipal();
+        user = (UserEntity) authentication.getPrincipal();
 
         return LoginResponse.builder()
                 .accessToken(jwtToken)

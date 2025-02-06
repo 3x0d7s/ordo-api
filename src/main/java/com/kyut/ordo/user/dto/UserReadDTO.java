@@ -10,6 +10,6 @@ import lombok.Data;
 public class UserReadDTO {
     private String id;
     private String email;
-    private String name;
-    private String picture;
+    private String username;
+    private String imageUrl;
 }

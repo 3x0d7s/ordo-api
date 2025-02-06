@@ -91,8 +91,8 @@ public class GoogleOAuth2Service {
         UserReadDTO user = UserReadDTO.builder()
                 .id(userInfo.get("id"))
                 .email(userInfo.get("email"))
-                .name(userInfo.get("name"))
-                .picture(userInfo.get("picture"))
+                .username(userInfo.get("name"))
+                .imageUrl(userInfo.get("picture"))
                 .build();
 
         return OAuth2UserInfo.builder()
@@ -111,8 +111,8 @@ public class GoogleOAuth2Service {
         if (user.isEmpty()) {
             userEntity = UserEntity.builder()
                     .email(userReadDTO.getEmail())
-                    .username(userReadDTO.getName())
-                    .imageUrl(userReadDTO.getPicture())
+                    .username(userReadDTO.getUsername())
+                    .imageUrl(userReadDTO.getImageUrl())
                     .provider(AuthProvider.GOOGLE)
                     .password(passwordEncoder.encode("test"))
                     .build();
