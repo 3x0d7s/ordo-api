@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-import com.kyut.ordo.auth.oauth2.AuthProvider;
+import com.kyut.ordo.auth.common.AuthProvider;
 import com.kyut.ordo.board.BoardMemberEntity;
 import com.kyut.ordo.comment.CommentEntity;
 import com.kyut.ordo.task.TaskEntity;

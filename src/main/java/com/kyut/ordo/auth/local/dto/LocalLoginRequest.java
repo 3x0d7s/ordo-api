@@ -1,4 +1,4 @@
-package com.kyut.ordo.auth.common.dto;
+package com.kyut.ordo.auth.local.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class LoginRequest {
+public class LocalLoginRequest {
     private String email;
     private String password;
 }

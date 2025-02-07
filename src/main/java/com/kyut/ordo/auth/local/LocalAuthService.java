@@ -1,8 +1,8 @@
 package com.kyut.ordo.auth.local;
 
-import com.kyut.ordo.auth.common.dto.LoginRequest;
+import com.kyut.ordo.auth.local.dto.LocalLoginRequest;
 import com.kyut.ordo.auth.common.dto.LoginResponse;
-import com.kyut.ordo.auth.oauth2.AuthProvider;
+import com.kyut.ordo.auth.common.AuthProvider;
 import com.kyut.ordo.common.security.jwt.JwtService;
 import com.kyut.ordo.user.UserMapper;
 import com.kyut.ordo.user.UserRepository;
@@ -40,7 +40,7 @@ public class LocalAuthService {
         return userMapper.toDto(user);
     }
 
-    public LoginResponse authenticate(LoginRequest request) {
+    public LoginResponse authenticate(LocalLoginRequest request) {
         UserEntity user = userRepository.findByEmail(request.getEmail()).orElseThrow();
 
         if (!user.getProvider().equals(AuthProvider.LOCAL)) {

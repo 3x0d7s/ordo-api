@@ -7,9 +7,9 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleOAuthConstants;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.kyut.ordo.auth.common.AuthProvider;
 import com.kyut.ordo.auth.common.dto.LoginResponse;
 import com.kyut.ordo.auth.oauth2.dto.OAuth2TokenResponse;
-import com.kyut.ordo.auth.oauth2.dto.OAuth2UserInfo;
 import com.kyut.ordo.common.security.jwt.JwtService;
 import com.kyut.ordo.user.UserEntity;
 import com.kyut.ordo.user.UserRepository;
@@ -74,7 +74,7 @@ public class GoogleOAuth2Service {
                 .build();
     }
 
-    public OAuth2UserInfo getUserInfo(OAuth2TokenResponse tokens) {
+    public LoginResponse getUserInfo(OAuth2TokenResponse tokens) {
         HttpHeaders userInfoHeaders = new HttpHeaders();
         userInfoHeaders.setBearerAuth(tokens.getAccessToken());
         HttpEntity<?> userInfoRequest = new HttpEntity<>(userInfoHeaders);
@@ -95,14 +95,14 @@ public class GoogleOAuth2Service {
                 .imageUrl(userInfo.get("picture"))
                 .build();
 
-        return OAuth2UserInfo.builder()
+        return LoginResponse.builder()
                 .accessToken(tokens.getAccessToken())
                 .refreshToken(tokens.getRefreshToken())
                 .user(user)
                 .build();
     }
 
-    public LoginResponse authenticate(OAuth2UserInfo userInfo) {
+    public LoginResponse authenticate(LoginResponse userInfo) {
         UserReadDTO userReadDTO = userInfo.getUser();
 
         Optional<UserEntity> user = userRepository.findByEmail(userReadDTO.getEmail());
@@ -145,7 +145,7 @@ public class GoogleOAuth2Service {
 
     public LoginResponse authenticateFromCode(String code) {
         OAuth2TokenResponse oAuth2TokenResponse = exchangeCodeOnToken(code);
-        OAuth2UserInfo oAuth2UserInfo = getUserInfo(oAuth2TokenResponse);
+        LoginResponse oAuth2UserInfo = getUserInfo(oAuth2TokenResponse);
         return authenticate(oAuth2UserInfo);
     }
 
