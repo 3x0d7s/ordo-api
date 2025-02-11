@@ -3,7 +3,7 @@ package com.kyut.ordo.auth.oauth2.service;
 import com.kyut.ordo.auth.common.AuthProvider;
 import com.kyut.ordo.auth.common.dto.LoginResponse;
 import com.kyut.ordo.auth.oauth2.dto.OAuth2TokenResponse;
-import com.kyut.ordo.auth.oauth2.exception.OAuth2AuthenticationException;
+import com.kyut.ordo.auth.common.exception.DifferentAuthenticationProviderException;
 import com.kyut.ordo.common.security.jwt.JwtService;
 import com.kyut.ordo.user.UserEntity;
 import com.kyut.ordo.user.UserRepository;
@@ -44,8 +44,6 @@ public class GoogleOAuth2Service {
         Authentication authentication = createOAuth2Authentication(userEntity);
         String jwtToken = jwtService.generateToken(authentication);
 
-//        log.debug("Successfully authenticated Google user: {}", userInfo.getEmail());
-
         return LoginResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(tokens.getRefreshToken())
@@ -57,7 +55,7 @@ public class GoogleOAuth2Service {
         if (!user.getProvider().equals(AuthProvider.GOOGLE)) {
             log.error("User {} exists with different auth provider: {}", 
                     user.getEmail(), user.getProvider());
-            throw new OAuth2AuthenticationException(
+            throw new DifferentAuthenticationProviderException(
                     "Account exists with different authentication provider"
             );
         }

@@ -9,6 +9,8 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.kyut.ordo.auth.oauth2.config.GoogleOAuth2Properties;
 import com.kyut.ordo.auth.oauth2.dto.OAuth2TokenResponse;
+import com.kyut.ordo.auth.oauth2.exception.GoogleOAuth2CodeForTokenExchangeException;
+import com.kyut.ordo.auth.oauth2.exception.GoogleOAuth2FetchUserInfoException;
 import com.kyut.ordo.auth.oauth2.exception.OAuth2AuthenticationException;
 import com.kyut.ordo.user.dto.UserReadDTO;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +52,7 @@ public class GoogleOAuth2Client {
                     .build();
         } catch (IOException e) {
             log.error("Failed to exchange code for token", e);
-            throw new OAuth2AuthenticationException("Failed to exchange code for token", e);
+            throw new GoogleOAuth2CodeForTokenExchangeException("Failed to exchange code for token", e);
         }
     }
 
@@ -68,7 +70,7 @@ public class GoogleOAuth2Client {
             );
 
             if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
-                throw new OAuth2AuthenticationException("Failed to fetch user info from Google");
+                throw new GoogleOAuth2FetchUserInfoException("Failed to fetch user info from Google");
             }
 
             Map<String, String> userInfo = response.getBody();
@@ -78,8 +80,11 @@ public class GoogleOAuth2Client {
                     .username(userInfo.get("name"))
                     .imageUrl(userInfo.get("picture"))
                     .build();
-        } catch (Exception e) {
-            log.error("Failed to fetch user info", e);
+        }
+        catch (GoogleOAuth2FetchUserInfoException e) {
+            throw e;
+        }
+        catch (Exception e) {
             throw new OAuth2AuthenticationException("Failed to fetch user info", e);
         }
     }

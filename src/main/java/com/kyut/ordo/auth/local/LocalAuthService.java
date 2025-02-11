@@ -1,5 +1,7 @@
 package com.kyut.ordo.auth.local;
 
+import com.kyut.ordo.auth.common.exception.DifferentAuthenticationProviderException;
+import com.kyut.ordo.auth.common.exception.AuthUsernameNotFoundException;
 import com.kyut.ordo.auth.local.dto.LocalLoginRequest;
 import com.kyut.ordo.auth.common.dto.LoginResponse;
 import com.kyut.ordo.auth.common.AuthProvider;
@@ -41,10 +43,12 @@ public class LocalAuthService {
     }
 
     public LoginResponse authenticate(LocalLoginRequest request) {
-        UserEntity user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        UserEntity user = userRepository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new AuthUsernameNotFoundException("User not found")
+        );
 
         if (!user.getProvider().equals(AuthProvider.LOCAL)) {
-            throw new RuntimeException();
+            throw new DifferentAuthenticationProviderException("Account exists with different authentication provider");
         }
 
         Authentication authentication = authenticationManager.authenticate(

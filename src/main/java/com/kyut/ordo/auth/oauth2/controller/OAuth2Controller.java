@@ -1,4 +1,4 @@
-package com.kyut.ordo.auth.oauth2;
+package com.kyut.ordo.auth.oauth2.controller;
 import com.kyut.ordo.auth.common.dto.LoginResponse;
 
 import com.kyut.ordo.auth.oauth2.service.GoogleOAuth2Service;
