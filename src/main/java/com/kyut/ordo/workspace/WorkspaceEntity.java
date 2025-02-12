@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 
 @Data
 @Entity
@@ -30,12 +31,15 @@ public class WorkspaceEntity {
 
     private String description;
 
+    @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+
+
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
-    private UserEntity createdBy;
+    private UserEntity owner;
 
     // Relationships
     @OneToMany(mappedBy = "workspace")

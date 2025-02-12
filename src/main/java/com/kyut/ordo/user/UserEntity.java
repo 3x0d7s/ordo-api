@@ -59,7 +59,7 @@ public class UserEntity implements UserDetails {
     private LocalDateTime lastLoginAt;
 
     // Relationships
-    @OneToMany(mappedBy = "createdBy")
+    @OneToMany(mappedBy = "owner")
     private List<WorkspaceEntity> createdWorkspaces;
 
     @OneToMany(mappedBy = "user")
