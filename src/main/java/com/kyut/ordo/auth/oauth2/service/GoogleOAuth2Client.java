@@ -77,7 +77,7 @@ public class GoogleOAuth2Client {
             return UserReadDTO.builder()
                     .id(userInfo.get("id"))
                     .email(userInfo.get("email"))
-                    .username(userInfo.get("name"))
+                    .name(userInfo.get("name"))
                     .imageUrl(userInfo.get("picture"))
                     .build();
         }

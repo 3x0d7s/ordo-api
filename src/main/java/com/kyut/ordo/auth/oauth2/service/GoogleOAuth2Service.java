@@ -65,7 +65,7 @@ public class GoogleOAuth2Service {
     private UserEntity createNewUser(UserReadDTO userInfo) {
         UserEntity newUser = UserEntity.builder()
                 .email(userInfo.getEmail())
-                .username(userInfo.getUsername())
+                .name(userInfo.getName())
                 .imageUrl(userInfo.getImageUrl())
                 .provider(AuthProvider.GOOGLE)
                 .build();
