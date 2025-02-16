@@ -1,4 +1,4 @@
-package com.kyut.ordo.workspace;
+package com.kyut.ordo.workspace.entity;
 
 import java.time.LocalDateTime;
 
@@ -34,14 +34,11 @@ public class WorkspaceMemberEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private WorkspaceRole role;
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private WorkspaceRoleEntity role;
 
     @Column(name = "joined_at")
     private LocalDateTime joinedAt;
 
-    public enum WorkspaceRole {
-        ADMIN, MEMBER, GUEST
-    }
 }

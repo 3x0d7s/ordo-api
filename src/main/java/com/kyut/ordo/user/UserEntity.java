@@ -8,8 +8,8 @@ import com.kyut.ordo.auth.common.AuthProvider;
 import com.kyut.ordo.board.BoardMemberEntity;
 import com.kyut.ordo.comment.CommentEntity;
 import com.kyut.ordo.task.TaskEntity;
-import com.kyut.ordo.workspace.WorkspaceEntity;
-import com.kyut.ordo.workspace.WorkspaceMemberEntity;
+import com.kyut.ordo.workspace.entity.WorkspaceEntity;
+import com.kyut.ordo.workspace.entity.WorkspaceMemberEntity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

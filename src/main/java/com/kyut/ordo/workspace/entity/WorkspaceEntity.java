@@ -1,4 +1,4 @@
-package com.kyut.ordo.workspace;
+package com.kyut.ordo.workspace.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -6,15 +6,7 @@ import java.util.List;
 import com.kyut.ordo.board.BoardEntity;
 import com.kyut.ordo.user.UserEntity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -35,16 +27,13 @@ public class WorkspaceEntity {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-
-
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
     private UserEntity owner;
 
-    // Relationships
-    @OneToMany(mappedBy = "workspace")
+    @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WorkspaceMemberEntity> members;
 
-    @OneToMany(mappedBy = "workspace")
+    @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardEntity> boards;
 }
