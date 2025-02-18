@@ -38,7 +38,8 @@ public class WorkspaceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<WorkspaceRead> deleteWorkspace(@AuthenticationPrincipal UserEntity user, @PathVariable long id)
+    public ResponseEntity<WorkspaceRead> deleteWorkspace(@AuthenticationPrincipal UserEntity user,
+                                                         @PathVariable long id)
             throws WorkspaceNotFoundException {
         return ResponseEntity.ok(workspaceService.deleteWorkspace(user, id));
     }

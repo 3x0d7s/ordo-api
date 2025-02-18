@@ -70,6 +70,8 @@ public class WorkspaceService {
                 .canManageSettings(false)
                 .build());
 
+
+
         return workspaceMapper.toDto(workspace);
     }
 
