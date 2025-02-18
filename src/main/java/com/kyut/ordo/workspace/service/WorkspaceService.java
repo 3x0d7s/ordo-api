@@ -4,10 +4,12 @@ import com.kyut.ordo.user.UserEntity;
 import com.kyut.ordo.workspace.dto.WorkspaceCreate;
 import com.kyut.ordo.workspace.dto.WorkspaceRead;
 
+import com.kyut.ordo.workspace.dto.WorkspaceRoleRead;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceRoleEntity;
 import com.kyut.ordo.workspace.exception.WorkspaceNotFoundException;
 import com.kyut.ordo.workspace.mapper.WorkspaceMapper;
+import com.kyut.ordo.workspace.mapper.WorkspaceRoleMapper;
 import com.kyut.ordo.workspace.repository.WorkspaceRepository;
 import com.kyut.ordo.workspace.repository.WorkspaceRoleRepository;
 import jakarta.transaction.Transactional;
@@ -23,6 +25,7 @@ public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceRoleRepository workspaceRoleRepository;
 
+    private final WorkspaceRoleMapper workspaceRoleMapper;
     private final WorkspaceMapper workspaceMapper;
 
     public Page<WorkspaceRead> findAllByOwner(UserEntity user, Pageable pageable) {
@@ -73,6 +76,16 @@ public class WorkspaceService {
 
 
         return workspaceMapper.toDto(workspace);
+    }
+
+    public Page<WorkspaceRoleRead> findRolesByWorkspaceId(Long id, Pageable pageable) throws WorkspaceNotFoundException {
+        WorkspaceEntity workspace = workspaceRepository
+                .findById(id)
+                .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
+
+        return workspaceRoleRepository
+                .findAllByWorkspace(workspace, pageable)
+                .map(workspaceRoleMapper::toDto);
     }
 
     @Transactional

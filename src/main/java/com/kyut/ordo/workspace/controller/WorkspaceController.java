@@ -1,6 +1,7 @@
 package com.kyut.ordo.workspace.controller;
 
 import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.workspace.dto.WorkspaceRoleRead;
 import com.kyut.ordo.workspace.exception.WorkspaceNotFoundException;
 import com.kyut.ordo.workspace.service.WorkspaceService;
 import com.kyut.ordo.workspace.dto.WorkspaceCreate;
@@ -29,6 +30,14 @@ public class WorkspaceController {
                                                   @PathVariable long id)
             throws WorkspaceNotFoundException {
         return ResponseEntity.ok(workspaceService.findById(user, id));
+    }
+
+    @GetMapping("/{id}/roles")
+    public ResponseEntity<Page<WorkspaceRoleRead>> findRolesByWorkspaceId(@AuthenticationPrincipal UserEntity user,
+                                                                          @PathVariable long id,
+                                                                          Pageable pageable)
+            throws WorkspaceNotFoundException {
+        return ResponseEntity.ok(workspaceService.findRolesByWorkspaceId(id, pageable));
     }
 
     @PostMapping
