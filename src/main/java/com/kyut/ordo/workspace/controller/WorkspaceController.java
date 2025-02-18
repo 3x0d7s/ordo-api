@@ -24,6 +24,13 @@ public class WorkspaceController {
         return ResponseEntity.ok(workspaceService.findAllByOwner(user, pageable));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<WorkspaceRead> findById(@AuthenticationPrincipal UserEntity user,
+                                                  @PathVariable long id)
+            throws WorkspaceNotFoundException {
+        return ResponseEntity.ok(workspaceService.findById(user, id));
+    }
+
     @PostMapping
     public ResponseEntity<WorkspaceRead> createWorkspace(@AuthenticationPrincipal UserEntity user,
                                                          WorkspaceCreate dto) {
