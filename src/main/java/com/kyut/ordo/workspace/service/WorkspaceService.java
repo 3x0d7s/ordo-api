@@ -6,6 +6,7 @@ import com.kyut.ordo.workspace.dto.WorkspaceRead;
 
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceRoleEntity;
+import com.kyut.ordo.workspace.exception.WorkspaceNotFoundException;
 import com.kyut.ordo.workspace.mapper.WorkspaceMapper;
 import com.kyut.ordo.workspace.repository.WorkspaceRepository;
 import com.kyut.ordo.workspace.repository.WorkspaceRoleRepository;
@@ -30,10 +31,10 @@ public class WorkspaceService {
                 .map(workspaceMapper::toDto);
     }
 
-    public WorkspaceRead findById(UserEntity user, long id) {
+    public WorkspaceRead findById(UserEntity user, long id) throws WorkspaceNotFoundException {
         WorkspaceEntity result = workspaceRepository
                 .findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
         return workspaceMapper.toDto(result);
     }
 
@@ -73,8 +74,11 @@ public class WorkspaceService {
     }
 
     @Transactional
-    public WorkspaceRead deleteWorkspace(UserEntity user, Long id) {
-        WorkspaceEntity workspace = workspaceRepository.findById(id).orElseThrow();
+    public WorkspaceRead deleteWorkspace(UserEntity user, Long id) throws WorkspaceNotFoundException {
+        WorkspaceEntity workspace = workspaceRepository
+                .findById(id)
+                .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
+
         workspaceRoleRepository.deleteAllByWorkspace(workspace);
         workspaceRepository.delete(workspace);
         return workspaceMapper.toDto(workspace);

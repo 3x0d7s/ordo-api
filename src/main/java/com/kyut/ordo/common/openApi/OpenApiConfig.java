@@ -19,7 +19,7 @@ public class OpenApiConfig {
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
                                 .bearerFormat("JWT")))
-                .info(new Info().title("Scheduler API").version("0.0.1"))
+                .info(new Info().title("Ordo").version("0.0.1"))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
 
         pageableOpenApiCustomizer.customise(openAPI);
