@@ -7,9 +7,12 @@ import com.kyut.ordo.workspace.dto.WorkspaceRead;
 import com.kyut.ordo.workspace.dto.WorkspaceRoleRead;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceRoleEntity;
+import com.kyut.ordo.workspace.entity.WorkspaceMemberEntity;
 import com.kyut.ordo.workspace.exception.WorkspaceNotFoundException;
+import com.kyut.ordo.workspace.exception.WorkspaceRoleInsuficientRightsExceptions;
 import com.kyut.ordo.workspace.mapper.WorkspaceMapper;
 import com.kyut.ordo.workspace.mapper.WorkspaceRoleMapper;
+import com.kyut.ordo.workspace.repository.WorkspaceMemberRepository;
 import com.kyut.ordo.workspace.repository.WorkspaceRepository;
 import com.kyut.ordo.workspace.repository.WorkspaceRoleRepository;
 import jakarta.transaction.Transactional;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceRoleRepository workspaceRoleRepository;
+    private final WorkspaceMemberRepository workspaceMemberRepository;
 
     private final WorkspaceRoleMapper workspaceRoleMapper;
     private final WorkspaceMapper workspaceMapper;
@@ -41,12 +45,13 @@ public class WorkspaceService {
         return workspaceMapper.toDto(result);
     }
 
+    @Transactional
     public WorkspaceRead createWorkspace(UserEntity user, WorkspaceCreate dto) {
         WorkspaceEntity workspace = workspaceMapper.toEntity(dto);
         workspace.setOwner(user);
         workspaceRepository.save(workspace);
 
-        workspaceRoleRepository.save(WorkspaceRoleEntity.builder()
+        WorkspaceRoleEntity ownerRole = workspaceRoleRepository.save(WorkspaceRoleEntity.builder()
                 .workspace(workspace)
                 .name("Owner")
                 .canManageMembers(true)
@@ -73,7 +78,13 @@ public class WorkspaceService {
                 .canManageSettings(false)
                 .build());
 
+        WorkspaceMemberEntity workspaceMember = WorkspaceMemberEntity.builder()
+                .workspace(workspace)
+                .user(user)
+                .role(ownerRole)
+                .build();
 
+        workspaceMemberRepository.save(workspaceMember);
 
         return workspaceMapper.toDto(workspace);
     }
@@ -88,14 +99,21 @@ public class WorkspaceService {
                 .map(workspaceRoleMapper::toDto);
     }
 
-    @Transactional
-    public WorkspaceRead deleteWorkspace(UserEntity user, Long id) throws WorkspaceNotFoundException {
+    public WorkspaceRead deleteWorkspace(UserEntity user, Long id)
+            throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
         WorkspaceEntity workspace = workspaceRepository
                 .findById(id)
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
 
-        workspaceRoleRepository.deleteAllByWorkspace(workspace);
+        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository.findByWorkspaceAndUser(workspace, user);
+        WorkspaceRoleEntity role = workspaceMember.getRole();
+
+        if (!role.isCanManageSettings()) {
+            throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to delete this workspace");
+        }
+
         workspaceRepository.delete(workspace);
+
         return workspaceMapper.toDto(workspace);
     }
 

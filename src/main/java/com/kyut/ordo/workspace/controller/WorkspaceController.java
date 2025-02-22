@@ -3,6 +3,7 @@ package com.kyut.ordo.workspace.controller;
 import com.kyut.ordo.user.UserEntity;
 import com.kyut.ordo.workspace.dto.WorkspaceRoleRead;
 import com.kyut.ordo.workspace.exception.WorkspaceNotFoundException;
+import com.kyut.ordo.workspace.exception.WorkspaceRoleInsuficientRightsExceptions;
 import com.kyut.ordo.workspace.service.WorkspaceService;
 import com.kyut.ordo.workspace.dto.WorkspaceCreate;
 import com.kyut.ordo.workspace.dto.WorkspaceRead;
@@ -49,7 +50,7 @@ public class WorkspaceController {
     @DeleteMapping("/{id}")
     public ResponseEntity<WorkspaceRead> deleteWorkspace(@AuthenticationPrincipal UserEntity user,
                                                          @PathVariable long id)
-            throws WorkspaceNotFoundException {
+            throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
         return ResponseEntity.ok(workspaceService.deleteWorkspace(user, id));
     }
 

@@ -11,6 +11,6 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class JwtProperties {
     private String secret;
-    private long expirationMs = 3600000; // 1 hour
+    private long expirationMs = 3600000 * 3; // 1 hour
     private String tokenPrefix = "Bearer ";
 }

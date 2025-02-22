@@ -11,4 +11,5 @@ public interface WorkspaceRoleRepository extends CrudRepository<WorkspaceRoleEnt
 
     Page<WorkspaceRoleEntity> findAllByWorkspace(WorkspaceEntity workspace, Pageable pageable);
 
+    WorkspaceRoleEntity findByNameAndWorkspace(String name, WorkspaceEntity workspace);
 }

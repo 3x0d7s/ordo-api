@@ -24,8 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Builder
 @Table(name = "users", 
        uniqueConstraints = {
-           @UniqueConstraint(columnNames = "email"),
-           @UniqueConstraint(columnNames = {"provider", "provider_id"})
+           @UniqueConstraint(columnNames = "email")
        })
 @NoArgsConstructor
 @AllArgsConstructor
@@ -59,22 +58,46 @@ public class UserEntity implements UserDetails {
     private LocalDateTime lastLoginAt;
 
     // Relationships
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(
+            mappedBy = "owner",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER)
     private List<WorkspaceEntity> createdWorkspaces;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER)
     private List<WorkspaceMemberEntity> workspaceMemberships;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER)
     private List<BoardMemberEntity> boardMemberships;
 
-    @OneToMany(mappedBy = "createdBy")
+    @OneToMany(
+            mappedBy = "createdBy",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER)
     private List<TaskEntity> createdTasks;
 
-    @OneToMany(mappedBy = "assignedTo")
+    @OneToMany(
+            mappedBy = "assignedTo",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER)
     private List<TaskEntity> assignedTasks;
 
-    @OneToMany(mappedBy = "createdBy")
+    @OneToMany(
+            mappedBy = "createdBy",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER)
     private List<CommentEntity> comments;
 
     @Override
