@@ -1,4 +1,4 @@
-package com.kyut.ordo.board;
+package com.kyut.ordo.board.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +30,7 @@ public class BoardEntity {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "workspace_id", nullable = false)
+    @JoinColumn(name = "workspace_id")
     private WorkspaceEntity workspace;
 
     // Relationships

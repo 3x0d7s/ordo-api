@@ -1,4 +1,4 @@
-package com.kyut.ordo.board;
+package com.kyut.ordo.board.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
