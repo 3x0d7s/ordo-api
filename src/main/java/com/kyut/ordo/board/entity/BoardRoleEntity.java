@@ -20,10 +20,10 @@ public class BoardRoleEntity {
     @Column(nullable = false)
     private String name;
     
-    private boolean canEdit;
-    private boolean canDelete;
-    private boolean canInviteMembers;
-    private boolean canManageRoles;
-    private boolean canCreateLists;
-    private boolean canCreateTasks;
+    private boolean ableToEdit;
+    private boolean ableToDelete;
+    private boolean ableToInviteMembers;
+    private boolean ableToManageRoles;
+    private boolean ableToCreateLists;
+    private boolean ableToCreateTasks;
 }

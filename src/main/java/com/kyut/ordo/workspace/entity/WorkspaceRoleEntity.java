@@ -30,11 +30,11 @@ public class WorkspaceRoleEntity {
     private List<WorkspaceMemberEntity> members;
 
     @Column(nullable = false)
-    private boolean canManageMembers;
+    private boolean ableToManageMembers;
     @Column(nullable = false)
-    private boolean canManageContent;
+    private boolean ableToManageContent;
     @Column(nullable = false)
-    private boolean canManageSettings;
+    private boolean ableToManageSettings;
     @Column(nullable = false)
-    private boolean canManageRoles;
+    private boolean ableToManageRoles;
 }

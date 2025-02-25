@@ -1,7 +1,5 @@
 package com.kyut.ordo.board.service;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,17 +31,18 @@ public class BoardService {
     private final WorkspaceMemberRepository workspaceMemberRepository;
     private final BoardPermissionService boardPermissionService;
     private final BoardMapper boardMapper;
+    private final BoardRoleFactory boardRoleFactory;
 
     @Transactional(readOnly = true)
     public Page<BoardRead> findAllAccessibleBoards(UserEntity user, Pageable pageable) {
-        return boardRepository.findAll(pageable)
-            .map(board -> {
-                if (canUserAccessBoard(user, board)) {
-                    return boardMapper.toDto(board);
-                }
+        return boardRepository
+                .findAll(pageable)
+                .map(board -> {
+                    if (canUserAccessBoard(user, board)) {
+                        return boardMapper.toDto(board);
+                    }
                 return null;
-            })
-            .map(dto -> dto);
+            }).map(dto -> dto);
     }
 
     @Transactional(readOnly = true)
@@ -68,14 +67,21 @@ public class BoardService {
                             user.getId())
                 .orElseThrow(() -> new InsufficientBoardPermissionsException(
                     "User does not have access to this workspace"));
+
+            if (!workspace.getRole().isAbleToManageContent()) {
+                throw new InsufficientBoardPermissionsException(
+                    "User does not have permission to create boards in this workspace");
+            }
         }
 
         BoardEntity board = boardMapper.toEntity(dto);
-        board.setCreatedAt(LocalDateTime.now());
         board = boardRepository.save(board);
 
-        BoardRoleEntity ownerRole = boardRoleRepository.findByName("OWNER")
-            .orElseThrow(() -> new IllegalStateException("Owner role not found"));
+        // Create roles using factory
+        BoardRoleEntity ownerRole = boardRoleFactory.createOwnerRole();
+        boardRoleFactory.createMemberRole();
+        boardRoleFactory.createGuestRole();
+
         boardPermissionService.addMember(board, user, ownerRole);
 
         return boardMapper.toDto(board);

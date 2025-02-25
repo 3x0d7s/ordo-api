@@ -54,28 +54,28 @@ public class WorkspaceService {
         WorkspaceRoleEntity ownerRole = workspaceRoleRepository.save(WorkspaceRoleEntity.builder()
                 .workspace(workspace)
                 .name("Owner")
-                .canManageMembers(true)
-                .canManageContent(true)
-                .canManageRoles(true)
-                .canManageSettings(true)
+                .ableToManageMembers(true)
+                .ableToManageContent(true)
+                .ableToManageRoles(true)
+                .ableToManageSettings(true)
                 .build());
 
         workspaceRoleRepository.save(WorkspaceRoleEntity.builder()
                 .workspace(workspace)
                 .name("Member")
-                .canManageMembers(false)
-                .canManageContent(true)
-                .canManageRoles(false)
-                .canManageSettings(false)
+                .ableToManageMembers(false)
+                .ableToManageContent(true)
+                .ableToManageRoles(false)
+                .ableToManageSettings(false)
                 .build());
 
         workspaceRoleRepository.save(WorkspaceRoleEntity.builder()
                 .workspace(workspace)
                 .name("Guest")
-                .canManageMembers(false)
-                .canManageContent(false)
-                .canManageRoles(false)
-                .canManageSettings(false)
+                .ableToManageMembers(false)
+                .ableToManageContent(false)
+                .ableToManageRoles(false)
+                .ableToManageSettings(false)
                 .build());
 
         WorkspaceMemberEntity workspaceMember = WorkspaceMemberEntity.builder()
@@ -108,7 +108,7 @@ public class WorkspaceService {
         WorkspaceMemberEntity workspaceMember = workspaceMemberRepository.findByWorkspaceAndUser(workspace, user);
         WorkspaceRoleEntity role = workspaceMember.getRole();
 
-        if (!role.isCanManageSettings()) {
+        if (!role.isAbleToManageSettings()) {
             throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to delete this workspace");
         }
 

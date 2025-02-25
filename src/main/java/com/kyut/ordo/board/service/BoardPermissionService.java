@@ -31,12 +31,12 @@ public class BoardPermissionService {
 
         BoardRoleEntity role = memberOpt.get().getRole();
         return switch (permission) {
-            case "EDIT" -> role.isCanEdit();
-            case "DELETE" -> role.isCanDelete();
-            case "INVITE" -> role.isCanInviteMembers();
-            case "MANAGE_ROLES" -> role.isCanManageRoles();
-            case "CREATE_LISTS" -> role.isCanCreateLists();
-            case "CREATE_TASKS" -> role.isCanCreateTasks();
+            case "EDIT" -> role.isAbleToEdit();
+            case "DELETE" -> role.isAbleToDelete();
+            case "INVITE" -> role.isAbleToInviteMembers();
+            case "MANAGE_ROLES" -> role.isAbleToManageRoles();
+            case "CREATE_LISTS" -> role.isAbleToCreateLists();
+            case "CREATE_TASKS" -> role.isAbleToCreateTasks();
             default -> false;
         };
     }
