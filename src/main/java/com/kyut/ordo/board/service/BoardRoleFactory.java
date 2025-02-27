@@ -1,5 +1,6 @@
 package com.kyut.ordo.board.service;
 
+import com.kyut.ordo.board.entity.BoardEntity;
 import com.kyut.ordo.board.entity.BoardRoleEntity;
 import com.kyut.ordo.board.repository.BoardRoleRepository;
 import com.kyut.ordo.common.role.RoleFactory;
@@ -8,13 +9,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class BoardRoleFactory implements RoleFactory<BoardRoleEntity> {
+public class BoardRoleFactory {
     private final BoardRoleRepository boardRoleRepository;
 
-    @Override
-    public BoardRoleEntity createOwnerRole() {
+    public BoardRoleEntity createOwnerRole(BoardEntity board) {
         return boardRoleRepository.save(BoardRoleEntity.builder()
                 .name("Owner")
+                .board(board)
                 .ableToEdit(true)
                 .ableToDelete(true)
                 .ableToInviteMembers(true)
@@ -24,10 +25,10 @@ public class BoardRoleFactory implements RoleFactory<BoardRoleEntity> {
                 .build());
     }
 
-    @Override
-    public BoardRoleEntity createMemberRole() {
+    public BoardRoleEntity createMemberRole(BoardEntity board) {
         return boardRoleRepository.save(BoardRoleEntity.builder()
                 .name("Member")
+                .board(board)
                 .ableToEdit(true)
                 .ableToDelete(false)
                 .ableToInviteMembers(false)
@@ -37,10 +38,10 @@ public class BoardRoleFactory implements RoleFactory<BoardRoleEntity> {
                 .build());
     }
 
-    @Override
-    public BoardRoleEntity createGuestRole() {
+    public BoardRoleEntity createGuestRole(BoardEntity board) {
         return boardRoleRepository.save(BoardRoleEntity.builder()
                 .name("Guest")
+                .board(board)
                 .ableToEdit(false)
                 .ableToDelete(false)
                 .ableToInviteMembers(false)

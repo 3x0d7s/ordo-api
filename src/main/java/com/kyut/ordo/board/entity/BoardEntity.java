@@ -35,6 +35,9 @@ public class BoardEntity {
     private WorkspaceEntity workspace;
 
     @OneToMany(mappedBy = "board")
+    private List<BoardRoleEntity> roles;
+
+    @OneToMany(mappedBy = "board")
     private List<BoardMemberEntity> members;
 
     @OneToMany(mappedBy = "board")

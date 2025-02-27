@@ -10,19 +10,36 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface BoardMapper {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(source = "dto.title", target = "title")
+    @Mapping(source = "dto.description", target = "description")
+    @Mapping(source = "dto.visibility", target = "visibility")
+    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "members", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     @Mapping(source = "workspaceId", target = "workspace.id")
     BoardEntity toEntity(BoardCreate dto);
 
-    @Mapping(source = "workspace", target = "workspace")
+    @Mapping(target = "id", ignore = true)
     @Mapping(source = "dto.title", target = "title")
     @Mapping(source = "dto.description", target = "description")
-    BoardEntity toEntity(BoardCreate dto, WorkspaceEntity workspace);
+    @Mapping(source = "dto.visibility", target = "visibility")
+    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "members", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(source = "workspaceEntity", target = "workspace")
+    BoardEntity toEntity(BoardCreate dto, WorkspaceEntity workspaceEntity);
 
+    @Mapping(source = "entity.id", target = "id")
+    @Mapping(source = "entity.title", target = "title")
+    @Mapping(source = "entity.description", target = "description")
+    @Mapping(source = "entity.roles", target = "roles")
     BoardRead toDto(BoardEntity entity);
 
     @Mapping(source = "entity.id", target = "id")
     @Mapping(source = "entity.title", target = "title")
     @Mapping(source = "entity.description", target = "description")
+    @Mapping(source = "entity.roles", target = "roles")
     BoardRead toDto(BoardEntity entity, WorkspaceEntity workspace);
 
     void updateEntityFromDto(BoardCreate dto, @MappingTarget BoardEntity board);

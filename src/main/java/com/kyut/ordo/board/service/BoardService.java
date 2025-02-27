@@ -86,9 +86,9 @@ public class BoardService {
         BoardEntity board = boardMapper.toEntity(dto, workspace);
         board = boardRepository.save(board);
 
-        BoardRoleEntity ownerRole = boardRoleFactory.createOwnerRole();
-        boardRoleFactory.createMemberRole();
-        boardRoleFactory.createGuestRole();
+        BoardRoleEntity ownerRole = boardRoleFactory.createOwnerRole(board);
+        boardRoleFactory.createMemberRole(board);
+        boardRoleFactory.createGuestRole(board);
 
         boardPermissionService.addMember(board, user, ownerRole);
 
