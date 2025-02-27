@@ -7,8 +7,8 @@ public class WorkspaceRoleRead {
     private Long id;
     private String name;
 
-    private boolean canManageMembers;
-    private boolean canManageContent;
-    private boolean canManageSettings;
-    private boolean canManageRoles;
+    private boolean ableToManageMembers;
+    private boolean ableToManageContent;
+    private boolean ableToManageSettings;
+    private boolean ableToManageRoles;
 }

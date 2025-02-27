@@ -1,5 +1,7 @@
 package com.kyut.ordo.board.service;
 
+import com.kyut.ordo.workspace.entity.WorkspaceEntity;
+import com.kyut.ordo.workspace.repository.WorkspaceRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class BoardService {
     private final BoardPermissionService boardPermissionService;
     private final BoardMapper boardMapper;
     private final BoardRoleFactory boardRoleFactory;
+    private final WorkspaceRepository workspaceRepository;
 
     @Transactional(readOnly = true)
     public Page<BoardRead> findAllAccessibleBoards(UserEntity user, Pageable pageable) {
@@ -61,23 +64,28 @@ public class BoardService {
     @Transactional
     public BoardRead createBoard(UserEntity user, BoardCreate dto)
             throws InsufficientBoardPermissionsException {
+        WorkspaceEntity workspace = null;
+
         if (dto.getWorkspaceId() != null) {
-            WorkspaceMemberEntity workspace = workspaceMemberRepository.findByWorkspaceIdAndUserId(
+            workspace = workspaceRepository.findById(dto.getWorkspaceId())
+                .orElseThrow(() -> new InsufficientBoardPermissionsException(
+                    "Workspace not found with id: " + dto.getWorkspaceId()));
+
+            WorkspaceMemberEntity workspaceMember = workspaceMemberRepository.findByWorkspaceIdAndUserId(
                     dto.getWorkspaceId(),
                             user.getId())
                 .orElseThrow(() -> new InsufficientBoardPermissionsException(
                     "User does not have access to this workspace"));
 
-            if (!workspace.getRole().isAbleToManageContent()) {
+            if (!workspaceMember.getRole().isAbleToManageContent()) {
                 throw new InsufficientBoardPermissionsException(
                     "User does not have permission to create boards in this workspace");
             }
         }
 
-        BoardEntity board = boardMapper.toEntity(dto);
+        BoardEntity board = boardMapper.toEntity(dto, workspace);
         board = boardRepository.save(board);
 
-        // Create roles using factory
         BoardRoleEntity ownerRole = boardRoleFactory.createOwnerRole();
         boardRoleFactory.createMemberRole();
         boardRoleFactory.createGuestRole();

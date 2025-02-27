@@ -29,11 +29,11 @@ public class BoardEntity {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @ManyToOne
+    // Relationships
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id")
     private WorkspaceEntity workspace;
 
-    // Relationships
     @OneToMany(mappedBy = "board")
     private List<BoardMemberEntity> members;
 
