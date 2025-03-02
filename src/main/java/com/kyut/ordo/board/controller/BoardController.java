@@ -61,8 +61,8 @@ public class BoardController {
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id)
             throws InsufficientBoardPermissionsException {
-        boardService.deleteBoard(user, id);
-        return ResponseEntity.ok().build();
+        BoardRead board = boardService.deleteBoard(user, id);
+        return ResponseEntity.ok(board);
     }
 
     @PutMapping("/{boardId}/members/{newUserId}/{roleId}")

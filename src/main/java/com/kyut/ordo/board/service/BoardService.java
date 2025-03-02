@@ -112,14 +112,19 @@ public class BoardService {
         return boardMapper.toDto(board);
     }
 
-    @Transactional
-    public void deleteBoard(UserEntity user, Long id)
+    public BoardRead deleteBoard(UserEntity user, Long id)
             throws InsufficientBoardPermissionsException {
+        BoardEntity board = boardRepository
+                .findById(id)
+                .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + id));
+
         if (!boardPermissionService.hasPermission(id, user.getId(), "DELETE")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to delete this board");
         }
 
-        boardRepository.deleteById(id);
+        boardRepository.delete(board);
+
+        return boardMapper.toDto(board);
     }
 
     @Transactional
