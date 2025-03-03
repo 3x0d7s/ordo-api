@@ -5,13 +5,11 @@ import com.kyut.ordo.board.dto.BoardRead;
 import com.kyut.ordo.board.entity.BoardEntity;
 import com.kyut.ordo.board.entity.BoardRoleEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
-import com.kyut.ordo.workspace.entity.WorkspaceRoleEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import java.util.Collection;
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface BoardMapper {

@@ -7,10 +7,6 @@ import com.kyut.ordo.common.role.RoleFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Component
 @RequiredArgsConstructor
 public class BoardRoleFactory implements RoleFactory<BoardRoleEntity, BoardEntity> {

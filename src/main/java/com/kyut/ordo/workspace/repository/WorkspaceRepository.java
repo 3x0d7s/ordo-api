@@ -2,7 +2,6 @@ package com.kyut.ordo.workspace.repository;
 
 import com.kyut.ordo.user.UserEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
-import com.kyut.ordo.workspace.entity.WorkspaceRoleEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
