@@ -24,6 +24,8 @@ import com.kyut.ordo.workspace.repository.WorkspaceMemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -86,13 +88,10 @@ public class BoardService {
         BoardEntity board = boardMapper.toEntity(dto, workspace);
         board = boardRepository.save(board);
 
-        BoardRoleEntity ownerRole = boardRoleFactory.createOwnerRole(board);
-        boardRoleFactory.createMemberRole(board);
-        boardRoleFactory.createGuestRole(board);
+        Map<String, BoardRoleEntity> roles = boardRoleFactory.rolesAsMap(board);
+        boardPermissionService.addMember(board, user, roles.get("Owner"));
 
-        boardPermissionService.addMember(board, user, ownerRole);
-
-        return boardMapper.toDto(board);
+        return boardMapper.toDto(board, roles.values());
     }
 
     @Transactional

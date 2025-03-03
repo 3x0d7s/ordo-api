@@ -3,10 +3,15 @@ package com.kyut.ordo.board.mapper;
 import com.kyut.ordo.board.dto.BoardCreate;
 import com.kyut.ordo.board.dto.BoardRead;
 import com.kyut.ordo.board.entity.BoardEntity;
+import com.kyut.ordo.board.entity.BoardRoleEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
+import com.kyut.ordo.workspace.entity.WorkspaceRoleEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+
+import java.util.Collection;
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface BoardMapper {
@@ -41,6 +46,12 @@ public interface BoardMapper {
     @Mapping(source = "entity.description", target = "description")
     @Mapping(source = "entity.roles", target = "roles")
     BoardRead toDto(BoardEntity entity, WorkspaceEntity workspace);
+
+    @Mapping(source = "entity.id", target = "id")
+    @Mapping(source = "entity.title", target = "title")
+    @Mapping(source = "entity.description", target = "description")
+    @Mapping(source = "rolesCollection", target = "roles")
+    BoardRead toDto(BoardEntity entity, Collection<BoardRoleEntity> rolesCollection);
 
     void updateEntityFromDto(BoardCreate dto, @MappingTarget BoardEntity board);
 }

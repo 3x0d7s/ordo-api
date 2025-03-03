@@ -1,5 +1,6 @@
 package com.kyut.ordo.workspace.service;
 
+import com.kyut.ordo.board.entity.BoardRoleEntity;
 import com.kyut.ordo.user.UserEntity;
 import com.kyut.ordo.workspace.dto.WorkspaceCreate;
 import com.kyut.ordo.workspace.dto.WorkspaceRead;
@@ -22,12 +23,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceRoleRepository workspaceRoleRepository;
     private final WorkspaceMemberRepository workspaceMemberRepository;
+    private final WorkspaceRoleFactory workspaceRoleFactory;
 
     private final WorkspaceRoleMapper workspaceRoleMapper;
     private final WorkspaceMapper workspaceMapper;
@@ -51,42 +55,17 @@ public class WorkspaceService {
         workspace.setOwner(user);
         workspaceRepository.save(workspace);
 
-        WorkspaceRoleEntity ownerRole = workspaceRoleRepository.save(WorkspaceRoleEntity.builder()
-                .workspace(workspace)
-                .name("Owner")
-                .ableToManageMembers(true)
-                .ableToManageContent(true)
-                .ableToManageRoles(true)
-                .ableToManageSettings(true)
-                .build());
-
-        workspaceRoleRepository.save(WorkspaceRoleEntity.builder()
-                .workspace(workspace)
-                .name("Member")
-                .ableToManageMembers(false)
-                .ableToManageContent(true)
-                .ableToManageRoles(false)
-                .ableToManageSettings(false)
-                .build());
-
-        workspaceRoleRepository.save(WorkspaceRoleEntity.builder()
-                .workspace(workspace)
-                .name("Guest")
-                .ableToManageMembers(false)
-                .ableToManageContent(false)
-                .ableToManageRoles(false)
-                .ableToManageSettings(false)
-                .build());
+        Map<String, WorkspaceRoleEntity> rolesMap = workspaceRoleFactory.rolesAsMap(workspace);
 
         WorkspaceMemberEntity workspaceMember = WorkspaceMemberEntity.builder()
                 .workspace(workspace)
                 .user(user)
-                .role(ownerRole)
+                .role(rolesMap.get("Owner"))
                 .build();
 
         workspaceMemberRepository.save(workspaceMember);
 
-        return workspaceMapper.toDto(workspace);
+        return workspaceMapper.toDto(workspace, rolesMap.values());
     }
 
     public Page<WorkspaceRoleRead> findRolesByWorkspaceId(Long id, Pageable pageable) throws WorkspaceNotFoundException {
