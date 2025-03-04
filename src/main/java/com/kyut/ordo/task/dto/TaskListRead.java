@@ -14,5 +14,4 @@ public class TaskListRead {
     private String color;
     private LocalDateTime createdAt;
     private BoardRead board;
-    private List<TaskRead> tasks;
 }

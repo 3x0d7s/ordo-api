@@ -3,6 +3,7 @@ package com.kyut.ordo.task.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.kyut.ordo.user.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskListRepository taskListRepository;
+    private final UserRepository userRepository;
     private final BoardPermissionService boardPermissionService;
     private final TaskMapper taskMapper;
     
@@ -97,10 +99,17 @@ public class TaskService {
         }
         
         UserEntity assignedTo = null;
+//        if (dto.getAssignedToId() != null) {
+//            // In a real implementation, you would fetch the user from a UserService
+//            assignedTo = new UserEntity();
+//            assignedTo.setId(dto.getAssignedToId());
+//        }
+
         if (dto.getAssignedToId() != null) {
-            // In a real implementation, you would fetch the user from a UserService
-            assignedTo = new UserEntity();
-            assignedTo.setId(dto.getAssignedToId());
+            assignedTo = userRepository
+                    .findById(dto.getAssignedToId())
+                    .orElseThrow(() ->
+                            new TaskNotFoundException("User not found with id: " + dto.getAssignedToId()));
         }
         
         TaskEntity task = taskMapper.toEntity(dto, taskList, user, assignedTo);

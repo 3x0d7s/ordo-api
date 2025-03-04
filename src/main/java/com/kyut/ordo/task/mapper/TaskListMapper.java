@@ -27,7 +27,6 @@ public interface TaskListMapper {
     @Mapping(source = "entity.color", target = "color")
     @Mapping(source = "entity.createdAt", target = "createdAt")
     @Mapping(source = "entity.board", target = "board")
-    @Mapping(source = "entity.tasks", target = "tasks")
     TaskListRead toDto(TaskListEntity entity);
     
     void updateEntityFromDto(TaskListCreate dto, @MappingTarget TaskListEntity taskList);
