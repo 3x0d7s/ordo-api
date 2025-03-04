@@ -1,11 +1,12 @@
 package com.kyut.ordo.task.mapper;
 
+import com.kyut.ordo.task.dto.TaskRead;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import com.kyut.ordo.task.dto.TaskCreate;
-import com.kyut.ordo.task.dto.TaskRead;
+import com.kyut.ordo.task.dto.TaskWithItsListRead;
 import com.kyut.ordo.task.entity.TaskEntity;
 import com.kyut.ordo.task.entity.TaskListEntity;
 import com.kyut.ordo.user.UserEntity;
@@ -32,6 +33,16 @@ public interface TaskMapper {
     @Mapping(source = "entity.position", target = "position")
     @Mapping(source = "entity.createdAt", target = "createdAt")
     @Mapping(source = "entity.taskList", target = "taskList")
+    @Mapping(source = "entity.createdBy", target = "createdBy")
+    @Mapping(source = "entity.assignedTo", target = "assignedTo")
+    TaskWithItsListRead toDtoWithItsList(TaskEntity entity);
+
+    @Mapping(source = "entity.id", target = "id")
+    @Mapping(source = "entity.title", target = "title")
+    @Mapping(source = "entity.description", target = "description")
+    @Mapping(source = "entity.dueDate", target = "dueDate")
+    @Mapping(source = "entity.position", target = "position")
+    @Mapping(source = "entity.createdAt", target = "createdAt")
     @Mapping(source = "entity.createdBy", target = "createdBy")
     @Mapping(source = "entity.assignedTo", target = "assignedTo")
     TaskRead toDto(TaskEntity entity);

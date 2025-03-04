@@ -2,6 +2,8 @@ package com.kyut.ordo.task.controller;
 
 import java.util.List;
 
+import com.kyut.ordo.task.dto.TaskRead;
+import com.kyut.ordo.task.dto.TaskWithItsListRead;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
 import com.kyut.ordo.task.dto.TaskCreate;
-import com.kyut.ordo.task.dto.TaskRead;
 import com.kyut.ordo.task.exception.InsufficientTaskPermissionsException;
 import com.kyut.ordo.task.exception.TaskListNotFoundException;
 import com.kyut.ordo.task.exception.TaskNotFoundException;
@@ -52,47 +53,47 @@ public class TaskController {
     }
     
     @GetMapping("/assigned")
-    public ResponseEntity<Page<TaskRead>> findAllAssignedToUser(
+    public ResponseEntity<Page<TaskWithItsListRead>> findAllAssignedToUser(
             @AuthenticationPrincipal UserEntity user,
             Pageable pageable) {
-        Page<TaskRead> tasks = taskService.findAllAssignedToUser(user, pageable);
+        Page<TaskWithItsListRead> tasks = taskService.findAllAssignedToUser(user, pageable);
         return ResponseEntity.ok(tasks);
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<TaskRead> findById(
+    public ResponseEntity<TaskWithItsListRead> findById(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id) 
             throws TaskNotFoundException, InsufficientTaskPermissionsException {
-        TaskRead task = taskService.findById(user, id);
+        TaskWithItsListRead task = taskService.findById(user, id);
         return ResponseEntity.ok(task);
     }
     
     @PostMapping
-    public ResponseEntity<TaskRead> createTask(
+    public ResponseEntity<TaskWithItsListRead> createTask(
             @AuthenticationPrincipal UserEntity user,
             @RequestBody TaskCreate dto) 
             throws TaskListNotFoundException, InsufficientTaskPermissionsException {
-        TaskRead task = taskService.createTask(user, dto);
+        TaskWithItsListRead task = taskService.createTask(user, dto);
         return ResponseEntity.ok(task);
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<TaskRead> updateTask(
+    public ResponseEntity<TaskWithItsListRead> updateTask(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id,
             @RequestBody TaskCreate dto) 
             throws TaskNotFoundException, InsufficientTaskPermissionsException {
-        TaskRead task = taskService.updateTask(user, id, dto);
+        TaskWithItsListRead task = taskService.updateTask(user, id, dto);
         return ResponseEntity.ok(task);
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<TaskRead> deleteTask(
+    public ResponseEntity<TaskWithItsListRead> deleteTask(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id) 
             throws TaskNotFoundException, InsufficientTaskPermissionsException {
-        TaskRead task = taskService.deleteTask(user, id);
+        TaskWithItsListRead task = taskService.deleteTask(user, id);
         return ResponseEntity.ok(task);
     }
 }
