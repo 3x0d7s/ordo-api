@@ -1,7 +1,6 @@
 package com.kyut.ordo.task.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.kyut.ordo.board.dto.BoardRead;
 import lombok.Data;

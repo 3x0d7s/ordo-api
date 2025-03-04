@@ -161,8 +161,7 @@ public class TaskService {
         
         return taskMapper.toDtoWithItsList(task);
     }
-    
-    @Transactional
+
     public TaskWithItsListRead deleteTask(UserEntity user, Long id)
             throws TaskNotFoundException, InsufficientTaskPermissionsException {
         TaskEntity task = taskRepository.findById(id)
@@ -171,7 +170,7 @@ public class TaskService {
         if (!boardPermissionService.hasPermission(task.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientTaskPermissionsException("User does not have permission to delete this task");
         }
-        
+
         taskRepository.delete(task);
         
         return taskMapper.toDtoWithItsList(task);
