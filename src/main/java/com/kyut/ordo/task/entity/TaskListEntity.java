@@ -40,6 +40,6 @@ public class TaskListEntity {
     private BoardEntity board;
 
     // Relationships
-    @OneToMany(mappedBy = "list")
+    @OneToMany(mappedBy = "taskList")
     private List<TaskEntity> tasks;
 }

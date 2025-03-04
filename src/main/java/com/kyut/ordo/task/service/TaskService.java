@@ -42,7 +42,7 @@ public class TaskService {
             throw new InsufficientBoardPermissionsException("User does not have permission to view tasks in this list");
         }
         
-        List<TaskEntity> tasks = taskRepository.findAllByListOrderByPosition(taskList);
+        List<TaskEntity> tasks = taskRepository.findAllByTaskListOrderByPosition(taskList);
         return tasks.stream()
             .map(taskMapper::toDto)
             .toList();
@@ -58,7 +58,7 @@ public class TaskService {
             throw new InsufficientBoardPermissionsException("User does not have permission to view tasks in this list");
         }
         
-        return taskRepository.findAllByList(taskList, pageable)
+        return taskRepository.findAllByTaskList(taskList, pageable)
             .map(taskMapper::toDto);
     }
     
@@ -74,7 +74,7 @@ public class TaskService {
         TaskEntity task = taskRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
         
-        if (!boardPermissionService.hasPermission(task.getList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(task.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientTaskPermissionsException("User does not have permission to view this task");
         }
         
@@ -91,13 +91,11 @@ public class TaskService {
             throw new InsufficientTaskPermissionsException("User does not have permission to create tasks in this list");
         }
         
-        // If position is not provided, add to the end
         if (dto.getPosition() == null) {
-            Integer taskCount = taskRepository.countByList(taskList);
+            Integer taskCount = taskRepository.countByTaskList(taskList);
             dto.setPosition(taskCount);
         }
         
-        // Handle assigned user
         UserEntity assignedTo = null;
         if (dto.getAssignedToId() != null) {
             // In a real implementation, you would fetch the user from a UserService
@@ -118,21 +116,21 @@ public class TaskService {
         TaskEntity task = taskRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
         
-        if (!boardPermissionService.hasPermission(task.getList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(task.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientTaskPermissionsException("User does not have permission to edit this task");
         }
         
         // Don't allow changing the list if it's provided and different
-        if (dto.getListId() != null && !dto.getListId().equals(task.getList().getId())) {
+        if (dto.getListId() != null && !dto.getListId().equals(task.getTaskList().getId())) {
             TaskListEntity newList = taskListRepository.findById(dto.getListId())
                 .orElseThrow(() -> new TaskListNotFoundException("Task list not found with id: " + dto.getListId()));
             
             // Ensure the new list is in the same board
-            if (!newList.getBoard().getId().equals(task.getList().getBoard().getId())) {
+            if (!newList.getBoard().getId().equals(task.getTaskList().getBoard().getId())) {
                 throw new IllegalArgumentException("Cannot move task to a list in a different board");
             }
             
-            task.setList(newList);
+            task.setTaskList(newList);
         }
         
         // Update assigned user if changed
@@ -160,7 +158,7 @@ public class TaskService {
         TaskEntity task = taskRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
         
-        if (!boardPermissionService.hasPermission(task.getList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(task.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientTaskPermissionsException("User does not have permission to delete this task");
         }
         

@@ -13,17 +13,17 @@ import com.kyut.ordo.user.UserEntity;
 
 public interface TaskRepository extends CrudRepository<TaskEntity, Long> {
     
-    List<TaskEntity> findAllByList(TaskListEntity list);
+    List<TaskEntity> findAllByTaskList(TaskListEntity list);
     
-    List<TaskEntity> findAllByListOrderByPosition(TaskListEntity list);
-    
-    Page<TaskEntity> findAllByList(TaskListEntity list, Pageable pageable);
-    
-    Optional<TaskEntity> findByIdAndList(Long id, TaskListEntity list);
+    List<TaskEntity> findAllByTaskListOrderByPosition(TaskListEntity taskList);
+
+    Optional<TaskEntity> findByIdAndTaskList(Long id, TaskListEntity list);
     
     List<TaskEntity> findAllByAssignedTo(UserEntity user);
     
     Page<TaskEntity> findAllByAssignedTo(UserEntity user, Pageable pageable);
-    
-    Integer countByList(TaskListEntity list);
+
+    Page<TaskEntity> findAllByTaskList(TaskListEntity taskList, Pageable pageable);
+
+    Integer countByTaskList(TaskListEntity taskList);
 }

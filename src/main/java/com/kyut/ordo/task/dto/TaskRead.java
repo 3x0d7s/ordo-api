@@ -2,6 +2,8 @@ package com.kyut.ordo.task.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.kyut.ordo.user.dto.UserReadDTO;
 import lombok.Data;
 
 @Data
@@ -12,14 +14,7 @@ public class TaskRead {
     private LocalDate dueDate;
     private Integer position;
     private LocalDateTime createdAt;
-    private TaskListRead list;
-    private UserRead createdBy;
-    private UserRead assignedTo;
-    
-    @Data
-    public static class UserRead {
-        private Long id;
-        private String username;
-        private String email;
-    }
+    private TaskListRead taskList;
+    private UserReadDTO createdBy;
+    private UserReadDTO assignedTo;
 }

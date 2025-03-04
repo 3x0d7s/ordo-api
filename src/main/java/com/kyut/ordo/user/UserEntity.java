@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.kyut.ordo.auth.common.AuthProvider;
 import com.kyut.ordo.board.entity.BoardMemberEntity;
-import com.kyut.ordo.comment.CommentEntity;
+import com.kyut.ordo.comment.entity.CommentEntity;
 import com.kyut.ordo.task.entity.TaskEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceMemberEntity;
@@ -16,6 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -48,9 +50,11 @@ public class UserEntity implements UserDetails {
 
     private String imageUrl;
 
+    @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 

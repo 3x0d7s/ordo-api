@@ -19,11 +19,11 @@ public interface TaskMapper {
     @Mapping(source = "dto.dueDate", target = "dueDate")
     @Mapping(source = "dto.position", target = "position")
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(source = "list", target = "list")
+    @Mapping(source = "taskList", target = "taskList")
     @Mapping(source = "createdBy", target = "createdBy")
     @Mapping(source = "assignedTo", target = "assignedTo")
     @Mapping(target = "comments", ignore = true)
-    TaskEntity toEntity(TaskCreate dto, TaskListEntity list, UserEntity createdBy, UserEntity assignedTo);
+    TaskEntity toEntity(TaskCreate dto, TaskListEntity taskList, UserEntity createdBy, UserEntity assignedTo);
     
     @Mapping(source = "entity.id", target = "id")
     @Mapping(source = "entity.title", target = "title")
@@ -31,15 +31,10 @@ public interface TaskMapper {
     @Mapping(source = "entity.dueDate", target = "dueDate")
     @Mapping(source = "entity.position", target = "position")
     @Mapping(source = "entity.createdAt", target = "createdAt")
-    @Mapping(source = "entity.list", target = "list")
+    @Mapping(source = "entity.taskList", target = "taskList")
     @Mapping(source = "entity.createdBy", target = "createdBy")
     @Mapping(source = "entity.assignedTo", target = "assignedTo")
     TaskRead toDto(TaskEntity entity);
     
     void updateEntityFromDto(TaskCreate dto, @MappingTarget TaskEntity task);
-    
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "username", target = "username")
-    @Mapping(source = "email", target = "email")
-    TaskRead.UserRead userToUserRead(UserEntity user);
 }

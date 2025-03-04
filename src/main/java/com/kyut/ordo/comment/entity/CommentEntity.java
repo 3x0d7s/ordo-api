@@ -1,4 +1,4 @@
-package com.kyut.ordo.comment;
+package com.kyut.ordo.comment.entity;
 
 import java.time.LocalDateTime;
 

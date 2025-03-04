@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.kyut.ordo.comment.CommentEntity;
+import com.kyut.ordo.comment.entity.CommentEntity;
 import com.kyut.ordo.user.UserEntity;
 
 import jakarta.persistence.Column;
@@ -42,7 +42,7 @@ public class TaskEntity {
 
     @ManyToOne
     @JoinColumn(name = "list_id", nullable = false)
-    private TaskListEntity list;
+    private TaskListEntity taskList;
 
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
