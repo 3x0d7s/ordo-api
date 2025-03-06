@@ -32,10 +32,10 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardMemberRepository boardMemberRepository;
     private final BoardRoleRepository boardRoleRepository;
-    private final WorkspaceMemberRepository workspaceMemberRepository;
     private final BoardPermissionService boardPermissionService;
     private final BoardMapper boardMapper;
     private final BoardRoleFactory boardRoleFactory;
+    private final WorkspaceMemberRepository workspaceMemberRepository;
     private final WorkspaceRepository workspaceRepository;
 
     @Transactional(readOnly = true)
@@ -47,7 +47,19 @@ public class BoardService {
                         return boardMapper.toDto(board);
                     }
                 return null;
-            }).map(dto -> dto);
+            });
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BoardRead> findAllBoardsByWorkspace(UserEntity user, Long workspaceId, Pageable pageable) {
+        return boardRepository
+                .findAllByWorkspaceId(workspaceId, pageable)
+                .map(board -> {
+                    if (canUserAccessBoard(user, board)) {
+                        return boardMapper.toDto(board);
+                    }
+                    return null;
+                });
     }
 
     @Transactional(readOnly = true)

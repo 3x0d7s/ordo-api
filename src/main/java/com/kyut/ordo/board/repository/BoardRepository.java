@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface BoardRepository extends CrudRepository<BoardEntity, Long> {
 
-    void findAllByWorkspaceId(Long workspaceId);
+    Page<BoardEntity> findAllByWorkspaceId(Long workspaceId, Pageable pageable);
 
     Page<BoardEntity> findAll(Pageable pageable);
 }

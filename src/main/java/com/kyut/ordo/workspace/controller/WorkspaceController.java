@@ -1,5 +1,7 @@
 package com.kyut.ordo.workspace.controller;
 
+import com.kyut.ordo.board.dto.BoardRead;
+import com.kyut.ordo.board.service.BoardService;
 import com.kyut.ordo.user.UserEntity;
 import com.kyut.ordo.workspace.dto.WorkspaceRoleRead;
 import com.kyut.ordo.workspace.exception.WorkspaceNotFoundException;
@@ -15,10 +17,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController()
-@RequestMapping("/workspace")
+@RequestMapping("/workspaces")
 @RequiredArgsConstructor
 public class WorkspaceController {
     private final WorkspaceService workspaceService;
+    private final BoardService boardService;
 
     @GetMapping
     public ResponseEntity<Page<WorkspaceRead>> findAllByOwner(@AuthenticationPrincipal UserEntity user,
@@ -39,6 +42,14 @@ public class WorkspaceController {
                                                                           Pageable pageable)
             throws WorkspaceNotFoundException {
         return ResponseEntity.ok(workspaceService.findRolesByWorkspaceId(id, pageable));
+    }
+
+    @GetMapping("/{id}/boards")
+    public ResponseEntity<Page<BoardRead>> findBoardsByWorkspaceId(
+            @AuthenticationPrincipal UserEntity user,
+            @PathVariable long id,
+            Pageable pageable) {
+        return ResponseEntity.ok(boardService.findAllBoardsByWorkspace(user, id, pageable));
     }
 
     @PostMapping
