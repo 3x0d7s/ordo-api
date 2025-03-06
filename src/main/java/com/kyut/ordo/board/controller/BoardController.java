@@ -2,9 +2,12 @@ package com.kyut.ordo.board.controller;
 
 import com.kyut.ordo.board.dto.BoardCreate;
 import com.kyut.ordo.board.dto.BoardRead;
+import com.kyut.ordo.board.exception.BoardNotFoundException;
 import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
 import com.kyut.ordo.board.service.BoardPermissionService;
 import com.kyut.ordo.board.service.BoardService;
+import com.kyut.ordo.task.dto.TaskListRead;
+import com.kyut.ordo.task.service.TaskListService;
 import com.kyut.ordo.user.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,12 +16,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/board")
+@RequestMapping("/boards")
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
     private final BoardPermissionService boardPermissionService;
+    private final TaskListService taskListService;
 
     @GetMapping
     public ResponseEntity<Page<BoardRead>> findAllAccessibleBoards(
@@ -26,6 +32,15 @@ public class BoardController {
             Pageable pageable) {
         Page<BoardRead> boards = boardService.findAllAccessibleBoards(user, pageable);
         return ResponseEntity.ok(boards);
+    }
+
+    @PostMapping
+    public ResponseEntity<BoardRead> createBoard(
+            @AuthenticationPrincipal UserEntity user,
+            BoardCreate dto)
+            throws InsufficientBoardPermissionsException {
+        BoardRead board = boardService.createBoard(user, dto);
+        return ResponseEntity.ok(board);
     }
 
     @GetMapping("/{id}")
@@ -37,12 +52,12 @@ public class BoardController {
         return ResponseEntity.ok(board);
     }
 
-    @PostMapping
-    public ResponseEntity<BoardRead> createBoard(
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BoardRead> deleteBoard(
             @AuthenticationPrincipal UserEntity user,
-            BoardCreate dto)
+            @PathVariable Long id)
             throws InsufficientBoardPermissionsException {
-        BoardRead board = boardService.createBoard(user, dto);
+        BoardRead board = boardService.deleteBoard(user, id);
         return ResponseEntity.ok(board);
     }
 
@@ -56,34 +71,45 @@ public class BoardController {
         return ResponseEntity.ok(board);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<BoardRead> deleteBoard(
+    @GetMapping("/{id}/task-lists/page")
+    public ResponseEntity<Page<TaskListRead>> findAllTaskListsByBoardId(
             @AuthenticationPrincipal UserEntity user,
-            @PathVariable Long id)
-            throws InsufficientBoardPermissionsException {
-        BoardRead board = boardService.deleteBoard(user, id);
-        return ResponseEntity.ok(board);
+            @PathVariable Long id,
+            Pageable pageable)
+            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+        Page<TaskListRead> taskLists = taskListService.findAllByBoard(user, id, pageable);
+        return ResponseEntity.ok(taskLists);
     }
 
-    @PutMapping("/{boardId}/members/{newUserId}/{roleId}")
+    @GetMapping("/{id}/task-lists")
+    public ResponseEntity<List<TaskListRead>> findAllTaskListsByBoardId(
+            @AuthenticationPrincipal UserEntity user,
+            @PathVariable Long id)
+            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+        List<TaskListRead> taskLists = taskListService.findAllByBoard(user, id);
+        return ResponseEntity.ok(taskLists);
+    }
+
+
+    @PutMapping("/{id}/members/{newUserId}/{roleId}")
     public ResponseEntity<BoardRead> addMember(
             @AuthenticationPrincipal UserEntity user,
-            @PathVariable Long boardId,
+            @PathVariable Long id,
             @PathVariable Long newUserId,
             @PathVariable Long roleId)
             throws InsufficientBoardPermissionsException {
-        boardService.addMember(user, boardId, newUserId, roleId);
+        boardService.addMember(user, id, newUserId, roleId);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{boardId}/members/{memberId}/{newRoleId}")
+    @PutMapping("/{id}/members/{memberId}/{newRoleId}")
     public ResponseEntity<BoardRead> updateMemberRole(
             @AuthenticationPrincipal UserEntity user,
-            @PathVariable Long boardId,
+            @PathVariable Long id,
             @PathVariable Long memberId,
             @PathVariable Long newRoleId)
             throws InsufficientBoardPermissionsException {
-        boardService.updateMemberRole(user, boardId, memberId, newRoleId);
+        boardService.updateMemberRole(user, id, memberId, newRoleId);
         return ResponseEntity.ok().build();
     }
 

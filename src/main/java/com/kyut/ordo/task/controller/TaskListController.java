@@ -31,24 +31,24 @@ import lombok.RequiredArgsConstructor;
 public class TaskListController {
     private final TaskListService taskListService;
     
-    @GetMapping("/board/{boardId}")
-    public ResponseEntity<List<TaskListRead>> findAllByBoard(
-            @AuthenticationPrincipal UserEntity user,
-            @PathVariable Long boardId) 
-            throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        List<TaskListRead> taskLists = taskListService.findAllByBoard(user, boardId);
-        return ResponseEntity.ok(taskLists);
-    }
-    
-    @GetMapping("/board/{boardId}/page")
-    public ResponseEntity<Page<TaskListRead>> findAllByBoardPaged(
-            @AuthenticationPrincipal UserEntity user,
-            @PathVariable Long boardId,
-            Pageable pageable) 
-            throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        Page<TaskListRead> taskLists = taskListService.findAllByBoard(user, boardId, pageable);
-        return ResponseEntity.ok(taskLists);
-    }
+//    @GetMapping("/board/{boardId}")
+//    public ResponseEntity<List<TaskListRead>> findAllByBoard(
+//            @AuthenticationPrincipal UserEntity user,
+//            @PathVariable Long boardId)
+//            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+//        List<TaskListRead> taskLists = taskListService.findAllByBoard(user, boardId);
+//        return ResponseEntity.ok(taskLists);
+//    }
+//
+//    @GetMapping("/board/{boardId}/page")
+//    public ResponseEntity<Page<TaskListRead>> findAllByBoardPaged(
+//            @AuthenticationPrincipal UserEntity user,
+//            @PathVariable Long boardId,
+//            Pageable pageable)
+//            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+//        Page<TaskListRead> taskLists = taskListService.findAllByBoard(user, boardId, pageable);
+//        return ResponseEntity.ok(taskLists);
+//    }
     
     @GetMapping("/{id}")
     public ResponseEntity<TaskListRead> findById(
