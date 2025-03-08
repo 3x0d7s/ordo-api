@@ -6,7 +6,7 @@ import com.kyut.ordo.board.exception.BoardNotFoundException;
 import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
 import com.kyut.ordo.board.service.BoardPermissionService;
 import com.kyut.ordo.board.service.BoardService;
-import com.kyut.ordo.task.dto.TaskListRead;
+import com.kyut.ordo.task.dto.ListRead;
 import com.kyut.ordo.task.service.TaskListService;
 import com.kyut.ordo.user.UserEntity;
 import lombok.RequiredArgsConstructor;
@@ -71,25 +71,24 @@ public class BoardController {
         return ResponseEntity.ok(board);
     }
 
-    @GetMapping("/{id}/task-lists/page")
-    public ResponseEntity<Page<TaskListRead>> findAllTaskListsByBoardId(
+    @GetMapping("/{id}/lists/page")
+    public ResponseEntity<Page<ListRead>> findAllTaskListsByBoardId(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id,
             Pageable pageable)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        Page<TaskListRead> taskLists = taskListService.findAllByBoard(user, id, pageable);
+        Page<ListRead> taskLists = taskListService.findAllByBoard(user, id, pageable);
         return ResponseEntity.ok(taskLists);
     }
 
-    @GetMapping("/{id}/task-lists")
-    public ResponseEntity<List<TaskListRead>> findAllTaskListsByBoardId(
+    @GetMapping("/{id}/lists")
+    public ResponseEntity<List<ListRead>> findAllTaskListsByBoardId(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        List<TaskListRead> taskLists = taskListService.findAllByBoard(user, id);
+        List<ListRead> taskLists = taskListService.findAllByBoard(user, id);
         return ResponseEntity.ok(taskLists);
     }
-
 
     @PutMapping("/{id}/members/{newUserId}/{roleId}")
     public ResponseEntity<BoardRead> addMember(

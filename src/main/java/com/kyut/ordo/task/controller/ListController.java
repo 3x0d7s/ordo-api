@@ -1,7 +1,8 @@
 package com.kyut.ordo.task.controller;
 
-import java.util.List;
-
+import com.kyut.ordo.task.dto.CardRead;
+import com.kyut.ordo.task.dto.ListRead;
+import com.kyut.ordo.task.service.TaskService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kyut.ordo.board.exception.BoardNotFoundException;
 import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
-import com.kyut.ordo.task.dto.TaskListCreate;
-import com.kyut.ordo.task.dto.TaskListRead;
+import com.kyut.ordo.task.dto.ListCreate;
 import com.kyut.ordo.task.exception.TaskListNotFoundException;
 import com.kyut.ordo.task.service.TaskListService;
 import com.kyut.ordo.user.UserEntity;
@@ -26,11 +26,13 @@ import com.kyut.ordo.user.UserEntity;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/tasklist")
+@RequestMapping("/lists")
 @RequiredArgsConstructor
-public class TaskListController {
+public class ListController {
     private final TaskListService taskListService;
-    
+    private final TaskService taskService;
+
+
 //    @GetMapping("/board/{boardId}")
 //    public ResponseEntity<List<TaskListRead>> findAllByBoard(
 //            @AuthenticationPrincipal UserEntity user,
@@ -49,41 +51,51 @@ public class TaskListController {
 //        Page<TaskListRead> taskLists = taskListService.findAllByBoard(user, boardId, pageable);
 //        return ResponseEntity.ok(taskLists);
 //    }
-    
+
     @GetMapping("/{id}")
-    public ResponseEntity<TaskListRead> findById(
+    public ResponseEntity<ListRead> findById(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id) 
             throws TaskListNotFoundException, InsufficientBoardPermissionsException {
-        TaskListRead taskList = taskListService.findById(user, id);
+        ListRead taskList = taskListService.findById(user, id);
         return ResponseEntity.ok(taskList);
+    }
+
+    @GetMapping("/{id}/tasks")
+    public ResponseEntity<Page<CardRead>> findAllByListPaged(
+            @AuthenticationPrincipal UserEntity user,
+            @PathVariable Long id,
+            Pageable pageable)
+            throws TaskListNotFoundException, InsufficientBoardPermissionsException {
+        Page<CardRead> tasks = taskService.findAllByTaskList(user, id, pageable);
+        return ResponseEntity.ok(tasks);
     }
     
     @PostMapping
-    public ResponseEntity<TaskListRead> createTaskList(
+    public ResponseEntity<ListRead> createTaskList(
             @AuthenticationPrincipal UserEntity user,
-            @RequestBody TaskListCreate dto) 
+            @RequestBody ListCreate dto)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        TaskListRead taskList = taskListService.createTaskList(user, dto);
+        ListRead taskList = taskListService.createTaskList(user, dto);
         return ResponseEntity.ok(taskList);
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<TaskListRead> updateTaskList(
+    public ResponseEntity<ListRead> updateTaskList(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id,
-            @RequestBody TaskListCreate dto) 
+            @RequestBody ListCreate dto)
             throws TaskListNotFoundException, InsufficientBoardPermissionsException {
-        TaskListRead taskList = taskListService.updateTaskList(user, id, dto);
+        ListRead taskList = taskListService.updateTaskList(user, id, dto);
         return ResponseEntity.ok(taskList);
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<TaskListRead> deleteTaskList(
+    public ResponseEntity<ListRead> deleteTaskList(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id) 
             throws TaskListNotFoundException, InsufficientBoardPermissionsException {
-        TaskListRead taskList = taskListService.deleteTaskList(user, id);
+        ListRead taskList = taskListService.deleteTaskList(user, id);
         return ResponseEntity.ok(taskList);
     }
 }

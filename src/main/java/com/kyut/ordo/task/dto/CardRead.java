@@ -1,20 +1,19 @@
 package com.kyut.ordo.task.dto;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import com.kyut.ordo.user.dto.UserReadDTO;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Data
-public class TaskWithItsListRead {
+public class CardRead {
     private Long id;
     private String title;
     private String description;
     private LocalDate dueDate;
     private Integer position;
     private LocalDateTime createdAt;
-    private TaskListRead taskList;
     private UserReadDTO createdBy;
     private UserReadDTO assignedTo;
 }

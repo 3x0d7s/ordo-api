@@ -11,7 +11,7 @@ import lombok.Data;
 @Entity
 @Table(name = "lists")
 @Data
-public class TaskListEntity {
+public class ListEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,5 +33,5 @@ public class TaskListEntity {
 
     // Relationships
     @OneToMany(mappedBy = "taskList", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TaskEntity> tasks;
+    private List<CardEntity> tasks;
 }

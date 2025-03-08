@@ -6,7 +6,7 @@ import com.kyut.ordo.board.dto.BoardRead;
 import lombok.Data;
 
 @Data
-public class TaskListRead {
+public class ListRead {
     private Long id;
     private String title;
     private Integer position;

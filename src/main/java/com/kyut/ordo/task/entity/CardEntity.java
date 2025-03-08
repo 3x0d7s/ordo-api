@@ -12,8 +12,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "tasks")
-public class TaskEntity {
+@Table(name = "cards")
+public class CardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,7 +34,7 @@ public class TaskEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "list_id", nullable = false)
-    private TaskListEntity taskList;
+    private ListEntity taskList;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)

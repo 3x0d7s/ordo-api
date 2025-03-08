@@ -37,7 +37,7 @@ public class CommentController {
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long cardId) 
             throws TaskNotFoundException, InsufficientBoardPermissionsException {
-        List<CommentRead> comments = commentService.findAllByCard(user, cardId);
+        List<CommentRead> comments = commentService.findAllByTask(user, cardId);
         return ResponseEntity.ok(comments);
     }
     
@@ -47,7 +47,7 @@ public class CommentController {
             @PathVariable Long cardId,
             Pageable pageable) 
             throws TaskNotFoundException, InsufficientBoardPermissionsException {
-        Page<CommentRead> comments = commentService.findAllByCard(user, cardId, pageable);
+        Page<CommentRead> comments = commentService.findAllByTask(user, cardId, pageable);
         return ResponseEntity.ok(comments);
     }
     

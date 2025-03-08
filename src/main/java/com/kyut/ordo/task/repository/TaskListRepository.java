@@ -8,17 +8,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
 import com.kyut.ordo.board.entity.BoardEntity;
-import com.kyut.ordo.task.entity.TaskListEntity;
+import com.kyut.ordo.task.entity.ListEntity;
 
-public interface TaskListRepository extends CrudRepository<TaskListEntity, Long> {
+public interface TaskListRepository extends CrudRepository<ListEntity, Long> {
     
-    List<TaskListEntity> findAllByBoard(BoardEntity board);
+    List<ListEntity> findAllByBoard(BoardEntity board);
     
-    List<TaskListEntity> findAllByBoardOrderByPosition(BoardEntity board);
+    List<ListEntity> findAllByBoardOrderByPosition(BoardEntity board);
     
-    Page<TaskListEntity> findAllByBoard(BoardEntity board, Pageable pageable);
+    Page<ListEntity> findAllByBoard(BoardEntity board, Pageable pageable);
     
-    Optional<TaskListEntity> findByIdAndBoard(Long id, BoardEntity board);
+    Optional<ListEntity> findByIdAndBoard(Long id, BoardEntity board);
     
     Integer countByBoard(BoardEntity board);
 }

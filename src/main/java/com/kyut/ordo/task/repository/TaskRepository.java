@@ -3,27 +3,27 @@ package com.kyut.ordo.task.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.kyut.ordo.task.entity.CardEntity;
+import com.kyut.ordo.task.entity.ListEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
-import com.kyut.ordo.task.entity.TaskEntity;
-import com.kyut.ordo.task.entity.TaskListEntity;
 import com.kyut.ordo.user.UserEntity;
 
-public interface TaskRepository extends CrudRepository<TaskEntity, Long> {
+public interface TaskRepository extends CrudRepository<CardEntity, Long> {
     
-    List<TaskEntity> findAllByTaskList(TaskListEntity list);
+    List<CardEntity> findAllByTaskList(ListEntity list);
     
-    List<TaskEntity> findAllByTaskListOrderByPosition(TaskListEntity taskList);
+    List<CardEntity> findAllByTaskListOrderByPosition(ListEntity taskList);
 
-    Optional<TaskEntity> findByIdAndTaskList(Long id, TaskListEntity list);
+    Optional<CardEntity> findByIdAndTaskList(Long id, ListEntity list);
     
-    List<TaskEntity> findAllByAssignedTo(UserEntity user);
+    List<CardEntity> findAllByAssignedTo(UserEntity user);
     
-    Page<TaskEntity> findAllByAssignedTo(UserEntity user, Pageable pageable);
+    Page<CardEntity> findAllByAssignedTo(UserEntity user, Pageable pageable);
 
-    Page<TaskEntity> findAllByTaskList(TaskListEntity taskList, Pageable pageable);
+    Page<CardEntity> findAllByTaskList(ListEntity taskList, Pageable pageable);
 
-    Integer countByTaskList(TaskListEntity taskList);
+    Integer countByTaskList(ListEntity taskList);
 }

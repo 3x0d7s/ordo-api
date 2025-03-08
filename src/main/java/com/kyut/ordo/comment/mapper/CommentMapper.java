@@ -2,12 +2,11 @@ package com.kyut.ordo.comment.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 import com.kyut.ordo.comment.dto.CommentCreate;
 import com.kyut.ordo.comment.dto.CommentRead;
 import com.kyut.ordo.comment.entity.CommentEntity;
-import com.kyut.ordo.task.entity.TaskEntity;
+import com.kyut.ordo.task.entity.CardEntity;
 import com.kyut.ordo.user.UserEntity;
 
 @Mapper(componentModel = "spring")
@@ -18,7 +17,7 @@ public interface CommentMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(source = "createdBy", target = "createdBy")
     @Mapping(source = "card", target = "card")
-    CommentEntity toEntity(CommentCreate dto, UserEntity createdBy, TaskEntity card);
+    CommentEntity toEntity(CommentCreate dto, UserEntity createdBy, CardEntity card);
     
     @Mapping(source = "entity.id", target = "id")
     @Mapping(source = "entity.message", target = "message")

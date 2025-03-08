@@ -3,7 +3,7 @@ package com.kyut.ordo.task.dto;
 import lombok.Data;
 
 @Data
-public class TaskListCreate {
+public class ListCreate {
     private String title;
     private Integer position;
     private String color;

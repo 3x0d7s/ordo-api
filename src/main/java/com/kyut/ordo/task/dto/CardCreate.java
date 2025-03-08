@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class TaskCreate {
+public class CardCreate {
     private String title;
     private String description;
     private LocalDate dueDate;

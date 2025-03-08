@@ -3,7 +3,7 @@ package com.kyut.ordo.board.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.kyut.ordo.task.entity.TaskListEntity;
+import com.kyut.ordo.task.entity.ListEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 
 import jakarta.persistence.*;
@@ -41,5 +41,5 @@ public class BoardEntity {
     private List<BoardMemberEntity> members;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TaskListEntity> lists;
+    private List<ListEntity> lists;
 }

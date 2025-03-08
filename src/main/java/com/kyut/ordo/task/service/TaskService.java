@@ -3,8 +3,10 @@ package com.kyut.ordo.task.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.kyut.ordo.task.dto.TaskRead;
-import com.kyut.ordo.task.dto.TaskWithItsListRead;
+import com.kyut.ordo.task.dto.CardCreate;
+import com.kyut.ordo.task.dto.CardRead;
+import com.kyut.ordo.task.dto.CardWithItsListRead;
+import com.kyut.ordo.task.entity.CardEntity;
 import com.kyut.ordo.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -13,9 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
 import com.kyut.ordo.board.service.BoardPermissionService;
-import com.kyut.ordo.task.dto.TaskCreate;
-import com.kyut.ordo.task.entity.TaskEntity;
-import com.kyut.ordo.task.entity.TaskListEntity;
+import com.kyut.ordo.task.entity.ListEntity;
 import com.kyut.ordo.task.exception.InsufficientTaskPermissionsException;
 import com.kyut.ordo.task.exception.TaskListNotFoundException;
 import com.kyut.ordo.task.exception.TaskNotFoundException;
@@ -36,25 +36,25 @@ public class TaskService {
     private final TaskMapper taskMapper;
     
     @Transactional()
-    public List<TaskRead> findAllByList(UserEntity user, Long listId)
+    public List<CardRead> findAllByTaskList(UserEntity user, Long listId)
             throws TaskListNotFoundException, InsufficientBoardPermissionsException {
-        TaskListEntity taskList = taskListRepository.findById(listId)
+        ListEntity taskList = taskListRepository.findById(listId)
             .orElseThrow(() -> new TaskListNotFoundException("Task list not found with id: " + listId));
         
         if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to view tasks in this list");
         }
         
-        List<TaskEntity> tasks = taskRepository.findAllByTaskListOrderByPosition(taskList);
+        List<CardEntity> tasks = taskRepository.findAllByTaskListOrderByPosition(taskList);
         return tasks.stream()
             .map(taskMapper::toDto)
             .toList();
     }
     
     @Transactional()
-    public Page<TaskRead> findAllByList(UserEntity user, Long listId, Pageable pageable)
+    public Page<CardRead> findAllByTaskList(UserEntity user, Long listId, Pageable pageable)
             throws TaskListNotFoundException, InsufficientBoardPermissionsException {
-        TaskListEntity taskList = taskListRepository.findById(listId)
+        ListEntity taskList = taskListRepository.findById(listId)
             .orElseThrow(() -> new TaskListNotFoundException("Task list not found with id: " + listId));
         
         if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
@@ -66,15 +66,15 @@ public class TaskService {
     }
     
     @Transactional()
-    public Page<TaskWithItsListRead> findAllAssignedToUser(UserEntity user, Pageable pageable) {
+    public Page<CardWithItsListRead> findAllAssignedToUser(UserEntity user, Pageable pageable) {
         return taskRepository.findAllByAssignedTo(user, pageable)
             .map(taskMapper::toDtoWithItsList);
     }
     
     @Transactional()
-    public TaskWithItsListRead findById(UserEntity user, Long id)
+    public CardWithItsListRead findById(UserEntity user, Long id)
             throws TaskNotFoundException, InsufficientTaskPermissionsException {
-        TaskEntity task = taskRepository.findById(id)
+        CardEntity task = taskRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
         
         if (!boardPermissionService.hasPermission(task.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
@@ -85,9 +85,9 @@ public class TaskService {
     }
     
     @Transactional
-    public TaskWithItsListRead createTask(UserEntity user, TaskCreate dto)
+    public CardWithItsListRead createTask(UserEntity user, CardCreate dto)
             throws TaskListNotFoundException, InsufficientTaskPermissionsException {
-        TaskListEntity taskList = taskListRepository.findById(dto.getListId())
+        ListEntity taskList = taskListRepository.findById(dto.getListId())
             .orElseThrow(() -> new TaskListNotFoundException("Task list not found with id: " + dto.getListId()));
         
         if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "CREATE_TASKS")) {
@@ -113,7 +113,7 @@ public class TaskService {
                             new TaskNotFoundException("User not found with id: " + dto.getAssignedToId()));
         }
         
-        TaskEntity task = taskMapper.toEntity(dto, taskList, user, assignedTo);
+        CardEntity task = taskMapper.toEntity(dto, taskList, user, assignedTo);
         task.setCreatedAt(LocalDateTime.now());
         task = taskRepository.save(task);
         
@@ -121,9 +121,9 @@ public class TaskService {
     }
     
     @Transactional
-    public TaskWithItsListRead updateTask(UserEntity user, Long id, TaskCreate dto)
+    public CardWithItsListRead updateTask(UserEntity user, Long id, CardCreate dto)
             throws TaskNotFoundException, InsufficientTaskPermissionsException {
-        TaskEntity task = taskRepository.findById(id)
+        CardEntity task = taskRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
         
         if (!boardPermissionService.hasPermission(task.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
@@ -132,7 +132,7 @@ public class TaskService {
         
         // Don't allow changing the list if it's provided and different
         if (dto.getListId() != null && !dto.getListId().equals(task.getTaskList().getId())) {
-            TaskListEntity newList = taskListRepository.findById(dto.getListId())
+            ListEntity newList = taskListRepository.findById(dto.getListId())
                 .orElseThrow(() -> new TaskListNotFoundException("Task list not found with id: " + dto.getListId()));
             
             // Ensure the new list is in the same board
@@ -162,9 +162,9 @@ public class TaskService {
         return taskMapper.toDtoWithItsList(task);
     }
 
-    public TaskWithItsListRead deleteTask(UserEntity user, Long id)
+    public CardWithItsListRead deleteTask(UserEntity user, Long id)
             throws TaskNotFoundException, InsufficientTaskPermissionsException {
-        TaskEntity task = taskRepository.findById(id)
+        CardEntity task = taskRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
         
         if (!boardPermissionService.hasPermission(task.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {

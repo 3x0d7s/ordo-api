@@ -2,7 +2,7 @@ package com.kyut.ordo.comment.entity;
 
 import java.time.LocalDateTime;
 
-import com.kyut.ordo.task.entity.TaskEntity;
+import com.kyut.ordo.task.entity.CardEntity;
 import com.kyut.ordo.user.UserEntity;
 
 import jakarta.persistence.Column;
@@ -35,5 +35,5 @@ public class CommentEntity {
 
     @ManyToOne
     @JoinColumn(name = "card_id", nullable = false)
-    private TaskEntity card;
+    private CardEntity card;
 }
