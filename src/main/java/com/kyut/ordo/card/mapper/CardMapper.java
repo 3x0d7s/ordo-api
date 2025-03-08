@@ -1,14 +1,14 @@
-package com.kyut.ordo.task.mapper;
+package com.kyut.ordo.card.mapper;
 
-import com.kyut.ordo.task.dto.CardRead;
-import com.kyut.ordo.task.dto.CardWithItsListRead;
-import com.kyut.ordo.task.entity.CardEntity;
+import com.kyut.ordo.card.dto.CardRead;
+import com.kyut.ordo.card.dto.CardWithItsListRead;
+import com.kyut.ordo.card.entity.CardEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import com.kyut.ordo.task.dto.CardCreate;
-import com.kyut.ordo.task.entity.ListEntity;
+import com.kyut.ordo.card.dto.CardCreate;
+import com.kyut.ordo.list.entity.ListEntity;
 import com.kyut.ordo.user.UserEntity;
 
 @Mapper(componentModel = "spring")

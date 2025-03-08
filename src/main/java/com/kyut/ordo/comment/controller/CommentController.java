@@ -21,7 +21,7 @@ import com.kyut.ordo.comment.dto.CommentRead;
 import com.kyut.ordo.comment.exception.CommentNotFoundException;
 import com.kyut.ordo.comment.exception.InsufficientCommentPermissionsException;
 import com.kyut.ordo.comment.service.CommentService;
-import com.kyut.ordo.task.exception.TaskNotFoundException;
+import com.kyut.ordo.card.exception.CardNotFoundException;
 import com.kyut.ordo.user.UserEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -32,24 +32,24 @@ import lombok.RequiredArgsConstructor;
 public class CommentController {
     private final CommentService commentService;
     
-    @GetMapping("/card/{cardId}")
-    public ResponseEntity<List<CommentRead>> findAllByCard(
-            @AuthenticationPrincipal UserEntity user,
-            @PathVariable Long cardId) 
-            throws TaskNotFoundException, InsufficientBoardPermissionsException {
-        List<CommentRead> comments = commentService.findAllByTask(user, cardId);
-        return ResponseEntity.ok(comments);
-    }
-    
-    @GetMapping("/card/{cardId}/page")
-    public ResponseEntity<Page<CommentRead>> findAllByCardPaged(
-            @AuthenticationPrincipal UserEntity user,
-            @PathVariable Long cardId,
-            Pageable pageable) 
-            throws TaskNotFoundException, InsufficientBoardPermissionsException {
-        Page<CommentRead> comments = commentService.findAllByTask(user, cardId, pageable);
-        return ResponseEntity.ok(comments);
-    }
+//    @GetMapping("/card/{cardId}")
+//    public ResponseEntity<List<CommentRead>> findAllByCard(
+//            @AuthenticationPrincipal UserEntity user,
+//            @PathVariable Long cardId)
+//            throws CardNotFoundException, InsufficientBoardPermissionsException {
+//        List<CommentRead> comments = commentService.findAllByTask(user, cardId);
+//        return ResponseEntity.ok(comments);
+//    }
+//
+//    @GetMapping("/card/{cardId}/page")
+//    public ResponseEntity<Page<CommentRead>> findAllByCardPaged(
+//            @AuthenticationPrincipal UserEntity user,
+//            @PathVariable Long cardId,
+//            Pageable pageable)
+//            throws CardNotFoundException, InsufficientBoardPermissionsException {
+//        Page<CommentRead> comments = commentService.findAllByTask(user, cardId, pageable);
+//        return ResponseEntity.ok(comments);
+//    }
     
     @GetMapping("/user")
     public ResponseEntity<Page<CommentRead>> findAllByUser(
@@ -72,7 +72,7 @@ public class CommentController {
     public ResponseEntity<CommentRead> createComment(
             @AuthenticationPrincipal UserEntity user,
             @RequestBody CommentCreate dto) 
-            throws TaskNotFoundException, InsufficientCommentPermissionsException {
+            throws CardNotFoundException, InsufficientCommentPermissionsException {
         CommentRead comment = commentService.createComment(user, dto);
         return ResponseEntity.ok(comment);
     }

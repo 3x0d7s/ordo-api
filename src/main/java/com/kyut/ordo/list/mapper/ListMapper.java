@@ -1,8 +1,9 @@
-package com.kyut.ordo.task.mapper;
+package com.kyut.ordo.list.mapper;
 
-import com.kyut.ordo.task.dto.ListCreate;
-import com.kyut.ordo.task.dto.ListRead;
-import com.kyut.ordo.task.entity.ListEntity;
+import com.kyut.ordo.card.mapper.CardMapper;
+import com.kyut.ordo.list.dto.ListCreate;
+import com.kyut.ordo.list.dto.ListRead;
+import com.kyut.ordo.list.entity.ListEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

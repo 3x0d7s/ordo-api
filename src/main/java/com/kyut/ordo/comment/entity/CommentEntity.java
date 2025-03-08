@@ -2,7 +2,7 @@ package com.kyut.ordo.comment.entity;
 
 import java.time.LocalDateTime;
 
-import com.kyut.ordo.task.entity.CardEntity;
+import com.kyut.ordo.card.entity.CardEntity;
 import com.kyut.ordo.user.UserEntity;
 
 import jakarta.persistence.Column;

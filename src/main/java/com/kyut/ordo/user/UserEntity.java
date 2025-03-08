@@ -7,7 +7,7 @@ import java.util.List;
 import com.kyut.ordo.auth.common.AuthProvider;
 import com.kyut.ordo.board.entity.BoardMemberEntity;
 import com.kyut.ordo.comment.entity.CommentEntity;
-import com.kyut.ordo.task.entity.CardEntity;
+import com.kyut.ordo.card.entity.CardEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceMemberEntity;
 

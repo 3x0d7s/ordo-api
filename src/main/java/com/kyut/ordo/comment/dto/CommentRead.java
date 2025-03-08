@@ -2,7 +2,7 @@ package com.kyut.ordo.comment.dto;
 
 import java.time.LocalDateTime;
 
-import com.kyut.ordo.task.dto.CardWithItsListRead;
+import com.kyut.ordo.card.dto.CardWithItsListRead;
 import com.kyut.ordo.user.dto.UserReadDTO;
 import lombok.Data;
 

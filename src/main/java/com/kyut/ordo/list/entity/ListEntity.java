@@ -1,10 +1,11 @@
-package com.kyut.ordo.task.entity;
+package com.kyut.ordo.list.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import com.kyut.ordo.board.entity.BoardEntity;
 
+import com.kyut.ordo.card.entity.CardEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 

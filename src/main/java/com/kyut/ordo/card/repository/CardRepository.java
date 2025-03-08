@@ -1,10 +1,10 @@
-package com.kyut.ordo.task.repository;
+package com.kyut.ordo.card.repository;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.kyut.ordo.task.entity.CardEntity;
-import com.kyut.ordo.task.entity.ListEntity;
+import com.kyut.ordo.card.entity.CardEntity;
+import com.kyut.ordo.list.entity.ListEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;

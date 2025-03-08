@@ -1,4 +1,4 @@
-package com.kyut.ordo.task.repository;
+package com.kyut.ordo.list.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
 import com.kyut.ordo.board.entity.BoardEntity;
-import com.kyut.ordo.task.entity.ListEntity;
+import com.kyut.ordo.list.entity.ListEntity;
 
 public interface ListRepository extends CrudRepository<ListEntity, Long> {
     

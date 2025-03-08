@@ -1,4 +1,4 @@
-package com.kyut.ordo.task.dto;
+package com.kyut.ordo.list.dto;
 
 import java.time.LocalDateTime;
 

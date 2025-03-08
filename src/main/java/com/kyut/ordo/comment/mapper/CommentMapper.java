@@ -6,7 +6,7 @@ import org.mapstruct.Mapping;
 import com.kyut.ordo.comment.dto.CommentCreate;
 import com.kyut.ordo.comment.dto.CommentRead;
 import com.kyut.ordo.comment.entity.CommentEntity;
-import com.kyut.ordo.task.entity.CardEntity;
+import com.kyut.ordo.card.entity.CardEntity;
 import com.kyut.ordo.user.UserEntity;
 
 @Mapper(componentModel = "spring")

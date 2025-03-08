@@ -3,7 +3,7 @@ package com.kyut.ordo.board.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.kyut.ordo.task.entity.ListEntity;
+import com.kyut.ordo.list.entity.ListEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 
 import jakarta.persistence.*;

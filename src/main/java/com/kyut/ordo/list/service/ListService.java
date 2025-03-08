@@ -1,10 +1,10 @@
-package com.kyut.ordo.task.service;
+package com.kyut.ordo.list.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.kyut.ordo.task.dto.ListRead;
-import com.kyut.ordo.task.entity.ListEntity;
+import com.kyut.ordo.list.dto.ListRead;
+import com.kyut.ordo.list.entity.ListEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,10 +15,10 @@ import com.kyut.ordo.board.exception.BoardNotFoundException;
 import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
 import com.kyut.ordo.board.repository.BoardRepository;
 import com.kyut.ordo.board.service.BoardPermissionService;
-import com.kyut.ordo.task.dto.ListCreate;
-import com.kyut.ordo.task.exception.TaskListNotFoundException;
-import com.kyut.ordo.task.mapper.ListMapper;
-import com.kyut.ordo.task.repository.ListRepository;
+import com.kyut.ordo.list.dto.ListCreate;
+import com.kyut.ordo.list.exception.ListNotFoundException;
+import com.kyut.ordo.list.mapper.ListMapper;
+import com.kyut.ordo.list.repository.ListRepository;
 import com.kyut.ordo.user.UserEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -63,9 +63,9 @@ public class ListService {
     
     @Transactional(readOnly = true)
     public ListRead findById(UserEntity user, Long id)
-            throws TaskListNotFoundException, InsufficientBoardPermissionsException {
+            throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListEntity taskList = listRepository.findById(id)
-            .orElseThrow(() -> new TaskListNotFoundException("Task list not found with id: " + id));
+            .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + id));
         
         if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to view this list");
@@ -99,9 +99,9 @@ public class ListService {
     
     @Transactional
     public ListRead updateTaskList(UserEntity user, Long id, ListCreate dto)
-            throws TaskListNotFoundException, InsufficientBoardPermissionsException {
+            throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListEntity taskList = listRepository.findById(id)
-            .orElseThrow(() -> new TaskListNotFoundException("Task list not found with id: " + id));
+            .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + id));
         
         if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to edit this list");
@@ -120,9 +120,9 @@ public class ListService {
     
     @Transactional
     public ListRead deleteTaskList(UserEntity user, Long id)
-            throws TaskListNotFoundException, InsufficientBoardPermissionsException {
+            throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListEntity taskList = listRepository.findById(id)
-            .orElseThrow(() -> new TaskListNotFoundException("Task list not found with id: " + id));
+            .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + id));
         
         if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to delete this list");

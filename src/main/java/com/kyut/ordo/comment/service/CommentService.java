@@ -17,9 +17,9 @@ import com.kyut.ordo.comment.exception.CommentNotFoundException;
 import com.kyut.ordo.comment.exception.InsufficientCommentPermissionsException;
 import com.kyut.ordo.comment.mapper.CommentMapper;
 import com.kyut.ordo.comment.repository.CommentRepository;
-import com.kyut.ordo.task.entity.CardEntity;
-import com.kyut.ordo.task.exception.TaskNotFoundException;
-import com.kyut.ordo.task.repository.CardRepository;
+import com.kyut.ordo.card.entity.CardEntity;
+import com.kyut.ordo.card.exception.CardNotFoundException;
+import com.kyut.ordo.card.repository.CardRepository;
 import com.kyut.ordo.user.UserEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -33,10 +33,10 @@ public class CommentService {
     private final CommentMapper commentMapper;
     
     @Transactional(readOnly = true)
-    public List<CommentRead> findAllByTask(UserEntity user, Long cardId)
-            throws TaskNotFoundException, InsufficientBoardPermissionsException {
+    public List<CommentRead> findAllByCard(UserEntity user, Long cardId)
+            throws CardNotFoundException, InsufficientBoardPermissionsException {
         CardEntity card = cardRepository.findById(cardId)
-            .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + cardId));
+            .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + cardId));
         
         if (!boardPermissionService.hasPermission(card.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to view comments in this task");
@@ -49,10 +49,10 @@ public class CommentService {
     }
     
     @Transactional(readOnly = true)
-    public Page<CommentRead> findAllByTask(UserEntity user, Long cardId, Pageable pageable)
-            throws TaskNotFoundException, InsufficientBoardPermissionsException {
+    public Page<CommentRead> findAllByCard(UserEntity user, Long cardId, Pageable pageable)
+            throws CardNotFoundException, InsufficientBoardPermissionsException {
         CardEntity card = cardRepository.findById(cardId)
-            .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + cardId));
+            .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + cardId));
         
         if (!boardPermissionService.hasPermission(card.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to view comments in this task");
@@ -83,9 +83,9 @@ public class CommentService {
     
     @Transactional
     public CommentRead createComment(UserEntity user, CommentCreate dto) 
-            throws TaskNotFoundException, InsufficientCommentPermissionsException {
+            throws CardNotFoundException, InsufficientCommentPermissionsException {
         CardEntity card = cardRepository.findById(dto.getCardId())
-            .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + dto.getCardId()));
+            .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + dto.getCardId()));
         
         if (!boardPermissionService.hasPermission(card.getTaskList().getBoard().getId(), user.getId(), "CREATE_TASKS")) {
             throw new InsufficientCommentPermissionsException("User does not have permission to create comments in this task");

@@ -1,14 +1,12 @@
 package com.kyut.ordo.task.dto;
 
-import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class CardCreate {
+public class TaskRead {
+    private Long id;
     private String title;
     private String description;
-    private LocalDate dueDate;
+    private boolean completed;
     private Integer position;
-    private Long listId;
-    private Long assignedToId;
 }

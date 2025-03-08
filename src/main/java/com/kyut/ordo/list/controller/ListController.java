@@ -1,8 +1,8 @@
-package com.kyut.ordo.task.controller;
+package com.kyut.ordo.list.controller;
 
-import com.kyut.ordo.task.dto.CardRead;
-import com.kyut.ordo.task.dto.ListRead;
-import com.kyut.ordo.task.service.CardService;
+import com.kyut.ordo.card.dto.CardRead;
+import com.kyut.ordo.list.dto.ListRead;
+import com.kyut.ordo.card.service.CardService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kyut.ordo.board.exception.BoardNotFoundException;
 import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
-import com.kyut.ordo.task.dto.ListCreate;
-import com.kyut.ordo.task.exception.TaskListNotFoundException;
-import com.kyut.ordo.task.service.ListService;
+import com.kyut.ordo.list.dto.ListCreate;
+import com.kyut.ordo.list.exception.ListNotFoundException;
+import com.kyut.ordo.list.service.ListService;
 import com.kyut.ordo.user.UserEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -56,7 +56,7 @@ public class ListController {
     public ResponseEntity<ListRead> findById(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id) 
-            throws TaskListNotFoundException, InsufficientBoardPermissionsException {
+            throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListRead taskList = listService.findById(user, id);
         return ResponseEntity.ok(taskList);
     }
@@ -66,7 +66,7 @@ public class ListController {
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id,
             Pageable pageable)
-            throws TaskListNotFoundException, InsufficientBoardPermissionsException {
+            throws ListNotFoundException, InsufficientBoardPermissionsException {
         Page<CardRead> tasks = cardService.findAllByTaskList(user, id, pageable);
         return ResponseEntity.ok(tasks);
     }
@@ -85,7 +85,7 @@ public class ListController {
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id,
             @RequestBody ListCreate dto)
-            throws TaskListNotFoundException, InsufficientBoardPermissionsException {
+            throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListRead taskList = listService.updateTaskList(user, id, dto);
         return ResponseEntity.ok(taskList);
     }
@@ -94,7 +94,7 @@ public class ListController {
     public ResponseEntity<ListRead> deleteTaskList(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id) 
-            throws TaskListNotFoundException, InsufficientBoardPermissionsException {
+            throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListRead taskList = listService.deleteTaskList(user, id);
         return ResponseEntity.ok(taskList);
     }
