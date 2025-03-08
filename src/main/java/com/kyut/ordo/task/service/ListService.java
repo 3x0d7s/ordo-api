@@ -17,19 +17,19 @@ import com.kyut.ordo.board.repository.BoardRepository;
 import com.kyut.ordo.board.service.BoardPermissionService;
 import com.kyut.ordo.task.dto.ListCreate;
 import com.kyut.ordo.task.exception.TaskListNotFoundException;
-import com.kyut.ordo.task.mapper.TaskListMapper;
-import com.kyut.ordo.task.repository.TaskListRepository;
+import com.kyut.ordo.task.mapper.ListMapper;
+import com.kyut.ordo.task.repository.ListRepository;
 import com.kyut.ordo.user.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class TaskListService {
-    private final TaskListRepository taskListRepository;
+public class ListService {
+    private final ListRepository listRepository;
     private final BoardRepository boardRepository;
     private final BoardPermissionService boardPermissionService;
-    private final TaskListMapper taskListMapper;
+    private final ListMapper listMapper;
     
     @Transactional(readOnly = true)
     public List<ListRead> findAllByBoard(UserEntity user, Long boardId)
@@ -41,9 +41,9 @@ public class TaskListService {
             throw new InsufficientBoardPermissionsException("User does not have permission to view lists in this board");
         }
         
-        List<ListEntity> lists = taskListRepository.findAllByBoardOrderByPosition(board);
+        List<ListEntity> lists = listRepository.findAllByBoardOrderByPosition(board);
         return lists.stream()
-            .map(taskListMapper::toDto)
+            .map(listMapper::toDto)
             .toList();
     }
     
@@ -57,21 +57,21 @@ public class TaskListService {
             throw new InsufficientBoardPermissionsException("User does not have permission to view lists in this board");
         }
         
-        return taskListRepository.findAllByBoard(board, pageable)
-            .map(taskListMapper::toDto);
+        return listRepository.findAllByBoard(board, pageable)
+            .map(listMapper::toDto);
     }
     
     @Transactional(readOnly = true)
     public ListRead findById(UserEntity user, Long id)
             throws TaskListNotFoundException, InsufficientBoardPermissionsException {
-        ListEntity taskList = taskListRepository.findById(id)
+        ListEntity taskList = listRepository.findById(id)
             .orElseThrow(() -> new TaskListNotFoundException("Task list not found with id: " + id));
         
         if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to view this list");
         }
         
-        return taskListMapper.toDto(taskList);
+        return listMapper.toDto(taskList);
     }
     
     @Transactional
@@ -86,21 +86,21 @@ public class TaskListService {
         
         // If position is not provided, add to the end
         if (dto.getPosition() == null) {
-            Integer listCount = taskListRepository.countByBoard(board);
+            Integer listCount = listRepository.countByBoard(board);
             dto.setPosition(listCount);
         }
         
-        ListEntity taskList = taskListMapper.toEntity(dto, board);
+        ListEntity taskList = listMapper.toEntity(dto, board);
         taskList.setCreatedAt(LocalDateTime.now());
-        taskList = taskListRepository.save(taskList);
+        taskList = listRepository.save(taskList);
         
-        return taskListMapper.toDto(taskList);
+        return listMapper.toDto(taskList);
     }
     
     @Transactional
     public ListRead updateTaskList(UserEntity user, Long id, ListCreate dto)
             throws TaskListNotFoundException, InsufficientBoardPermissionsException {
-        ListEntity taskList = taskListRepository.findById(id)
+        ListEntity taskList = listRepository.findById(id)
             .orElseThrow(() -> new TaskListNotFoundException("Task list not found with id: " + id));
         
         if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
@@ -112,24 +112,24 @@ public class TaskListService {
             throw new IllegalArgumentException("Cannot change the board of a task list");
         }
         
-        taskListMapper.updateEntityFromDto(dto, taskList);
-        taskList = taskListRepository.save(taskList);
+        listMapper.updateEntityFromDto(dto, taskList);
+        taskList = listRepository.save(taskList);
         
-        return taskListMapper.toDto(taskList);
+        return listMapper.toDto(taskList);
     }
     
     @Transactional
     public ListRead deleteTaskList(UserEntity user, Long id)
             throws TaskListNotFoundException, InsufficientBoardPermissionsException {
-        ListEntity taskList = taskListRepository.findById(id)
+        ListEntity taskList = listRepository.findById(id)
             .orElseThrow(() -> new TaskListNotFoundException("Task list not found with id: " + id));
         
         if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to delete this list");
         }
         
-        taskListRepository.delete(taskList);
+        listRepository.delete(taskList);
         
-        return taskListMapper.toDto(taskList);
+        return listMapper.toDto(taskList);
     }
 }

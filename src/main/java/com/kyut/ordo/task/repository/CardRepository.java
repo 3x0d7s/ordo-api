@@ -11,7 +11,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.kyut.ordo.user.UserEntity;
 
-public interface TaskRepository extends CrudRepository<CardEntity, Long> {
+public interface CardRepository extends CrudRepository<CardEntity, Long> {
     
     List<CardEntity> findAllByTaskList(ListEntity list);
     

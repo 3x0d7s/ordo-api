@@ -2,7 +2,7 @@ package com.kyut.ordo.task.controller;
 
 import com.kyut.ordo.task.dto.CardRead;
 import com.kyut.ordo.task.dto.ListRead;
-import com.kyut.ordo.task.service.TaskService;
+import com.kyut.ordo.task.service.CardService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import com.kyut.ordo.board.exception.BoardNotFoundException;
 import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
 import com.kyut.ordo.task.dto.ListCreate;
 import com.kyut.ordo.task.exception.TaskListNotFoundException;
-import com.kyut.ordo.task.service.TaskListService;
+import com.kyut.ordo.task.service.ListService;
 import com.kyut.ordo.user.UserEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -29,8 +29,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/lists")
 @RequiredArgsConstructor
 public class ListController {
-    private final TaskListService taskListService;
-    private final TaskService taskService;
+    private final ListService listService;
+    private final CardService cardService;
 
 
 //    @GetMapping("/board/{boardId}")
@@ -57,17 +57,17 @@ public class ListController {
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id) 
             throws TaskListNotFoundException, InsufficientBoardPermissionsException {
-        ListRead taskList = taskListService.findById(user, id);
+        ListRead taskList = listService.findById(user, id);
         return ResponseEntity.ok(taskList);
     }
 
-    @GetMapping("/{id}/tasks")
+    @GetMapping("/{id}/cards")
     public ResponseEntity<Page<CardRead>> findAllByListPaged(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id,
             Pageable pageable)
             throws TaskListNotFoundException, InsufficientBoardPermissionsException {
-        Page<CardRead> tasks = taskService.findAllByTaskList(user, id, pageable);
+        Page<CardRead> tasks = cardService.findAllByTaskList(user, id, pageable);
         return ResponseEntity.ok(tasks);
     }
     
@@ -76,7 +76,7 @@ public class ListController {
             @AuthenticationPrincipal UserEntity user,
             @RequestBody ListCreate dto)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        ListRead taskList = taskListService.createTaskList(user, dto);
+        ListRead taskList = listService.createTaskList(user, dto);
         return ResponseEntity.ok(taskList);
     }
     
@@ -86,7 +86,7 @@ public class ListController {
             @PathVariable Long id,
             @RequestBody ListCreate dto)
             throws TaskListNotFoundException, InsufficientBoardPermissionsException {
-        ListRead taskList = taskListService.updateTaskList(user, id, dto);
+        ListRead taskList = listService.updateTaskList(user, id, dto);
         return ResponseEntity.ok(taskList);
     }
     
@@ -95,7 +95,7 @@ public class ListController {
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id) 
             throws TaskListNotFoundException, InsufficientBoardPermissionsException {
-        ListRead taskList = taskListService.deleteTaskList(user, id);
+        ListRead taskList = listService.deleteTaskList(user, id);
         return ResponseEntity.ok(taskList);
     }
 }

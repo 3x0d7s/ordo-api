@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kyut.ordo.task.exception.InsufficientTaskPermissionsException;
 import com.kyut.ordo.task.exception.TaskListNotFoundException;
 import com.kyut.ordo.task.exception.TaskNotFoundException;
-import com.kyut.ordo.task.service.TaskService;
+import com.kyut.ordo.task.service.CardService;
 import com.kyut.ordo.user.UserEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -27,13 +27,13 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/cards")
 @RequiredArgsConstructor
 public class CardController {
-    private final TaskService taskService;
+    private final CardService cardService;
     
     @GetMapping("/assigned")
     public ResponseEntity<Page<CardWithItsListRead>> findAllAssignedToUser(
             @AuthenticationPrincipal UserEntity user,
             Pageable pageable) {
-        Page<CardWithItsListRead> tasks = taskService.findAllAssignedToUser(user, pageable);
+        Page<CardWithItsListRead> tasks = cardService.findAllAssignedToUser(user, pageable);
         return ResponseEntity.ok(tasks);
     }
     
@@ -42,7 +42,7 @@ public class CardController {
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id) 
             throws TaskNotFoundException, InsufficientTaskPermissionsException {
-        CardWithItsListRead task = taskService.findById(user, id);
+        CardWithItsListRead task = cardService.findById(user, id);
         return ResponseEntity.ok(task);
     }
     
@@ -51,7 +51,7 @@ public class CardController {
             @AuthenticationPrincipal UserEntity user,
             @RequestBody CardCreate dto)
             throws TaskListNotFoundException, InsufficientTaskPermissionsException {
-        CardWithItsListRead task = taskService.createTask(user, dto);
+        CardWithItsListRead task = cardService.createTask(user, dto);
         return ResponseEntity.ok(task);
     }
     
@@ -61,7 +61,7 @@ public class CardController {
             @PathVariable Long id,
             @RequestBody CardCreate dto)
             throws TaskNotFoundException, InsufficientTaskPermissionsException {
-        CardWithItsListRead task = taskService.updateTask(user, id, dto);
+        CardWithItsListRead task = cardService.updateTask(user, id, dto);
         return ResponseEntity.ok(task);
     }
     
@@ -70,7 +70,7 @@ public class CardController {
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id) 
             throws TaskNotFoundException, InsufficientTaskPermissionsException {
-        CardWithItsListRead task = taskService.deleteTask(user, id);
+        CardWithItsListRead task = cardService.deleteTask(user, id);
         return ResponseEntity.ok(task);
     }
 }

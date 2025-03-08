@@ -10,7 +10,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.kyut.ordo.board.entity.BoardEntity;
 import com.kyut.ordo.task.entity.ListEntity;
 
-public interface TaskListRepository extends CrudRepository<ListEntity, Long> {
+public interface ListRepository extends CrudRepository<ListEntity, Long> {
     
     List<ListEntity> findAllByBoard(BoardEntity board);
     

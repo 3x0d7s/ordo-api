@@ -7,7 +7,7 @@ import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
 import com.kyut.ordo.board.service.BoardPermissionService;
 import com.kyut.ordo.board.service.BoardService;
 import com.kyut.ordo.task.dto.ListRead;
-import com.kyut.ordo.task.service.TaskListService;
+import com.kyut.ordo.task.service.ListService;
 import com.kyut.ordo.user.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,7 +24,7 @@ import java.util.List;
 public class BoardController {
     private final BoardService boardService;
     private final BoardPermissionService boardPermissionService;
-    private final TaskListService taskListService;
+    private final ListService listService;
 
     @GetMapping
     public ResponseEntity<Page<BoardRead>> findAllAccessibleBoards(
@@ -77,7 +77,7 @@ public class BoardController {
             @PathVariable Long id,
             Pageable pageable)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        Page<ListRead> taskLists = taskListService.findAllByBoard(user, id, pageable);
+        Page<ListRead> taskLists = listService.findAllByBoard(user, id, pageable);
         return ResponseEntity.ok(taskLists);
     }
 
@@ -86,7 +86,7 @@ public class BoardController {
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        List<ListRead> taskLists = taskListService.findAllByBoard(user, id);
+        List<ListRead> taskLists = listService.findAllByBoard(user, id);
         return ResponseEntity.ok(taskLists);
     }
 

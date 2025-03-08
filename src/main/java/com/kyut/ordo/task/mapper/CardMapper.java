@@ -12,7 +12,7 @@ import com.kyut.ordo.task.entity.ListEntity;
 import com.kyut.ordo.user.UserEntity;
 
 @Mapper(componentModel = "spring")
-public interface TaskMapper {
+public interface CardMapper {
     
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "dto.title", target = "title")

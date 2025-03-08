@@ -9,8 +9,8 @@ import org.mapstruct.MappingTarget;
 
 import com.kyut.ordo.board.entity.BoardEntity;
 
-@Mapper(componentModel = "spring", uses = {TaskMapper.class})
-public interface TaskListMapper {
+@Mapper(componentModel = "spring", uses = {CardMapper.class})
+public interface ListMapper {
     
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "dto.title", target = "title")
