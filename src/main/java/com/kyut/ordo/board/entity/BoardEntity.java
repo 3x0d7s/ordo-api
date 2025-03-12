@@ -8,10 +8,13 @@ import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data
 @Entity
 @Table(name = "boards")
+@EntityListeners(AuditingEntityListener.class)
 public class BoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +29,8 @@ public class BoardEntity {
     @Column(name = "board_visibility", nullable = false)
     private BoardVisibility visibility;
 
-    @Column(name = "created_at")
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     // Relationships

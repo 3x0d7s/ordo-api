@@ -19,7 +19,7 @@ public interface BoardMapper {
     @Mapping(source = "dto.visibility", target = "visibility")
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "members", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
+//    @Mapping(target = "createdAt", ignore = true)
     @Mapping(source = "workspaceId", target = "workspace.id")
     BoardEntity toEntity(BoardCreate dto);
 
@@ -29,7 +29,7 @@ public interface BoardMapper {
     @Mapping(source = "dto.visibility", target = "visibility")
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "members", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
+//    @Mapping(target = "createdAt", ignore = true)
     @Mapping(source = "workspaceEntity", target = "workspace")
     BoardEntity toEntity(BoardCreate dto, WorkspaceEntity workspaceEntity);
 
@@ -37,12 +37,14 @@ public interface BoardMapper {
     @Mapping(source = "entity.title", target = "title")
     @Mapping(source = "entity.description", target = "description")
     @Mapping(source = "entity.roles", target = "roles")
+    @Mapping(source = "entity.createdAt", target = "createdAt")
     BoardRead toDto(BoardEntity entity);
 
     @Mapping(source = "entity.id", target = "id")
     @Mapping(source = "entity.title", target = "title")
     @Mapping(source = "entity.description", target = "description")
     @Mapping(source = "entity.roles", target = "roles")
+    @Mapping(source = "entity.createdAt", target = "createdAt")
     BoardRead toDto(BoardEntity entity, WorkspaceEntity workspace);
 
     @Mapping(source = "entity.id", target = "id")
