@@ -1,6 +1,7 @@
 package com.kyut.ordo.card.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.kyut.ordo.card.dto.CardCreate;
@@ -100,11 +101,6 @@ public class CardService {
         }
         
         UserEntity assignedTo = null;
-//        if (dto.getAssignedToId() != null) {
-//            // In a real implementation, you would fetch the user from a UserService
-//            assignedTo = new UserEntity();
-//            assignedTo.setId(dto.getAssignedToId());
-//        }
 
         if (dto.getAssignedToId() != null) {
             assignedTo = userRepository
@@ -114,7 +110,6 @@ public class CardService {
         }
         
         CardEntity task = cardMapper.toEntity(dto, taskList, user, assignedTo);
-        task.setCreatedAt(LocalDateTime.now());
         task = cardRepository.save(task);
         
         return cardMapper.toDtoWithItsList(task);
@@ -152,7 +147,6 @@ public class CardService {
                 task.setAssignedTo(assignedTo);
             }
         } else if (task.getAssignedTo() != null) {
-            // Remove assignment
             task.setAssignedTo(null);
         }
         
