@@ -7,7 +7,7 @@ import com.kyut.ordo.comment.dto.CommentCreate;
 import com.kyut.ordo.comment.dto.CommentRead;
 import com.kyut.ordo.comment.entity.CommentEntity;
 import com.kyut.ordo.card.entity.CardEntity;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 @Mapper(componentModel = "spring")
 public interface CommentMapper {

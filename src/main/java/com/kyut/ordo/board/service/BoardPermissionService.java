@@ -12,7 +12,7 @@ import com.kyut.ordo.board.entity.BoardMemberEntity;
 import com.kyut.ordo.board.entity.BoardRoleEntity;
 import com.kyut.ordo.board.repository.BoardMemberRepository;
 import com.kyut.ordo.board.repository.BoardRoleRepository;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 

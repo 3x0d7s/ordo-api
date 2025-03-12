@@ -19,7 +19,7 @@ import com.kyut.ordo.comment.exception.CommentNotFoundException;
 import com.kyut.ordo.comment.exception.InsufficientCommentPermissionsException;
 import com.kyut.ordo.comment.service.CommentService;
 import com.kyut.ordo.card.exception.CardNotFoundException;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 

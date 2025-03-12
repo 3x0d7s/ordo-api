@@ -19,7 +19,7 @@ import com.kyut.ordo.list.dto.ListCreate;
 import com.kyut.ordo.list.exception.ListNotFoundException;
 import com.kyut.ordo.list.mapper.ListMapper;
 import com.kyut.ordo.list.repository.ListRepository;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 

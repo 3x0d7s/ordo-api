@@ -18,7 +18,7 @@ import com.kyut.ordo.task.exception.InsufficientTaskPermissionsException;
 import com.kyut.ordo.task.exception.TaskNotFoundException;
 import com.kyut.ordo.task.mapper.TaskMapper;
 import com.kyut.ordo.task.repository.TaskRepository;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

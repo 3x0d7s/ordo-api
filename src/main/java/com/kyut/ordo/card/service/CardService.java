@@ -1,7 +1,5 @@
 package com.kyut.ordo.card.service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.kyut.ordo.card.dto.CardCreate;
@@ -9,7 +7,7 @@ import com.kyut.ordo.card.dto.CardRead;
 import com.kyut.ordo.card.dto.CardWithItsListRead;
 import com.kyut.ordo.card.entity.CardEntity;
 import com.kyut.ordo.card.mapper.CardMapper;
-import com.kyut.ordo.user.UserRepository;
+import com.kyut.ordo.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +21,7 @@ import com.kyut.ordo.list.exception.ListNotFoundException;
 import com.kyut.ordo.card.exception.CardNotFoundException;
 import com.kyut.ordo.list.repository.ListRepository;
 import com.kyut.ordo.card.repository.CardRepository;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 

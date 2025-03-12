@@ -9,7 +9,7 @@ import org.mapstruct.MappingTarget;
 
 import com.kyut.ordo.card.dto.CardCreate;
 import com.kyut.ordo.list.entity.ListEntity;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 @Mapper(componentModel = "spring")
 public interface CardMapper {

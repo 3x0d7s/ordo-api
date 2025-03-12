@@ -20,7 +20,7 @@ import com.kyut.ordo.comment.repository.CommentRepository;
 import com.kyut.ordo.card.entity.CardEntity;
 import com.kyut.ordo.card.exception.CardNotFoundException;
 import com.kyut.ordo.card.repository.CardRepository;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 

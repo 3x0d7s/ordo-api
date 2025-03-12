@@ -24,7 +24,7 @@ import com.kyut.ordo.card.exception.InsufficientCardPermissionsException;
 import com.kyut.ordo.list.exception.ListNotFoundException;
 import com.kyut.ordo.card.exception.CardNotFoundException;
 import com.kyut.ordo.card.service.CardService;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 

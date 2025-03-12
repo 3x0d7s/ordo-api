@@ -6,11 +6,11 @@ import com.kyut.ordo.auth.local.dto.LocalLoginRequest;
 import com.kyut.ordo.auth.common.dto.LoginResponse;
 import com.kyut.ordo.auth.common.AuthProvider;
 import com.kyut.ordo.common.security.jwt.JwtService;
-import com.kyut.ordo.user.UserMapper;
-import com.kyut.ordo.user.UserRepository;
+import com.kyut.ordo.user.mapper.UserMapper;
+import com.kyut.ordo.user.repository.UserRepository;
 import com.kyut.ordo.user.dto.UserCreateDTO;
 import com.kyut.ordo.user.dto.UserReadDTO;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

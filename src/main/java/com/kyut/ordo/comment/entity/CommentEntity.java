@@ -3,7 +3,7 @@ package com.kyut.ordo.comment.entity;
 import java.time.LocalDateTime;
 
 import com.kyut.ordo.card.entity.CardEntity;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import jakarta.persistence.*;
 import lombok.Data;

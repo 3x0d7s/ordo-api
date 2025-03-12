@@ -1,7 +1,5 @@
 package com.kyut.ordo.task.controller;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,14 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
 import com.kyut.ordo.card.exception.CardNotFoundException;
 import com.kyut.ordo.task.dto.TaskCreate;
 import com.kyut.ordo.task.dto.TaskRead;
 import com.kyut.ordo.task.exception.InsufficientTaskPermissionsException;
 import com.kyut.ordo.task.exception.TaskNotFoundException;
 import com.kyut.ordo.task.service.TaskService;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 

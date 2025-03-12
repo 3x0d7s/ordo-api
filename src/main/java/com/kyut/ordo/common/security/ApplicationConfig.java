@@ -1,6 +1,6 @@
 package com.kyut.ordo.common.security;
 
-import com.kyut.ordo.user.UserRepository;
+import com.kyut.ordo.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

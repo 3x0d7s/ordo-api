@@ -8,7 +8,7 @@ import com.kyut.ordo.board.service.BoardPermissionService;
 import com.kyut.ordo.board.service.BoardService;
 import com.kyut.ordo.list.dto.ListRead;
 import com.kyut.ordo.list.service.ListService;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

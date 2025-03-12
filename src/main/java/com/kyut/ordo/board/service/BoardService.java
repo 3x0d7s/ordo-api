@@ -18,7 +18,7 @@ import com.kyut.ordo.board.mapper.BoardMapper;
 import com.kyut.ordo.board.repository.BoardMemberRepository;
 import com.kyut.ordo.board.repository.BoardRepository;
 import com.kyut.ordo.board.repository.BoardRoleRepository;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceMemberEntity;
 import com.kyut.ordo.workspace.repository.WorkspaceMemberRepository;
 

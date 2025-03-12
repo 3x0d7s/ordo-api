@@ -1,8 +1,9 @@
-package com.kyut.ordo.user;
+package com.kyut.ordo.user.mapper;
 
 import com.kyut.ordo.user.dto.UserCreateDTO;
 import com.kyut.ordo.user.dto.UserReadDTO;
 
+import com.kyut.ordo.user.entity.UserEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

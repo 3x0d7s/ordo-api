@@ -2,7 +2,7 @@ package com.kyut.ordo.board.entity;
 
 import java.time.LocalDateTime;
 
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

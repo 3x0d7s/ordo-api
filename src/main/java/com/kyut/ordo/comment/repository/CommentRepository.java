@@ -2,7 +2,7 @@ package com.kyut.ordo.comment.repository;
 
 import com.kyut.ordo.comment.entity.CommentEntity;
 import com.kyut.ordo.card.entity.CardEntity;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;

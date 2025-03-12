@@ -1,6 +1,6 @@
 package com.kyut.ordo.workspace.repository;
 
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceMemberEntity;
 import org.springframework.data.repository.CrudRepository;

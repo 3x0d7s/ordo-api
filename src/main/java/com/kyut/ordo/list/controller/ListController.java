@@ -21,7 +21,7 @@ import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
 import com.kyut.ordo.list.dto.ListCreate;
 import com.kyut.ordo.list.exception.ListNotFoundException;
 import com.kyut.ordo.list.service.ListService;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 

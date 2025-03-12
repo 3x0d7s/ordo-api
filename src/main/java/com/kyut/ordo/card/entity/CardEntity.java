@@ -7,7 +7,7 @@ import java.util.List;
 import com.kyut.ordo.comment.entity.CommentEntity;
 import com.kyut.ordo.list.entity.ListEntity;
 import com.kyut.ordo.task.entity.TaskEntity;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 
 import jakarta.persistence.*;
 import lombok.Data;

@@ -2,7 +2,7 @@ package com.kyut.ordo.workspace.controller;
 
 import com.kyut.ordo.board.dto.BoardRead;
 import com.kyut.ordo.board.service.BoardService;
-import com.kyut.ordo.user.UserEntity;
+import com.kyut.ordo.user.entity.UserEntity;
 import com.kyut.ordo.workspace.dto.WorkspaceRoleRead;
 import com.kyut.ordo.workspace.exception.WorkspaceNotFoundException;
 import com.kyut.ordo.workspace.exception.WorkspaceRoleInsuficientRightsExceptions;
