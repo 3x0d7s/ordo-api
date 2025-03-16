@@ -1,12 +1,16 @@
 package com.kyut.ordo.workspace.mapper;
 
+import com.kyut.ordo.list.dto.ListCreate;
+import com.kyut.ordo.list.entity.ListEntity;
 import com.kyut.ordo.workspace.dto.WorkspaceCreate;
 import com.kyut.ordo.workspace.dto.WorkspaceRead;
+import com.kyut.ordo.workspace.dto.WorkspaceUpdate;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 
 import com.kyut.ordo.workspace.entity.WorkspaceRoleEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.Collection;
 
@@ -18,4 +22,6 @@ public interface WorkspaceMapper {
 
     @Mapping(source = "rolesCollection", target = "roles")
     WorkspaceRead toDto(WorkspaceEntity entity, Collection<WorkspaceRoleEntity> rolesCollection);
+
+    void updateEntityFromDto(WorkspaceUpdate dto, @MappingTarget WorkspaceEntity taskList);
 }

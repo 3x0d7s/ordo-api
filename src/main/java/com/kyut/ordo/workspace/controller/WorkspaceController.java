@@ -4,6 +4,7 @@ import com.kyut.ordo.board.dto.BoardRead;
 import com.kyut.ordo.board.service.BoardService;
 import com.kyut.ordo.user.entity.UserEntity;
 import com.kyut.ordo.workspace.dto.WorkspaceRoleRead;
+import com.kyut.ordo.workspace.dto.WorkspaceUpdate;
 import com.kyut.ordo.workspace.exception.WorkspaceNotFoundException;
 import com.kyut.ordo.workspace.exception.WorkspaceRoleInsuficientRightsExceptions;
 import com.kyut.ordo.workspace.service.WorkspaceService;
@@ -34,6 +35,14 @@ public class WorkspaceController {
                                                   @PathVariable long id)
             throws WorkspaceNotFoundException {
         return ResponseEntity.ok(workspaceService.findById(user, id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<WorkspaceRead> updateWorkspace(@AuthenticationPrincipal UserEntity user,
+                                                         @PathVariable long id,
+                                                         WorkspaceUpdate dto)
+            throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
+        return ResponseEntity.ok(workspaceService.updateWorkspace(user, id, dto));
     }
 
     @GetMapping("/{id}/roles")

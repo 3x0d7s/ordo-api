@@ -19,7 +19,7 @@ public interface ListMapper {
     @Mapping(source = "dto.color", target = "color")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(source = "board", target = "board")
-    @Mapping(target = "tasks", ignore = true)
+    @Mapping(target = "cards", ignore = true)
     ListEntity toEntity(ListCreate dto, BoardEntity board);
     
     @Mapping(source = "entity.id", target = "id")

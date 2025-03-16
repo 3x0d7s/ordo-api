@@ -51,5 +51,5 @@ public class ListEntity {
 
     // Relationships
     @OneToMany(mappedBy = "taskList", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CardEntity> tasks;
+    private List<CardEntity> cards;
 }

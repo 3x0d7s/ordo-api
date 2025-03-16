@@ -5,6 +5,7 @@ import com.kyut.ordo.workspace.dto.WorkspaceCreate;
 import com.kyut.ordo.workspace.dto.WorkspaceRead;
 
 import com.kyut.ordo.workspace.dto.WorkspaceRoleRead;
+import com.kyut.ordo.workspace.dto.WorkspaceUpdate;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceRoleEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceMemberEntity;
@@ -91,6 +92,23 @@ public class WorkspaceService {
         }
 
         workspaceRepository.delete(workspace);
+
+        return workspaceMapper.toDto(workspace);
+    }
+
+    public WorkspaceRead updateWorkspace(
+            UserEntity user,
+            Long id,
+            WorkspaceUpdate dto) throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
+        WorkspaceEntity workspace = workspaceRepository
+                .findById(id)
+                .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
+
+        if (!workspace.getOwner().equals(user)) {
+            throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to update this workspace");
+        }
+
+        workspaceMapper.updateEntityFromDto(dto, workspace);
 
         return workspaceMapper.toDto(workspace);
     }
