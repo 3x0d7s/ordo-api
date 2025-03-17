@@ -38,7 +38,7 @@ public class CommentService {
         CardEntity card = cardRepository.findById(cardId)
             .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + cardId));
         
-        if (!boardPermissionService.hasPermission(card.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(card.getList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to view comments in this task");
         }
 
@@ -54,7 +54,7 @@ public class CommentService {
         CardEntity card = cardRepository.findById(cardId)
             .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + cardId));
         
-        if (!boardPermissionService.hasPermission(card.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(card.getList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to view comments in this task");
         }
         
@@ -74,7 +74,7 @@ public class CommentService {
         CommentEntity comment = commentRepository.findById(id)
             .orElseThrow(() -> new CommentNotFoundException("Comment not found with id: " + id));
         
-        if (!boardPermissionService.hasPermission(comment.getCard().getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(comment.getCard().getList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientCommentPermissionsException("User does not have permission to view this comment");
         }
         
@@ -87,7 +87,7 @@ public class CommentService {
         CardEntity card = cardRepository.findById(dto.getCardId())
             .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + dto.getCardId()));
         
-        if (!boardPermissionService.hasPermission(card.getTaskList().getBoard().getId(), user.getId(), "CREATE_TASKS")) {
+        if (!boardPermissionService.hasPermission(card.getList().getBoard().getId(), user.getId(), "CREATE_TASKS")) {
             throw new InsufficientCommentPermissionsException("User does not have permission to create comments in this task");
         }
         
@@ -106,7 +106,7 @@ public class CommentService {
         
         // Only the creator of the comment or a board admin can update it
         if (!comment.getCreatedBy().getId().equals(user.getId()) &&
-            !boardPermissionService.hasPermission(comment.getCard().getTaskList().getBoard().getId(), user.getId(), "MANAGE_ROLES")) {
+            !boardPermissionService.hasPermission(comment.getCard().getList().getBoard().getId(), user.getId(), "MANAGE_ROLES")) {
             throw new InsufficientCommentPermissionsException("User does not have permission to edit this comment");
         }
         
@@ -130,7 +130,7 @@ public class CommentService {
         
         // Only the creator of the comment or a board admin can delete it
         if (!comment.getCreatedBy().getId().equals(user.getId()) && 
-            !boardPermissionService.hasPermission(comment.getCard().getTaskList().getBoard().getId(), user.getId(), "MANAGE_ROLES")) {
+            !boardPermissionService.hasPermission(comment.getCard().getList().getBoard().getId(), user.getId(), "MANAGE_ROLES")) {
             throw new InsufficientCommentPermissionsException("User does not have permission to delete this comment");
         }
         

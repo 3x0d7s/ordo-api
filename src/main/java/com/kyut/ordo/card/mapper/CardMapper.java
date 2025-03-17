@@ -20,12 +20,12 @@ public interface CardMapper {
     @Mapping(source = "dto.dueDate", target = "dueDate")
     @Mapping(source = "dto.position", target = "position")
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(source = "taskList", target = "taskList")
+    @Mapping(source = "list", target = "list")
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "tasks", ignore = true)
     @Mapping(source = "createdBy", target = "createdBy")
     @Mapping(source = "assignedTo", target = "assignedTo")
-    CardEntity toEntity(CardCreate dto, ListEntity taskList, UserEntity createdBy, UserEntity assignedTo);
+    CardEntity toEntity(CardCreate dto, ListEntity list, UserEntity createdBy, UserEntity assignedTo);
 
     CardWithItsListRead toDtoWithItsList(CardEntity entity);
 

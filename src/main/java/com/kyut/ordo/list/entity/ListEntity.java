@@ -50,6 +50,6 @@ public class ListEntity {
     private BoardEntity board;
 
     // Relationships
-    @OneToMany(mappedBy = "taskList", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "list", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CardEntity> cards;
 }

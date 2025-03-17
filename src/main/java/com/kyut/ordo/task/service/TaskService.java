@@ -37,7 +37,7 @@ public class TaskService {
         CardEntity card = cardRepository.findById(cardId)
             .orElseThrow(() -> new CardNotFoundException("Card not found with id: " + cardId));
         
-        if (!boardPermissionService.hasPermission(card.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(card.getList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to view tasks in this card");
         }
         
@@ -53,7 +53,7 @@ public class TaskService {
         CardEntity card = cardRepository.findById(cardId)
             .orElseThrow(() -> new CardNotFoundException("Card not found with id: " + cardId));
         
-        if (!boardPermissionService.hasPermission(card.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(card.getList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to view tasks in this card");
         }
         
@@ -67,7 +67,7 @@ public class TaskService {
         TaskEntity task = taskRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
         
-        if (!boardPermissionService.hasPermission(task.getCard().getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(task.getCard().getList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientTaskPermissionsException("User does not have permission to view this task");
         }
         
@@ -80,7 +80,7 @@ public class TaskService {
         CardEntity card = cardRepository.findById(dto.getCardId())
             .orElseThrow(() -> new CardNotFoundException("Card not found with id: " + dto.getCardId()));
         
-        if (!boardPermissionService.hasPermission(card.getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(card.getList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientTaskPermissionsException("User does not have permission to create tasks in this card");
         }
         
@@ -105,7 +105,7 @@ public class TaskService {
         TaskEntity task = taskRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
         
-        if (!boardPermissionService.hasPermission(task.getCard().getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(task.getCard().getList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientTaskPermissionsException("User does not have permission to edit this task");
         }
         
@@ -115,7 +115,7 @@ public class TaskService {
                 .orElseThrow(() -> new CardNotFoundException("Card not found with id: " + dto.getCardId()));
             
             // Ensure the new card is in the same board
-            if (!newCard.getTaskList().getBoard().getId().equals(task.getCard().getTaskList().getBoard().getId())) {
+            if (!newCard.getList().getBoard().getId().equals(task.getCard().getList().getBoard().getId())) {
                 throw new IllegalArgumentException("Cannot move task to a card in a different board");
             }
             
@@ -134,7 +134,7 @@ public class TaskService {
         TaskEntity task = taskRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
         
-        if (!boardPermissionService.hasPermission(task.getCard().getTaskList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(task.getCard().getList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientTaskPermissionsException("User does not have permission to delete this task");
         }
 

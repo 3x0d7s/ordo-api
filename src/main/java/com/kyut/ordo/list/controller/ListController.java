@@ -67,7 +67,7 @@ public class ListController {
             @PathVariable Long id,
             Pageable pageable)
             throws ListNotFoundException, InsufficientBoardPermissionsException {
-        Page<CardRead> tasks = cardService.findAllByTaskList(user, id, pageable);
+        Page<CardRead> tasks = cardService.findAllByList(user, id, pageable);
         return ResponseEntity.ok(tasks);
     }
     
@@ -95,7 +95,7 @@ public class ListController {
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id) 
             throws ListNotFoundException, InsufficientBoardPermissionsException {
-        ListRead taskList = listService.deleteTaskList(user, id);
+        ListRead taskList = listService.deleteList(user, id);
         return ResponseEntity.ok(taskList);
     }
 }

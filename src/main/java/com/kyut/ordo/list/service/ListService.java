@@ -3,6 +3,8 @@ package com.kyut.ordo.list.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.kyut.ordo.card.repository.CardRepository;
+import com.kyut.ordo.card.service.CardService;
 import com.kyut.ordo.list.dto.ListRead;
 import com.kyut.ordo.list.entity.ListEntity;
 import org.springframework.data.domain.Page;
@@ -30,7 +32,9 @@ public class ListService {
     private final BoardRepository boardRepository;
     private final BoardPermissionService boardPermissionService;
     private final ListMapper listMapper;
-    
+    private final CardService cardService;
+    private final CardRepository cardRepository;
+
     @Transactional(readOnly = true)
     public List<ListRead> findAllByBoard(UserEntity user, Long boardId)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
@@ -119,17 +123,19 @@ public class ListService {
     }
     
     @Transactional
-    public ListRead deleteTaskList(UserEntity user, Long id)
+    public ListRead deleteList(UserEntity user, Long id)
             throws ListNotFoundException, InsufficientBoardPermissionsException {
-        ListEntity taskList = listRepository.findById(id)
+        ListEntity list = listRepository.findById(id)
             .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + id));
         
-        if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
+        Long boardId = list.getBoard().getId();
+        if (!boardPermissionService.hasPermission(boardId, user.getId(), "EDIT")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to delete this list");
         }
+
+        listRepository.deleteCardsByListId(id);
+        listRepository.deleteListById(id);
         
-        listRepository.delete(taskList);
-        
-        return listMapper.toDto(taskList);
+        return listMapper.toDto(list);
     }
 }

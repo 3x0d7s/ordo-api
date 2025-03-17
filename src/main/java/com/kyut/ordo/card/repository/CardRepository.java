@@ -13,17 +13,19 @@ import com.kyut.ordo.user.entity.UserEntity;
 
 public interface CardRepository extends CrudRepository<CardEntity, Long> {
     
-    List<CardEntity> findAllByTaskList(ListEntity list);
+    List<CardEntity> findAllByList(ListEntity list);
     
-    List<CardEntity> findAllByTaskListOrderByPosition(ListEntity taskList);
+    List<CardEntity> findAllByListOrderByPosition(ListEntity taskList);
 
-    Optional<CardEntity> findByIdAndTaskList(Long id, ListEntity list);
+    Optional<CardEntity> findByIdAndList(Long id, ListEntity list);
     
     List<CardEntity> findAllByAssignedTo(UserEntity user);
     
     Page<CardEntity> findAllByAssignedTo(UserEntity user, Pageable pageable);
 
-    Page<CardEntity> findAllByTaskList(ListEntity taskList, Pageable pageable);
+    Page<CardEntity> findAllByList(ListEntity taskList, Pageable pageable);
 
-    Integer countByTaskList(ListEntity taskList);
+    Integer countByList(ListEntity taskList);
+
+    void deleteAllByList(ListEntity list);
 }
