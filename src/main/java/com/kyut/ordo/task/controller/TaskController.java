@@ -1,5 +1,6 @@
 package com.kyut.ordo.task.controller;
 
+import com.kyut.ordo.task.dto.TaskWithItsCardRead;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,11 +38,11 @@ public class TaskController {
     }
     
     @PostMapping
-    public ResponseEntity<TaskRead> createTask(
+    public ResponseEntity<TaskWithItsCardRead> createTask(
             @AuthenticationPrincipal UserEntity user,
             @RequestBody TaskCreate dto)
             throws CardNotFoundException, InsufficientTaskPermissionsException {
-        TaskRead task = taskService.createTask(user, dto);
+        TaskWithItsCardRead task = taskService.createTask(user, dto);
         return ResponseEntity.ok(task);
     }
     

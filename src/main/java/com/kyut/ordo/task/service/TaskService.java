@@ -2,6 +2,7 @@ package com.kyut.ordo.task.service;
 
 import java.util.List;
 
+import com.kyut.ordo.task.dto.TaskWithItsCardRead;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -75,7 +76,7 @@ public class TaskService {
     }
     
     @Transactional
-    public TaskRead createTask(UserEntity user, TaskCreate dto)
+    public TaskWithItsCardRead createTask(UserEntity user, TaskCreate dto)
             throws CardNotFoundException, InsufficientTaskPermissionsException {
         CardEntity card = cardRepository.findById(dto.getCardId())
             .orElseThrow(() -> new CardNotFoundException("Card not found with id: " + dto.getCardId()));
@@ -96,7 +97,7 @@ public class TaskService {
         TaskEntity task = taskMapper.toEntity(dto, card);
         task = taskRepository.save(task);
         
-        return taskMapper.toDto(task);
+        return taskMapper.toDtoWithItsCard(task);
     }
     
     @Transactional

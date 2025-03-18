@@ -15,7 +15,7 @@ public class CardWithItsListRead {
     private LocalDate dueDate;
     private Integer position;
     private LocalDateTime createdAt;
-    private ListRead taskList;
+    private ListRead list;
     private UserReadDTO createdBy;
     private UserReadDTO assignedTo;
 }

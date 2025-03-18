@@ -1,5 +1,6 @@
 package com.kyut.ordo.task.mapper;
 
+import com.kyut.ordo.task.dto.TaskWithItsCardRead;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -26,6 +27,14 @@ public interface TaskMapper {
     @Mapping(source = "entity.position", target = "position")
     @Mapping(source = "entity.completed", target = "completed")
     TaskRead toDto(TaskEntity entity);
+
+    @Mapping(source = "entity.card", target = "card")
+    @Mapping(source = "entity.id", target = "id")
+    @Mapping(source = "entity.title", target = "title")
+    @Mapping(source = "entity.description", target = "description")
+    @Mapping(source = "entity.position", target = "position")
+    @Mapping(source = "entity.completed", target = "completed")
+    TaskWithItsCardRead toDtoWithItsCard(TaskEntity entity);
     
     void updateEntityFromDto(TaskCreate dto, @MappingTarget TaskEntity task);
 }

@@ -6,5 +6,4 @@ import lombok.Data;
 public class CommentCreate {
     private String message;
     private Long cardId;
-    private Long createdBy;
 }
