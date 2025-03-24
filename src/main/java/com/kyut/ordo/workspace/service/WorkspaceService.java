@@ -11,6 +11,7 @@ import com.kyut.ordo.workspace.exception.WorkspaceRoleInsuficientRightsException
 import com.kyut.ordo.workspace.mapper.WorkspaceMapper;
 import com.kyut.ordo.workspace.mapper.WorkspaceMemberMapper;
 import com.kyut.ordo.workspace.mapper.WorkspaceRoleMapper;
+import com.kyut.ordo.workspace.mapper.WorkspaceRoleMapperImpl;
 import com.kyut.ordo.workspace.repository.WorkspaceMemberRepository;
 import com.kyut.ordo.workspace.repository.WorkspaceRepository;
 import com.kyut.ordo.workspace.repository.WorkspaceRoleRepository;
@@ -34,6 +35,7 @@ public class WorkspaceService {
     private final WorkspaceRoleMapper workspaceRoleMapper;
     private final WorkspaceMemberMapper workspaceMemberMapper;
     private final WorkspaceMapper workspaceMapper;
+    private final WorkspaceRoleMapperImpl workspaceRoleMapperImpl;
 
     public Page<WorkspaceRead> findAllByOwner(UserEntity user, Pageable pageable) {
         return workspaceRepository
@@ -151,6 +153,44 @@ public class WorkspaceService {
         member.setRole(role);
 
         return workspaceMemberMapper.toDto(member);
+    }
+
+    public WorkspaceMemberRead deleteMember(UserEntity user,
+                                      Long workspaceId,
+                                      Long userId) throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
+
+        WorkspaceEntity workspace = workspaceRepository
+                .findById(workspaceId)
+                .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
+
+        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
+                .findByWorkspaceAndUser(workspace, user)
+                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
+
+        if (!workspaceMember.getRole().isAbleToManageSettings()) {
+            throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to delete members in this workspace");
+        }
+
+        WorkspaceMemberEntity member = workspaceMemberRepository
+                .findByWorkspaceIdAndUserId(workspaceId, userId)
+                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
+
+        workspaceMemberRepository.delete(member);
+
+        return workspaceMemberMapper.toDto(member);
+    }
+
+    public WorkspaceRoleRead getMyRole(UserEntity user,
+                                       Long workspaceId) throws WorkspaceNotFoundException {
+        WorkspaceEntity workspace = workspaceRepository
+                .findById(workspaceId)
+                .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
+
+        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
+                .findByWorkspaceAndUser(workspace, user)
+                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
+
+        return workspaceRoleMapper.toDto(workspaceMember.getRole());
     }
 
     public WorkspaceMemberRead createMember(UserEntity user,

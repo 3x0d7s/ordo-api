@@ -11,5 +11,4 @@ public class WorkspaceMemberRead {
     private UserReadDTO user;
     private WorkspaceRead workspace;
     private WorkspaceRoleRead role;
-    private LocalDateTime joinedAt;
 }

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
+
 public interface WorkspaceRoleRepository extends CrudRepository<WorkspaceRoleEntity, Long> {
     void deleteAllByWorkspace(WorkspaceEntity workspace);
 

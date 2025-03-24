@@ -58,6 +58,12 @@ public class WorkspaceController {
         return ResponseEntity.ok(workspaceService.createRole(user, dto));
     }
 
+    @GetMapping("/{id}/my-role")
+    public ResponseEntity<WorkspaceRoleRead> findMyRole(@AuthenticationPrincipal UserEntity user,
+                                                        @PathVariable long id) throws WorkspaceNotFoundException {
+        return ResponseEntity.ok(workspaceService.getMyRole(user, id));
+    }
+
     @PutMapping("/{id}/roles/{roleId}")
     public ResponseEntity<WorkspaceRoleRead> updateRole(@AuthenticationPrincipal UserEntity user,
                                                         @PathVariable long id,
