@@ -12,6 +12,7 @@ public class BoardRead {
     private Long id;
     private String title;
     private String description;
+    private String color;
     private BoardVisibility visibility;
     private LocalDateTime createdAt;
     private List<BoardRoleRead> roles;

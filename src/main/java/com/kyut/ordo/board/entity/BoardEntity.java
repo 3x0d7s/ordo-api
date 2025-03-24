@@ -23,6 +23,8 @@ public class BoardEntity {
     @Column(nullable = false)
     private String title;
 
+    private String color;
+
     private String description;
 
     @Enumerated(EnumType.STRING)

@@ -7,6 +7,7 @@ import lombok.Data;
 public class BoardCreate {
     private String title;
     private String description;
+    private String color;
     private BoardVisibility visibility;
     private Long workspaceId;
 }
