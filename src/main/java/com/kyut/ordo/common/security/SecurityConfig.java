@@ -58,10 +58,10 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Bean
-    JwtDecoder jwtDecoder() {
-        return JwtDecoders.fromIssuerLocation(issuerUri);
-    }
+//    @Bean
+//    JwtDecoder jwtDecoder() {
+//        return JwtDecoders.fromIssuerLocation(issuerUri);
+//    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

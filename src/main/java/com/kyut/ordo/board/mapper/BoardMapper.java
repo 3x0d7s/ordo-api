@@ -5,13 +5,12 @@ import com.kyut.ordo.board.dto.BoardRead;
 import com.kyut.ordo.board.entity.BoardEntity;
 import com.kyut.ordo.board.entity.BoardRoleEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 import java.util.Collection;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface BoardMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "dto.title", target = "title")
@@ -19,7 +18,6 @@ public interface BoardMapper {
     @Mapping(source = "dto.visibility", target = "visibility")
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "members", ignore = true)
-//    @Mapping(target = "createdAt", ignore = true)
     @Mapping(source = "workspaceId", target = "workspace.id")
     BoardEntity toEntity(BoardCreate dto);
 
@@ -29,7 +27,6 @@ public interface BoardMapper {
     @Mapping(source = "dto.visibility", target = "visibility")
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "members", ignore = true)
-//    @Mapping(target = "createdAt", ignore = true)
     @Mapping(source = "workspaceEntity", target = "workspace")
     BoardEntity toEntity(BoardCreate dto, WorkspaceEntity workspaceEntity);
 

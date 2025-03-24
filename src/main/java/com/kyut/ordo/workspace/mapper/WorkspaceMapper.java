@@ -1,7 +1,5 @@
 package com.kyut.ordo.workspace.mapper;
 
-import com.kyut.ordo.list.dto.ListCreate;
-import com.kyut.ordo.list.entity.ListEntity;
 import com.kyut.ordo.workspace.dto.WorkspaceCreate;
 import com.kyut.ordo.workspace.dto.WorkspaceRead;
 import com.kyut.ordo.workspace.dto.WorkspaceUpdate;

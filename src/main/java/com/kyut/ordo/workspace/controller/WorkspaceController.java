@@ -3,13 +3,10 @@ package com.kyut.ordo.workspace.controller;
 import com.kyut.ordo.board.dto.BoardRead;
 import com.kyut.ordo.board.service.BoardService;
 import com.kyut.ordo.user.entity.UserEntity;
-import com.kyut.ordo.workspace.dto.WorkspaceRoleRead;
-import com.kyut.ordo.workspace.dto.WorkspaceUpdate;
+import com.kyut.ordo.workspace.dto.*;
 import com.kyut.ordo.workspace.exception.WorkspaceNotFoundException;
 import com.kyut.ordo.workspace.exception.WorkspaceRoleInsuficientRightsExceptions;
 import com.kyut.ordo.workspace.service.WorkspaceService;
-import com.kyut.ordo.workspace.dto.WorkspaceCreate;
-import com.kyut.ordo.workspace.dto.WorkspaceRead;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,12 +50,54 @@ public class WorkspaceController {
         return ResponseEntity.ok(workspaceService.findRolesByWorkspaceId(id, pageable));
     }
 
+    @PostMapping("/{id}/roles")
+    public ResponseEntity<WorkspaceRoleRead> createRole(@AuthenticationPrincipal UserEntity user,
+                                                        @PathVariable long id,
+                                                        WorkspaceRoleCreate dto)
+            throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
+        return ResponseEntity.ok(workspaceService.createRole(user, dto));
+    }
+
+    @PutMapping("/{id}/roles/{roleId}")
+    public ResponseEntity<WorkspaceRoleRead> updateRole(@AuthenticationPrincipal UserEntity user,
+                                                        @PathVariable long id,
+                                                        @PathVariable long roleId,
+                                                        WorkspaceRoleUpdate dto)
+            throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
+        return ResponseEntity.ok(workspaceService.updateRole(user, roleId, dto));
+    }
+
     @GetMapping("/{id}/boards")
     public ResponseEntity<Page<BoardRead>> findBoardsByWorkspaceId(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable long id,
             Pageable pageable) {
         return ResponseEntity.ok(boardService.findAllBoardsByWorkspace(user, id, pageable));
+    }
+
+    @GetMapping("/{id}/members")
+    public ResponseEntity<Page<WorkspaceMemberRead>> findMembersByWorkspaceId(@AuthenticationPrincipal UserEntity user,
+                                                                              @PathVariable long id,
+                                                                              Pageable pageable)
+            throws WorkspaceNotFoundException {
+        return ResponseEntity.ok(workspaceService.findMembersByWorkspaceId(id, pageable));
+    }
+
+    @PostMapping("/{id}/members")
+    public ResponseEntity<WorkspaceMemberRead> createMember(@AuthenticationPrincipal UserEntity user,
+                                                            @PathVariable long id,
+                                                            WorkspaceMemberCreate dto)
+            throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
+        return ResponseEntity.ok(workspaceService.createMember(user, id, dto));
+    }
+
+    @PutMapping("/{id}/members/{memberId}")
+    public ResponseEntity<WorkspaceMemberRead> updateMember(@AuthenticationPrincipal UserEntity user,
+                                                            @PathVariable long id,
+                                                            @PathVariable long memberId,
+                                                            WorkspaceMemberUpdate dto)
+            throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
+        return ResponseEntity.ok(workspaceService.updateMember(user, id, memberId, dto));
     }
 
     @PostMapping
