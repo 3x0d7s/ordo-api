@@ -3,9 +3,9 @@ package com.kyut.ordo.board.dto;
 import lombok.Data;
 
 @Data
-public class BoardRoleRead {
-    private Long id;
+public class BoardRoleCreate {
     private String name;
+    private Long boardId;
     private boolean ableToEdit;
     private boolean ableToDelete;
     private boolean ableToInviteMembers;

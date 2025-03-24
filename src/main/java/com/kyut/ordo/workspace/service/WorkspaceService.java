@@ -116,7 +116,11 @@ public class WorkspaceService {
                 .findById(id)
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
 
-        if (!workspace.getOwner().equals(user)) {
+        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository.findByWorkspaceAndUser(workspace, user)
+                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
+        WorkspaceRoleEntity role = workspaceMember.getRole();
+
+        if (!role.isAbleToManageSettings()) {
             throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to update this workspace");
         }
 

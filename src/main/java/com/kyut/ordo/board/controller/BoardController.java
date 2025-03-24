@@ -1,7 +1,6 @@
 package com.kyut.ordo.board.controller;
 
-import com.kyut.ordo.board.dto.BoardCreate;
-import com.kyut.ordo.board.dto.BoardRead;
+import com.kyut.ordo.board.dto.*;
 import com.kyut.ordo.board.exception.BoardNotFoundException;
 import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
 import com.kyut.ordo.board.service.BoardPermissionService;
@@ -111,8 +110,78 @@ public class BoardController {
         boardService.updateMemberRole(user, id, memberId, newRoleId);
         return ResponseEntity.ok().build();
     }
-
-
-
-
+    
+    @GetMapping("/{id}/roles")
+    public ResponseEntity<Page<BoardRoleRead>> findRolesByBoardId(
+            @AuthenticationPrincipal UserEntity user,
+            @PathVariable Long id,
+            Pageable pageable)
+            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+        return ResponseEntity.ok(boardService.findRolesByBoardId(user, id, pageable));
+    }
+    
+    @PostMapping("/{id}/roles")
+    public ResponseEntity<BoardRoleRead> createRole(
+            @AuthenticationPrincipal UserEntity user,
+            @PathVariable Long id,
+            @RequestBody BoardRoleCreate dto)
+            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+        dto.setBoardId(id);
+        return ResponseEntity.ok(boardService.createRole(user, dto));
+    }
+    
+    @PutMapping("/{id}/roles/{roleId}")
+    public ResponseEntity<BoardRoleRead> updateRole(
+            @AuthenticationPrincipal UserEntity user,
+            @PathVariable Long id,
+            @PathVariable Long roleId,
+            @RequestBody BoardRoleUpdate dto)
+            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+        return ResponseEntity.ok(boardService.updateRole(user, roleId, dto));
+    }
+    
+    @GetMapping("/{id}/my-role")
+    public ResponseEntity<BoardRoleRead> getMyRole(
+            @AuthenticationPrincipal UserEntity user,
+            @PathVariable Long id)
+            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+        return ResponseEntity.ok(boardService.getMyRole(user, id));
+    }
+    
+    @GetMapping("/{id}/members")
+    public ResponseEntity<Page<BoardMemberRead>> findMembersByBoardId(
+            @AuthenticationPrincipal UserEntity user,
+            @PathVariable Long id,
+            Pageable pageable)
+            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+        return ResponseEntity.ok(boardService.findMembersByBoardId(user, id, pageable));
+    }
+    
+    @PostMapping("/{id}/members")
+    public ResponseEntity<BoardMemberRead> createMember(
+            @AuthenticationPrincipal UserEntity user,
+            @PathVariable Long id,
+            @RequestBody BoardMemberCreate dto)
+            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+        return ResponseEntity.ok(boardService.createMember(user, id, dto));
+    }
+    
+    @PutMapping("/{id}/members/{memberId}")
+    public ResponseEntity<BoardMemberRead> updateMember(
+            @AuthenticationPrincipal UserEntity user,
+            @PathVariable Long id,
+            @PathVariable Long memberId,
+            @RequestBody BoardMemberUpdate dto)
+            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+        return ResponseEntity.ok(boardService.updateMember(user, id, memberId, dto));
+    }
+    
+    @DeleteMapping("/{id}/members/{memberId}")
+    public ResponseEntity<BoardMemberRead> deleteMember(
+            @AuthenticationPrincipal UserEntity user,
+            @PathVariable Long id,
+            @PathVariable Long memberId)
+            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+        return ResponseEntity.ok(boardService.deleteMember(user, id, memberId));
+    }
 }
