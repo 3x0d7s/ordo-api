@@ -1,5 +1,6 @@
 package com.kyut.ordo.card.dto;
 
+import com.kyut.ordo.list.dto.ListRead;
 import com.kyut.ordo.user.dto.UserReadDTO;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ public class CardRead {
     private LocalDate dueDate;
     private Integer position;
     private LocalDateTime createdAt;
+    private ListRead list;
     private UserReadDTO createdBy;
     private UserReadDTO assignedTo;
 }
