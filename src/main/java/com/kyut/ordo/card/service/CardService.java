@@ -7,6 +7,9 @@ import com.kyut.ordo.card.dto.CardRead;
 import com.kyut.ordo.card.dto.CardWithItsListRead;
 import com.kyut.ordo.card.entity.CardEntity;
 import com.kyut.ordo.card.mapper.CardMapper;
+import com.kyut.ordo.common.dto.WebSocketMessage;
+import com.kyut.ordo.common.dto.WebSocketMessage.WebSocketMessageType;
+import com.kyut.ordo.common.service.WebSocketService;
 import com.kyut.ordo.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -33,6 +36,7 @@ public class CardService {
     private final UserRepository userRepository;
     private final BoardPermissionService boardPermissionService;
     private final CardMapper cardMapper;
+    private final WebSocketService webSocketService;
     
     @Transactional()
     public List<CardRead> findAllByList(UserEntity user, Long listId)
@@ -110,7 +114,20 @@ public class CardService {
         CardEntity task = cardMapper.toEntity(dto, taskList, user, assignedTo);
         task = cardRepository.save(task);
         
-        return cardMapper.toDtoWithItsList(task);
+        CardWithItsListRead result = cardMapper.toDtoWithItsList(task);
+        
+        // Відправляємо повідомлення через веб-сокети
+        WebSocketMessage<CardWithItsListRead> message = WebSocketMessage.<CardWithItsListRead>builder()
+                .type(WebSocketMessageType.CARD_CREATED)
+                .payload(result)
+                .entityId(task.getId().toString())
+                .build();
+                
+        // Відправляємо повідомлення на дошку та список
+        webSocketService.sendBoardMessage(taskList.getBoard().getId(), message);
+        webSocketService.sendListMessage(taskList.getId(), message);
+        
+        return result;
     }
     
     @Transactional
@@ -123,6 +140,10 @@ public class CardService {
             throw new InsufficientCardPermissionsException("User does not have permission to edit this task");
         }
         
+        Long oldListId = task.getList().getId();
+        Long boardId = task.getList().getBoard().getId();
+        boolean listChanged = false;
+        
         // Don't allow changing the list if it's provided and different
         if (dto.getListId() != null && !dto.getListId().equals(task.getList().getId())) {
             ListEntity newList = listRepository.findById(dto.getListId())
@@ -134,6 +155,7 @@ public class CardService {
             }
             
             task.setList(newList);
+            listChanged = true;
         }
         
         // Update assigned user if changed
@@ -151,7 +173,25 @@ public class CardService {
         cardMapper.updateEntityFromDto(dto, task);
         task = cardRepository.save(task);
         
-        return cardMapper.toDtoWithItsList(task);
+        CardWithItsListRead result = cardMapper.toDtoWithItsList(task);
+        
+        // Відправляємо повідомлення через веб-сокети
+        WebSocketMessage<CardWithItsListRead> message = WebSocketMessage.<CardWithItsListRead>builder()
+                .type(WebSocketMessageType.CARD_UPDATED)
+                .payload(result)
+                .entityId(id.toString())
+                .build();
+                
+        // Відправляємо повідомлення на дошку та список
+        webSocketService.sendBoardMessage(boardId, message);
+        webSocketService.sendListMessage(task.getList().getId(), message);
+        
+        // Якщо список змінився, відправляємо повідомлення на старий список
+        if (listChanged) {
+            webSocketService.sendListMessage(oldListId, message);
+        }
+        
+        return result;
     }
 
     public CardWithItsListRead deleteTask(UserEntity user, Long id)
@@ -163,8 +203,23 @@ public class CardService {
             throw new InsufficientCardPermissionsException("User does not have permission to delete this task");
         }
 
+        Long boardId = task.getList().getBoard().getId();
+        Long listId = task.getList().getId();
+        CardWithItsListRead result = cardMapper.toDtoWithItsList(task);
+        
         cardRepository.delete(task);
         
-        return cardMapper.toDtoWithItsList(task);
+        // Відправляємо повідомлення через веб-сокети
+        WebSocketMessage<CardWithItsListRead> message = WebSocketMessage.<CardWithItsListRead>builder()
+                .type(WebSocketMessageType.CARD_DELETED)
+                .payload(result)
+                .entityId(id.toString())
+                .build();
+                
+        // Відправляємо повідомлення на дошку та список
+        webSocketService.sendBoardMessage(boardId, message);
+        webSocketService.sendListMessage(listId, message);
+        
+        return result;
     }
 }
