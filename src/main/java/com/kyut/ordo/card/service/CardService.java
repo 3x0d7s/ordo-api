@@ -175,18 +175,15 @@ public class CardService {
         
         CardWithItsListRead result = cardMapper.toDtoWithItsList(task);
         
-        // Відправляємо повідомлення через веб-сокети
         WebSocketMessage<CardWithItsListRead> message = WebSocketMessage.<CardWithItsListRead>builder()
                 .type(WebSocketMessageType.CARD_UPDATED)
                 .payload(result)
                 .entityId(id.toString())
                 .build();
                 
-        // Відправляємо повідомлення на дошку та список
         webSocketService.sendBoardMessage(boardId, message);
         webSocketService.sendListMessage(task.getList().getId(), message);
         
-        // Якщо список змінився, відправляємо повідомлення на старий список
         if (listChanged) {
             webSocketService.sendListMessage(oldListId, message);
         }

@@ -10,10 +10,11 @@ import org.mapstruct.MappingTarget;
 import com.kyut.ordo.card.dto.CardCreate;
 import com.kyut.ordo.list.entity.ListEntity;
 import com.kyut.ordo.user.entity.UserEntity;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CardMapper {
-    
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "dto.title", target = "title")
     @Mapping(source = "dto.description", target = "description")
