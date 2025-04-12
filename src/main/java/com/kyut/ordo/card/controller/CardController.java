@@ -58,7 +58,7 @@ public class CardController {
             @AuthenticationPrincipal UserEntity user,
             @RequestBody CardCreate dto)
             throws ListNotFoundException, InsufficientCardPermissionsException {
-        CardWithItsListRead task = cardService.createTask(user, dto);
+        CardWithItsListRead task = cardService.createCard(user, dto);
         return ResponseEntity.ok(task);
     }
 
@@ -88,7 +88,7 @@ public class CardController {
             @PathVariable Long id,
             @RequestBody CardCreate dto)
             throws CardNotFoundException, InsufficientCardPermissionsException {
-        CardWithItsListRead task = cardService.updateTask(user, id, dto);
+        CardWithItsListRead task = cardService.updateCard(user, id, dto);
         return ResponseEntity.ok(task);
     }
     
@@ -97,7 +97,7 @@ public class CardController {
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id) 
             throws CardNotFoundException, InsufficientCardPermissionsException {
-        CardWithItsListRead task = cardService.deleteTask(user, id);
+        CardWithItsListRead task = cardService.deleteCard(user, id);
         return ResponseEntity.ok(task);
     }
 }

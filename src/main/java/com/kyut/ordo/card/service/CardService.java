@@ -88,7 +88,7 @@ public class CardService {
     }
     
     @Transactional
-    public CardWithItsListRead createTask(UserEntity user, CardCreate dto)
+    public CardWithItsListRead createCard(UserEntity user, CardCreate dto)
             throws ListNotFoundException, InsufficientCardPermissionsException {
         ListEntity taskList = listRepository.findById(dto.getListId())
             .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + dto.getListId()));
@@ -131,7 +131,7 @@ public class CardService {
     }
     
     @Transactional
-    public CardWithItsListRead updateTask(UserEntity user, Long id, CardCreate dto)
+    public CardWithItsListRead updateCard(UserEntity user, Long id, CardCreate dto)
             throws CardNotFoundException, InsufficientCardPermissionsException {
         CardEntity task = cardRepository.findById(id)
             .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + id));
@@ -161,9 +161,8 @@ public class CardService {
         // Update assigned user if changed
         if (dto.getAssignedToId() != null) {
             if (task.getAssignedTo() == null || !dto.getAssignedToId().equals(task.getAssignedTo().getId())) {
-                // In a real implementation, you would fetch the user from a UserService
-                UserEntity assignedTo = new UserEntity();
-                assignedTo.setId(dto.getAssignedToId());
+                UserEntity assignedTo = userRepository
+                        .findById(dto.getAssignedToId()).get();
                 task.setAssignedTo(assignedTo);
             }
         } else if (task.getAssignedTo() != null) {
@@ -191,7 +190,7 @@ public class CardService {
         return result;
     }
 
-    public CardWithItsListRead deleteTask(UserEntity user, Long id)
+    public CardWithItsListRead deleteCard(UserEntity user, Long id)
             throws CardNotFoundException, InsufficientCardPermissionsException {
         CardEntity task = cardRepository.findById(id)
             .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + id));
@@ -206,14 +205,12 @@ public class CardService {
         
         cardRepository.delete(task);
         
-        // Відправляємо повідомлення через веб-сокети
         WebSocketMessage<CardWithItsListRead> message = WebSocketMessage.<CardWithItsListRead>builder()
                 .type(WebSocketMessageType.CARD_DELETED)
                 .payload(result)
                 .entityId(id.toString())
                 .build();
                 
-        // Відправляємо повідомлення на дошку та список
         webSocketService.sendBoardMessage(boardId, message);
         webSocketService.sendListMessage(listId, message);
         
