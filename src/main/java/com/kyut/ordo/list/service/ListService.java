@@ -133,6 +133,9 @@ public class ListService {
             throw new InsufficientBoardPermissionsException("User does not have permission to delete this list");
         }
 
+        listRepository.deleteTasksByCardsOfList(id);
+        listRepository.deleteCommentsByCardsOfList(id);
+        
         listRepository.deleteCardsByListId(id);
         listRepository.deleteListById(id);
         
