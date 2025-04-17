@@ -122,7 +122,7 @@ public class CardService {
                 .payload(result)
                 .entityId(task.getId().toString())
                 .build();
-                
+
         // Відправляємо повідомлення на дошку та список
         webSocketService.sendBoardMessage(taskList.getBoard().getId(), message);
         webSocketService.sendListMessage(taskList.getId(), message);
@@ -190,6 +190,7 @@ public class CardService {
         return result;
     }
 
+    @Transactional
     public CardWithItsListRead deleteCard(UserEntity user, Long id)
             throws CardNotFoundException, InsufficientCardPermissionsException {
         CardEntity task = cardRepository.findById(id)
@@ -202,9 +203,11 @@ public class CardService {
         Long boardId = task.getList().getBoard().getId();
         Long listId = task.getList().getId();
         CardWithItsListRead result = cardMapper.toDtoWithItsList(task);
-        
-        cardRepository.delete(task);
-        
+
+        cardRepository.deleteCommentsByCardId(id);
+        cardRepository.deleteTasksByCardId(id);
+        cardRepository.deleteById(task.getId());
+
         WebSocketMessage<CardWithItsListRead> message = WebSocketMessage.<CardWithItsListRead>builder()
                 .type(WebSocketMessageType.CARD_DELETED)
                 .payload(result)

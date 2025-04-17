@@ -3,15 +3,17 @@ package com.kyut.ordo.list.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.kyut.ordo.card.repository.CardRepository;
-import com.kyut.ordo.card.service.CardService;
-import com.kyut.ordo.list.dto.ListRead;
-import com.kyut.ordo.list.entity.ListEntity;
+import com.kyut.ordo.card.dto.CardWithItsListRead;
+import com.kyut.ordo.task.dto.TaskRead;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kyut.ordo.common.dto.WebSocketMessage;
+import com.kyut.ordo.common.service.WebSocketService;
+import com.kyut.ordo.list.dto.ListRead;
+import com.kyut.ordo.list.entity.ListEntity;
 import com.kyut.ordo.board.entity.BoardEntity;
 import com.kyut.ordo.board.exception.BoardNotFoundException;
 import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
@@ -32,8 +34,7 @@ public class ListService {
     private final BoardRepository boardRepository;
     private final BoardPermissionService boardPermissionService;
     private final ListMapper listMapper;
-    private final CardService cardService;
-    private final CardRepository cardRepository;
+    private final WebSocketService webSocketService;
 
     @Transactional(readOnly = true)
     public List<ListRead> findAllByBoard(UserEntity user, Long boardId)
@@ -93,12 +94,22 @@ public class ListService {
             Integer listCount = listRepository.countByBoard(board);
             dto.setPosition(listCount);
         }
-        
+
         ListEntity taskList = listMapper.toEntity(dto, board);
-        taskList.setCreatedAt(LocalDateTime.now());
+//        taskList.setCreatedAt(LocalDateTime.now());
         taskList = listRepository.save(taskList);
-        
-        return listMapper.toDto(taskList);
+
+        ListRead result = listMapper.toDto(taskList);
+
+        WebSocketMessage<ListRead> message = WebSocketMessage.<ListRead>builder()
+                .type(WebSocketMessage.WebSocketMessageType.LIST_CREATED)
+                .payload(result)
+                .entityId(taskList.getId().toString())
+                .build();
+
+        webSocketService.sendBoardMessage(taskList.getBoard().getId(), message);
+
+        return result;
     }
     
     @Transactional
@@ -118,8 +129,19 @@ public class ListService {
         
         listMapper.updateEntityFromDto(dto, taskList);
         taskList = listRepository.save(taskList);
-        
-        return listMapper.toDto(taskList);
+
+        ListRead result = listMapper.toDto(taskList);
+
+        WebSocketMessage<ListRead> message = WebSocketMessage.<ListRead>builder()
+                .type(WebSocketMessage.WebSocketMessageType.LIST_UPDATED)
+                .payload(result)
+                .entityId(id.toString())
+                .build();
+
+        webSocketService.sendBoardMessage(result.getBoard().getId(), message);
+        webSocketService.sendListMessage(id, message);
+
+        return result;
     }
     
     @Transactional
@@ -138,7 +160,18 @@ public class ListService {
         
         listRepository.deleteCardsByListId(id);
         listRepository.deleteListById(id);
-        
-        return listMapper.toDto(list);
+
+        ListRead listRead = listMapper.toDto(list);
+
+        WebSocketMessage<ListRead> message = WebSocketMessage.<ListRead>builder()
+                .type(WebSocketMessage.WebSocketMessageType.LIST_DELETED)
+                .payload(listRead)
+                .entityId(listRead.getId().toString())
+                .build();
+
+        webSocketService.sendBoardMessage(listRead.getBoard().getId(), message);
+        webSocketService.sendListMessage(id, message);
+
+        return listRead;
     }
 }
