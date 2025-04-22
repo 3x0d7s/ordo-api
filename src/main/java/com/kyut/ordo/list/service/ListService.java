@@ -1,10 +1,7 @@
 package com.kyut.ordo.list.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import com.kyut.ordo.card.dto.CardWithItsListRead;
-import com.kyut.ordo.task.dto.TaskRead;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

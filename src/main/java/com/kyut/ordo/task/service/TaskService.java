@@ -2,6 +2,8 @@ package com.kyut.ordo.task.service;
 
 import java.util.List;
 
+import com.kyut.ordo.common.dto.WebSocketMessage;
+import com.kyut.ordo.common.service.WebSocketService;
 import com.kyut.ordo.task.dto.TaskWithItsCardRead;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,7 @@ public class TaskService {
     private final CardRepository cardRepository;
     private final BoardPermissionService boardPermissionService;
     private final TaskMapper taskMapper;
+    private final WebSocketService webSocketService;
     
     @Transactional
     public List<TaskRead> findAllByCard(UserEntity user, Long cardId)
@@ -96,6 +99,15 @@ public class TaskService {
         
         TaskEntity task = taskMapper.toEntity(dto, card);
         task = taskRepository.save(task);
+
+        TaskRead taskRead = taskMapper.toDto(task);
+        WebSocketMessage<TaskRead> message = WebSocketMessage.<TaskRead>builder()
+                .type(WebSocketMessage.WebSocketMessageType.TASK_CREATED)
+                .payload(taskRead)
+                .entityId(task.getId().toString())
+                .build();
+
+        webSocketService.sendCardMessage(task.getCard().getId(), message);
         
         return taskMapper.toDtoWithItsCard(task);
     }
@@ -125,8 +137,17 @@ public class TaskService {
         
         taskMapper.updateEntityFromDto(dto, task);
         task = taskRepository.save(task);
-        
-        return taskMapper.toDto(task);
+
+        TaskRead taskRead = taskMapper.toDto(task);
+        WebSocketMessage<TaskRead> message = WebSocketMessage.<TaskRead>builder()
+                .type(WebSocketMessage.WebSocketMessageType.TASK_UPDATED)
+                .payload(taskRead)
+                .entityId(id.toString())
+                .build();
+
+        webSocketService.sendCardMessage(task.getCard().getId(), message);
+
+        return taskRead;
     }
 
     @Transactional
@@ -141,6 +162,15 @@ public class TaskService {
 
         TaskRead taskRead = taskMapper.toDto(task);
         taskRepository.delete(task);
+
+        WebSocketMessage<TaskRead> message = WebSocketMessage.<TaskRead>builder()
+                .type(WebSocketMessage.WebSocketMessageType.TASK_DELETED)
+                .payload(taskRead)
+                .entityId(id.toString())
+                .build();
+
+//        webSocketService.sendBoardMessage(task.getCard().getList().getBoard().getId(), message);
+        webSocketService.sendCardMessage(task.getCard().getId(), message);
         
         return taskRead;
     }

@@ -3,6 +3,9 @@ package com.kyut.ordo.comment.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.kyut.ordo.common.dto.WebSocketMessage;
+import com.kyut.ordo.common.service.WebSocketService;
+import com.kyut.ordo.list.dto.ListRead;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,7 @@ public class CommentService {
     private final CardRepository cardRepository;
     private final BoardPermissionService boardPermissionService;
     private final CommentMapper commentMapper;
+    private final WebSocketService webSocketService;
     
     @Transactional(readOnly = true)
     public List<CommentRead> findAllByCard(UserEntity user, Long cardId)
@@ -94,8 +98,20 @@ public class CommentService {
         CommentEntity comment = commentMapper.toEntity(dto, user, card);
         comment.setCreatedAt(LocalDateTime.now());
         comment = commentRepository.save(comment);
+
+        CommentRead result = commentMapper.toDto(comment);
+
+        WebSocketMessage<CommentRead> message = WebSocketMessage.<CommentRead>builder()
+                .type(WebSocketMessage.WebSocketMessageType.COMMENT_CREATED)
+                .payload(result)
+                .entityId(result.getId().toString())
+                .build();
+
+        webSocketService.sendBoardMessage(card.getList().getBoard().getId(), message);
+        webSocketService.sendListMessage(card.getList().getId(), message);
+        webSocketService.sendCardMessage(card.getId(), message);
         
-        return commentMapper.toDto(comment);
+        return result;
     }
     
     @Transactional
@@ -118,8 +134,21 @@ public class CommentService {
         // Only update the message
         comment.setMessage(dto.getMessage());
         comment = commentRepository.save(comment);
-        
-        return commentMapper.toDto(comment);
+
+        CardEntity card = comment.getCard();
+        CommentRead result = commentMapper.toDto(comment);
+
+        WebSocketMessage<CommentRead> message = WebSocketMessage.<CommentRead>builder()
+                .type(WebSocketMessage.WebSocketMessageType.COMMENT_UPDATED)
+                .payload(result)
+                .entityId(result.getId().toString())
+                .build();
+
+        webSocketService.sendBoardMessage(card.getList().getBoard().getId(), message);
+        webSocketService.sendListMessage(card.getList().getId(), message);
+        webSocketService.sendCardMessage(card.getId(), message);
+
+        return result;
     }
     
     @Transactional
@@ -135,6 +164,19 @@ public class CommentService {
         }
         
         commentRepository.delete(comment);
+
+        CommentRead result = commentMapper.toDto(comment);
+        CardEntity card = comment.getCard();
+
+        WebSocketMessage<CommentRead> message = WebSocketMessage.<CommentRead>builder()
+                .type(WebSocketMessage.WebSocketMessageType.COMMENT_DELETED)
+                .payload(result)
+                .entityId(result.getId().toString())
+                .build();
+
+        webSocketService.sendBoardMessage(card.getList().getBoard().getId(), message);
+        webSocketService.sendListMessage(card.getList().getId(), message);
+        webSocketService.sendCardMessage(card.getId(), message);
         
         return commentMapper.toDto(comment);
     }
