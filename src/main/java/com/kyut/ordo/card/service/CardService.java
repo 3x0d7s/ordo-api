@@ -191,6 +191,40 @@ public class CardService {
     }
 
     @Transactional
+    public void updateCardPositions(UserEntity user, Long listId, List<Long> cardIds) 
+            throws ListNotFoundException, InsufficientBoardPermissionsException {
+        ListEntity list = listRepository.findById(listId)
+            .orElseThrow(() -> new ListNotFoundException("List not found with id: " + listId));
+        
+        Long boardId = list.getBoard().getId();
+        
+        if (!boardPermissionService.hasPermission(boardId, user.getId(), "EDIT")) {
+            throw new InsufficientBoardPermissionsException("User does not have permission to update card positions");
+        }
+        
+        // Оновлюємо позиції карток
+        for (int i = 0; i < cardIds.size(); i++) {
+            Long cardId = cardIds.get(i);
+            CardEntity card = cardRepository.findById(cardId).orElse(null);
+            
+            if (card != null && card.getList().getId().equals(listId)) {
+                card.setPosition(i);
+                cardRepository.save(card);
+            }
+        }
+        
+        // Надсилаємо повідомлення про оновлення позицій
+        WebSocketMessage<List<Long>> message = WebSocketMessage.<List<Long>>builder()
+                .type(WebSocketMessageType.CARD_POSITIONS_UPDATED)
+                .payload(cardIds)
+                .entityId(listId.toString())
+                .build();
+                
+        webSocketService.sendBoardMessage(boardId, message);
+        webSocketService.sendListMessage(listId, message);
+    }
+    
+    @Transactional
     public CardWithItsListRead deleteCard(UserEntity user, Long id)
             throws CardNotFoundException, InsufficientCardPermissionsException {
         CardEntity task = cardRepository.findById(id)
