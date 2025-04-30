@@ -1,6 +1,7 @@
 package com.kyut.ordo.list.controller;
 
 import com.kyut.ordo.card.dto.CardRead;
+import com.kyut.ordo.list.dto.ListPositionUpdate;
 import com.kyut.ordo.list.dto.ListRead;
 import com.kyut.ordo.card.service.CardService;
 import org.springframework.data.domain.Page;
@@ -31,26 +32,6 @@ import lombok.RequiredArgsConstructor;
 public class ListController {
     private final ListService listService;
     private final CardService cardService;
-
-
-//    @GetMapping("/board/{boardId}")
-//    public ResponseEntity<List<TaskListRead>> findAllByBoard(
-//            @AuthenticationPrincipal UserEntity user,
-//            @PathVariable Long boardId)
-//            throws BoardNotFoundException, InsufficientBoardPermissionsException {
-//        List<TaskListRead> taskLists = taskListService.findAllByBoard(user, boardId);
-//        return ResponseEntity.ok(taskLists);
-//    }
-//
-//    @GetMapping("/board/{boardId}/page")
-//    public ResponseEntity<Page<TaskListRead>> findAllByBoardPaged(
-//            @AuthenticationPrincipal UserEntity user,
-//            @PathVariable Long boardId,
-//            Pageable pageable)
-//            throws BoardNotFoundException, InsufficientBoardPermissionsException {
-//        Page<TaskListRead> taskLists = taskListService.findAllByBoard(user, boardId, pageable);
-//        return ResponseEntity.ok(taskLists);
-//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ListRead> findById(
@@ -97,5 +78,14 @@ public class ListController {
             throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListRead taskList = listService.deleteList(user, id);
         return ResponseEntity.ok(taskList);
+    }
+
+    @PutMapping("/positions")
+    public ResponseEntity<Void> updateListPositions(
+            @AuthenticationPrincipal UserEntity user,
+            @RequestBody ListPositionUpdate positionUpdate)
+            throws ListNotFoundException, InsufficientBoardPermissionsException {
+        listService.updateListPositions(user, positionUpdate.getBoardId(), positionUpdate.getListIds());
+        return ResponseEntity.ok().build();
     }
 }
