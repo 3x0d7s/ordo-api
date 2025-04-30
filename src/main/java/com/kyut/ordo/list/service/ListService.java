@@ -142,6 +142,37 @@ public class ListService {
     }
     
     @Transactional
+    public void updateListPositions(UserEntity user, Long boardId, List<Long> listIds) 
+            throws BoardNotFoundException, InsufficientBoardPermissionsException {
+        BoardEntity board = boardRepository.findById(boardId)
+            .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
+        
+        if (!boardPermissionService.hasPermission(boardId, user.getId(), "EDIT")) {
+            throw new InsufficientBoardPermissionsException("User does not have permission to update list positions");
+        }
+        
+        // Оновлюємо позиції списків
+        for (int i = 0; i < listIds.size(); i++) {
+            Long listId = listIds.get(i);
+            ListEntity list = listRepository.findById(listId).orElse(null);
+            
+            if (list != null && list.getBoard().getId().equals(boardId)) {
+                list.setPosition(i);
+                listRepository.save(list);
+            }
+        }
+        
+        // Надсилаємо повідомлення про оновлення позицій
+        WebSocketMessage<List<Long>> message = WebSocketMessage.<List<Long>>builder()
+                .type(WebSocketMessage.WebSocketMessageType.LIST_POSITIONS_UPDATED)
+                .payload(listIds)
+                .entityId(boardId.toString())
+                .build();
+                
+        webSocketService.sendBoardMessage(boardId, message);
+    }
+    
+    @Transactional
     public ListRead deleteList(UserEntity user, Long id)
             throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListEntity list = listRepository.findById(id)

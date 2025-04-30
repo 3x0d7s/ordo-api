@@ -2,6 +2,7 @@ package com.kyut.ordo.card.controller;
 
 import com.kyut.ordo.board.exception.InsufficientBoardPermissionsException;
 import com.kyut.ordo.card.dto.CardCreate;
+import com.kyut.ordo.card.dto.CardPositionUpdate;
 import com.kyut.ordo.card.dto.CardWithItsListRead;
 import com.kyut.ordo.comment.dto.CommentRead;
 import com.kyut.ordo.comment.service.CommentService;
@@ -99,5 +100,14 @@ public class CardController {
             throws CardNotFoundException, InsufficientCardPermissionsException {
         CardWithItsListRead task = cardService.deleteCard(user, id);
         return ResponseEntity.ok(task);
+    }
+    
+    @PutMapping("/positions")
+    public ResponseEntity<Void> updateCardPositions(
+            @AuthenticationPrincipal UserEntity user,
+            @RequestBody CardPositionUpdate positionUpdate)
+            throws ListNotFoundException, InsufficientBoardPermissionsException {
+        cardService.updateCardPositions(user, positionUpdate.getListId(), positionUpdate.getCardIds());
+        return ResponseEntity.ok().build();
     }
 }
