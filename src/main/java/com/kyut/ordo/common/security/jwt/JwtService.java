@@ -18,14 +18,14 @@ public class JwtService {
     private final JwtProperties jwtProperties;
 
     public String generateToken(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtProperties.getExpirationMs());
 
         return Jwts.builder()
-                .subject(userDetails.getUsername())
-//                .subject(authentication.getName())
+//                .subject(userDetails.getUsername())
+                .subject(authentication.getName())
                 .issuedAt(new Date())
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
