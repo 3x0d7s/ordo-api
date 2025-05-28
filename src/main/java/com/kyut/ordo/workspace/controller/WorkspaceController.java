@@ -22,9 +22,9 @@ public class WorkspaceController {
     private final BoardService boardService;
 
     @GetMapping
-    public ResponseEntity<Page<WorkspaceRead>> findAllByOwner(@AuthenticationPrincipal UserEntity user,
-                                                              Pageable pageable) {
-        return ResponseEntity.ok(workspaceService.findAllByOwner(user, pageable));
+    public ResponseEntity<Page<WorkspaceRead>> findAllByMember(@AuthenticationPrincipal UserEntity user,
+                                                               Pageable pageable) {
+        return ResponseEntity.ok(workspaceService.findAllByMember(user, pageable));
     }
 
     @GetMapping("/{id}")

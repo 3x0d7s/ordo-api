@@ -3,6 +3,7 @@ package com.kyut.ordo.workspace.controller;
 import com.kyut.ordo.user.entity.UserEntity;
 import com.kyut.ordo.workspace.dto.WorkspaceInviteCreate;
 import com.kyut.ordo.workspace.dto.WorkspaceInviteRead;
+import com.kyut.ordo.workspace.dto.WorkspaceRead;
 import com.kyut.ordo.workspace.exception.WorkspaceNotFoundException;
 import com.kyut.ordo.workspace.exception.WorkspaceRoleInsuficientRightsExceptions;
 import com.kyut.ordo.workspace.service.WorkspaceInviteService;
@@ -26,11 +27,11 @@ public class WorkspaceInviteController {
     }
 
     @PostMapping("/{token}/accept")
-    public ResponseEntity<Void> acceptInvite(
+    public ResponseEntity<WorkspaceRead> acceptInvite(
             @AuthenticationPrincipal UserEntity user,
-            @PathVariable String token) 
+            @PathVariable String token)
             throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
-        inviteService.acceptInvite(user, token);
-        return ResponseEntity.ok().build();
+        WorkspaceRead workspace = inviteService.acceptInvite(user, token);
+        return ResponseEntity.ok(workspace);
     }
 } 

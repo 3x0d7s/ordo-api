@@ -43,6 +43,12 @@ public class WorkspaceService {
                 .map(workspaceMapper::toDto);
     }
 
+    public Page<WorkspaceRead> findAllByMember(UserEntity user, Pageable pageable) {
+        return workspaceRepository
+                .findAllByMembersUser(user, pageable)
+                .map(workspaceMapper::toDto);
+    }
+
     public WorkspaceRead findById(UserEntity user, long id) throws WorkspaceNotFoundException {
         WorkspaceEntity result = workspaceRepository
                 .findById(id)

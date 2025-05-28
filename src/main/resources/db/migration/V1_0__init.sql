@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS workspace_members
     joined_at    TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
     role_id      BIGINT                                  NOT NULL,
     CONSTRAINT workspace_members_pkey PRIMARY KEY (id),
+    CONSTRAINT workspace_members_workspace_id_user_id_key UNIQUE (workspace_id, user_id),
     CONSTRAINT uk6se2rw5firt04m4vpmqvbnr4u UNIQUE (workspace_id, user_id),
     CONSTRAINT workspace_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE NO ACTION,
     CONSTRAINT workspace_members_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces (id) ON DELETE NO ACTION,
