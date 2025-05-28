@@ -3,6 +3,7 @@ package com.kyut.ordo.board.service;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 import com.kyut.ordo.workspace.repository.WorkspaceRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +29,9 @@ import com.kyut.ordo.workspace.repository.WorkspaceMemberRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,26 +50,26 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public Page<BoardRead> findAllAccessibleBoards(UserEntity user, Pageable pageable) {
-        return boardRepository
-                .findAll(pageable)
-                .map(board -> {
-                    if (canUserAccessBoard(user, board)) {
-                        return boardMapper.toDto(board);
-                    }
-                return null;
-            });
+        Page<BoardEntity> allBoards = boardRepository.findAll(pageable);
+        
+        List<BoardRead> accessibleBoards = allBoards.getContent().stream()
+                .filter(board -> canUserAccessBoard(user, board))
+                .map(boardMapper::toDto)
+                .collect(Collectors.toList());
+        
+        return new PageImpl<>(accessibleBoards, pageable, allBoards.getTotalElements());
     }
 
     @Transactional(readOnly = true)
     public Page<BoardRead> findAllBoardsByWorkspace(UserEntity user, Long workspaceId, Pageable pageable) {
-        return boardRepository
-                .findAllByWorkspaceId(workspaceId, pageable)
-                .map(board -> {
-                    if (canUserAccessBoard(user, board)) {
-                        return boardMapper.toDto(board);
-                    }
-                    return null;
-                });
+        Page<BoardEntity> workspaceBoards = boardRepository.findAllByWorkspaceId(workspaceId, pageable);
+        
+        List<BoardRead> accessibleBoards = workspaceBoards.getContent().stream()
+                .filter(board -> canUserAccessBoard(user, board))
+                .map(boardMapper::toDto)
+                .collect(Collectors.toList());
+        
+        return new PageImpl<>(accessibleBoards, pageable, workspaceBoards.getTotalElements());
     }
 
     @Transactional(readOnly = true)
