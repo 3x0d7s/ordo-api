@@ -39,9 +39,9 @@ public class ListService {
         BoardEntity board = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
         
-        if (!boardPermissionService.hasPermission(boardId, user.getId(), "EDIT")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to view lists in this board");
-        }
+//        if (!boardPermissionService.hasPermission(boardId, user.getId(), "EDIT")) {
+//            throw new InsufficientBoardPermissionsException("User does not have permission to view lists in this board");
+//        }
         
         List<ListEntity> lists = listRepository.findAllByBoardOrderByPosition(board);
         return lists.stream()
@@ -55,9 +55,9 @@ public class ListService {
         BoardEntity board = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
         
-        if (!boardPermissionService.hasPermission(boardId, user.getId(), "EDIT")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to view lists in this board");
-        }
+//        if (!boardPermissionService.hasPermission(boardId, user.getId(), "EDIT")) {
+//            throw new InsufficientBoardPermissionsException("User does not have permission to view lists in this board");
+//        }
         
         return listRepository.findAllByBoard(board, pageable)
             .map(listMapper::toDto);

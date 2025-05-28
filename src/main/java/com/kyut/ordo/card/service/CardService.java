@@ -44,9 +44,9 @@ public class CardService {
         ListEntity taskList = listRepository.findById(listId)
             .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + listId));
         
-        if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to view tasks in this list");
-        }
+//        if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
+//            throw new InsufficientBoardPermissionsException("User does not have permission to view tasks in this list");
+//        }
         
         List<CardEntity> tasks = cardRepository.findAllByListOrderByPosition(taskList);
         return tasks.stream()
@@ -60,9 +60,9 @@ public class CardService {
         ListEntity taskList = listRepository.findById(listId)
             .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + listId));
         
-        if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to view tasks in this list");
-        }
+//        if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
+//            throw new InsufficientBoardPermissionsException("User does not have permission to view tasks in this list");
+//        }
         
         return cardRepository.findAllByList(taskList, pageable)
             .map(cardMapper::toDto);
