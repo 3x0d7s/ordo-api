@@ -189,11 +189,13 @@ public class BoardService {
         }
 
         // Для публічних дошок дозволяємо доступ всім
+        // (BoardMemberEntity з Guest роллю буде створено автоматично в getMyRole)
         if (board.getVisibility() == BoardVisibility.PUBLIC) {
             return true;
         }
 
         // Для дошок воркспейсу дозволяємо доступ членам воркспейсу
+        // (BoardMemberEntity з Member роллю буде створено автоматично в getMyRole)
         if (board.getVisibility() == BoardVisibility.WORKSPACE && board.getWorkspace() != null) {
             return workspaceMemberRepository.findByWorkspaceIdAndUserId(
                 board.getWorkspace().getId(), user.getId()).isPresent();
@@ -282,7 +284,25 @@ public class BoardService {
             return boardRoleMapper.toDto(boardMember.getRole());
         }
         
-        // Якщо BoardMemberEntity не знайдено, але користувач має доступ через воркспейс
+        // Для публічних дошок створюємо Guest роль
+        if (board.getVisibility() == BoardVisibility.PUBLIC) {
+            BoardRoleEntity guestRole = boardRoleRepository
+                .findByBoardAndName(board, "Guest")
+                .orElseGet(() -> boardRoleFactory.createGuestRole(board));
+            
+            BoardMemberEntity newBoardMember = BoardMemberEntity.builder()
+                .board(board)
+                .user(user)
+                .role(guestRole)
+                .joinedAt(LocalDateTime.now())
+                .build();
+                
+            boardMemberRepository.save(newBoardMember);
+            
+            return boardRoleMapper.toDto(guestRole);
+        }
+        
+        // Для дошок воркспейсу створюємо Member роль (існуючий код)
         if (board.getVisibility() == BoardVisibility.WORKSPACE && board.getWorkspace() != null) {
             WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
                 .findByWorkspaceIdAndUserId(board.getWorkspace().getId(), user.getId())
@@ -307,7 +327,7 @@ public class BoardService {
             }
         }
         
-        throw new BoardNotFoundException("User is not a member of this board and has no workspace access");
+        throw new BoardNotFoundException("User is not a member of this board and has no access");
     }
     
     @Transactional
