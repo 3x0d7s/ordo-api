@@ -13,5 +13,6 @@ import com.kyut.ordo.board.entity.BoardRoleEntity;
 @Repository
 public interface BoardRoleRepository extends JpaRepository<BoardRoleEntity, Long> {
     Optional<BoardRoleEntity> findByName(String name);
+    Optional<BoardRoleEntity> findByBoardAndName(BoardEntity board, String name);
     Page<BoardRoleEntity> findAllByBoard(BoardEntity board, Pageable pageable);
 }

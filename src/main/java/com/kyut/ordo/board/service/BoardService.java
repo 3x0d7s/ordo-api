@@ -183,14 +183,17 @@ public class BoardService {
     }
 
     private boolean canUserAccessBoard(UserEntity user, BoardEntity board) {
-        if (board.getVisibility() == BoardVisibility.PUBLIC) {
-            return true;
-        }
-
+        // Перевіряємо чи користувач є прямим членом дошки
         if (boardMemberRepository.findByBoardIdAndUserId(board.getId(), user.getId()).isPresent()) {
             return true;
         }
 
+        // Для публічних дошок дозволяємо доступ всім
+        if (board.getVisibility() == BoardVisibility.PUBLIC) {
+            return true;
+        }
+
+        // Для дошок воркспейсу дозволяємо доступ членам воркспейсу
         if (board.getVisibility() == BoardVisibility.WORKSPACE && board.getWorkspace() != null) {
             return workspaceMemberRepository.findByWorkspaceIdAndUserId(
                 board.getWorkspace().getId(), user.getId()).isPresent();
@@ -270,10 +273,41 @@ public class BoardService {
             throw new InsufficientBoardPermissionsException("User does not have access to this board");
         }
         
+        // Спочатку шукаємо BoardMemberEntity
         BoardMemberEntity boardMember = boardMemberRepository.findByBoardIdAndUserId(boardId, user.getId())
-            .orElseThrow(() -> new BoardNotFoundException("User is not a member of this board"));
+            .orElse(null);
             
-        return boardRoleMapper.toDto(boardMember.getRole());
+        if (boardMember != null) {
+            // Якщо користувач є членом дошки, повертаємо його роль
+            return boardRoleMapper.toDto(boardMember.getRole());
+        }
+        
+        // Якщо BoardMemberEntity не знайдено, але користувач має доступ через воркспейс
+        if (board.getVisibility() == BoardVisibility.WORKSPACE && board.getWorkspace() != null) {
+            WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
+                .findByWorkspaceIdAndUserId(board.getWorkspace().getId(), user.getId())
+                .orElse(null);
+                
+            if (workspaceMember != null) {
+                // Автоматично створюємо BoardMemberEntity з роллю Member для члена воркспейсу
+                BoardRoleEntity memberRole = boardRoleRepository
+                    .findByBoardAndName(board, "Member")
+                    .orElseGet(() -> boardRoleFactory.createMemberRole(board));
+                
+                BoardMemberEntity newBoardMember = BoardMemberEntity.builder()
+                    .board(board)
+                    .user(user)
+                    .role(memberRole)
+                    .joinedAt(LocalDateTime.now())
+                    .build();
+                    
+                boardMemberRepository.save(newBoardMember);
+                
+                return boardRoleMapper.toDto(memberRole);
+            }
+        }
+        
+        throw new BoardNotFoundException("User is not a member of this board and has no workspace access");
     }
     
     @Transactional
