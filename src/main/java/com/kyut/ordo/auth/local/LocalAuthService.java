@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,18 +29,22 @@ public class LocalAuthService {
     private final UserMapper userMapper;
     private final JwtService jwtService;
 
+    @Transactional
     public UserReadDTO register(UserCreateDTO request) {
-        if (userRepository
-                .findByEmail(request.getEmail())
-                .isPresent()) {
-            throw new IllegalArgumentException("Email already exists");
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("User with this email already exists");
+        }
+
+        if (request.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be empty");
         }
 
         UserEntity user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setProvider(AuthProvider.LOCAL);
-        userRepository.save(user);
-        return userMapper.toDto(user);
+        
+        UserEntity savedUser = userRepository.save(user);
+        return userMapper.toDto(savedUser);
     }
 
     public LoginResponse authenticate(LocalLoginRequest request) {

@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS boards
     created_at       TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
     workspace_id     BIGINT,
     board_visibility VARCHAR(255)                            NOT NULL,
+    color            VARCHAR(255),
     CONSTRAINT boards_pkey PRIMARY KEY (id),
     CONSTRAINT boards_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces (id) ON DELETE NO ACTION
 );
@@ -170,19 +171,19 @@ CREATE TABLE IF NOT EXISTS tasks
     CONSTRAINT fkmhite3hmlwqohrwelt76x22op FOREIGN KEY (card_id) REFERENCES cards (id) ON DELETE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS flyway_schema_history
-(
-    installed_rank INTEGER                                   NOT NULL,
-    version        VARCHAR(50),
-    description    VARCHAR(200)                              NOT NULL,
-    type           VARCHAR(20)                               NOT NULL,
-    script         VARCHAR(1000)                             NOT NULL,
-    checksum       INTEGER,
-    installed_by   VARCHAR(100)                              NOT NULL,
-    installed_on   TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL,
-    execution_time INTEGER                                   NOT NULL,
-    success        BOOLEAN                                   NOT NULL,
-    CONSTRAINT flyway_schema_history_pk PRIMARY KEY (installed_rank)
-);
-
-CREATE INDEX IF NOT EXISTS flyway_schema_history_s_idx ON flyway_schema_history (success);
+-- CREATE TABLE IF NOT EXISTS flyway_schema_history
+-- (
+--     installed_rank INTEGER                                   NOT NULL,
+--     version        VARCHAR(50),
+--     description    VARCHAR(200)                              NOT NULL,
+--     type           VARCHAR(20)                               NOT NULL,
+--     script         VARCHAR(1000)                             NOT NULL,
+--     checksum       INTEGER,
+--     installed_by   VARCHAR(100)                              NOT NULL,
+--     installed_on   TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL,
+--     execution_time INTEGER                                   NOT NULL,
+--     success        BOOLEAN                                   NOT NULL,
+--     CONSTRAINT flyway_schema_history_pk PRIMARY KEY (installed_rank)
+-- );
+--
+-- CREATE INDEX IF NOT EXISTS flyway_schema_history_s_idx ON flyway_schema_history (success);
