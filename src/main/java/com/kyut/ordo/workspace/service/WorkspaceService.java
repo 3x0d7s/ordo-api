@@ -139,6 +139,7 @@ public class WorkspaceService {
         return workspaceMapper.toDto(workspace);
     }
 
+    @Transactional
     public WorkspaceMemberRead updateMember(UserEntity user,
                                       Long workspaceId,
                                       Long userId,
@@ -148,15 +149,15 @@ public class WorkspaceService {
                 .findById(workspaceId)
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
 
-        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
+        WorkspaceMemberEntity currentUserMember = workspaceMemberRepository
                 .findByWorkspaceAndUser(workspace, user)
                 .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
 
-        if (!workspaceMember.getRole().isAbleToManageSettings()) {
+        if (!currentUserMember.getRole().isAbleToManageSettings()) {
             throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to update roles in this workspace");
         }
 
-        WorkspaceMemberEntity member = workspaceMemberRepository
+        WorkspaceMemberEntity memberToUpdate = workspaceMemberRepository
                 .findByWorkspaceIdAndUserId(workspaceId, userId)
                 .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
 
@@ -164,9 +165,11 @@ public class WorkspaceService {
                 .findById(dto.getWorkspaceRoleId())
                 .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceRole not found by this id"));
 
-        member.setRole(role);
+        memberToUpdate.setRole(role);
+        
+        WorkspaceMemberEntity savedMember = workspaceMemberRepository.save(memberToUpdate);
 
-        return workspaceMemberMapper.toDto(member);
+        return workspaceMemberMapper.toDto(savedMember);
     }
 
     public WorkspaceMemberRead deleteMember(UserEntity user,
@@ -207,6 +210,7 @@ public class WorkspaceService {
         return workspaceRoleMapper.toDto(workspaceMember.getRole());
     }
 
+    @Transactional
     public WorkspaceMemberRead createMember(UserEntity user,
                                       Long workspaceId,
                                       WorkspaceMemberCreate dto)
@@ -234,7 +238,9 @@ public class WorkspaceService {
 
         member.setRole(role);
 
-        return workspaceMemberMapper.toDto(member);
+        WorkspaceMemberEntity savedMember = workspaceMemberRepository.save(member);
+
+        return workspaceMemberMapper.toDto(savedMember);
     }
 
     public WorkspaceRoleRead createRole(UserEntity user,

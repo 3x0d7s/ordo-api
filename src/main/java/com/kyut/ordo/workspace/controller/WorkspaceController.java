@@ -109,13 +109,13 @@ public class WorkspaceController {
         return ResponseEntity.ok(workspaceService.createMember(user, id, dto));
     }
 
-    @PutMapping("/{id}/members/{memberId}")
+    @PutMapping("/{id}/members/{userId}")
     public ResponseEntity<WorkspaceMemberRead> updateMember(@AuthenticationPrincipal UserEntity user,
                                                             @PathVariable long id,
-                                                            @PathVariable long memberId,
-                                                            WorkspaceMemberUpdate dto)
+                                                            @PathVariable long userId,
+                                                            @RequestBody WorkspaceMemberUpdate dto)
             throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
-        return ResponseEntity.ok(workspaceService.updateMember(user, id, memberId, dto));
+        return ResponseEntity.ok(workspaceService.updateMember(user, id, userId, dto));
     }
 
     @PostMapping
