@@ -16,4 +16,9 @@ public interface WorkspaceRepository extends CrudRepository<WorkspaceEntity, Lon
            "JOIN w.members m " +
            "WHERE m.user = :user")
     Page<WorkspaceEntity> findAllByMembersUser(UserEntity user, Pageable pageable);
+
+    @Query("SELECT DISTINCT w FROM WorkspaceEntity w " +
+           "JOIN w.members m " +
+           "WHERE m.user = :user AND w.owner != :user")
+    Page<WorkspaceEntity> findAllJoinedByMember(UserEntity user, Pageable pageable);
 }

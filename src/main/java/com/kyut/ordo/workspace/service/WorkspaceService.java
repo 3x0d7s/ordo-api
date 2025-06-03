@@ -11,7 +11,6 @@ import com.kyut.ordo.workspace.exception.WorkspaceRoleInsuficientRightsException
 import com.kyut.ordo.workspace.mapper.WorkspaceMapper;
 import com.kyut.ordo.workspace.mapper.WorkspaceMemberMapper;
 import com.kyut.ordo.workspace.mapper.WorkspaceRoleMapper;
-import com.kyut.ordo.workspace.mapper.WorkspaceRoleMapperImpl;
 import com.kyut.ordo.workspace.repository.WorkspaceMemberRepository;
 import com.kyut.ordo.workspace.repository.WorkspaceRepository;
 import com.kyut.ordo.workspace.repository.WorkspaceRoleRepository;
@@ -35,7 +34,6 @@ public class WorkspaceService {
     private final WorkspaceRoleMapper workspaceRoleMapper;
     private final WorkspaceMemberMapper workspaceMemberMapper;
     private final WorkspaceMapper workspaceMapper;
-    private final WorkspaceRoleMapperImpl workspaceRoleMapperImpl;
 
     public Page<WorkspaceRead> findAllByOwner(UserEntity user, Pageable pageable) {
         return workspaceRepository
@@ -46,6 +44,12 @@ public class WorkspaceService {
     public Page<WorkspaceRead> findAllByMember(UserEntity user, Pageable pageable) {
         return workspaceRepository
                 .findAllByMembersUser(user, pageable)
+                .map(workspaceMapper::toDto);
+    }
+
+    public Page<WorkspaceRead> findAllJoinedByMember(UserEntity user, Pageable pageable) {
+        return workspaceRepository
+                .findAllJoinedByMember(user, pageable)
                 .map(workspaceMapper::toDto);
     }
 
@@ -177,7 +181,7 @@ public class WorkspaceService {
                 .findByWorkspaceAndUser(workspace, user)
                 .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
 
-        if (!workspaceMember.getRole().isAbleToManageSettings()) {
+        if (!user.getId().equals(userId) && !workspaceMember.getRole().isAbleToManageSettings()) {
             throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to delete members in this workspace");
         }
 

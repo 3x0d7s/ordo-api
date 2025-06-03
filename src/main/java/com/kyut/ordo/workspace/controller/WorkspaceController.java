@@ -27,6 +27,18 @@ public class WorkspaceController {
         return ResponseEntity.ok(workspaceService.findAllByMember(user, pageable));
     }
 
+    @GetMapping("/owned")
+    public ResponseEntity<Page<WorkspaceRead>> findOwnedWorkspaces(@AuthenticationPrincipal UserEntity user,
+                                                                   Pageable pageable) {
+        return ResponseEntity.ok(workspaceService.findAllByOwner(user, pageable));
+    }
+
+    @GetMapping("/joined")
+    public ResponseEntity<Page<WorkspaceRead>> findJoinedWorkspaces(@AuthenticationPrincipal UserEntity user,
+                                                                    Pageable pageable) {
+        return ResponseEntity.ok(workspaceService.findAllJoinedByMember(user, pageable));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<WorkspaceRead> findById(@AuthenticationPrincipal UserEntity user,
                                                   @PathVariable long id)
@@ -117,6 +129,13 @@ public class WorkspaceController {
                                                          @PathVariable long id)
             throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
         return ResponseEntity.ok(workspaceService.deleteWorkspace(user, id));
+    }
+
+    @DeleteMapping("/{id}/leave")
+    public ResponseEntity<WorkspaceMemberRead> leaveWorkspace(@AuthenticationPrincipal UserEntity user,
+                                                              @PathVariable long id)
+            throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
+        return ResponseEntity.ok(workspaceService.deleteMember(user, id, user.getId()));
     }
 
 }
