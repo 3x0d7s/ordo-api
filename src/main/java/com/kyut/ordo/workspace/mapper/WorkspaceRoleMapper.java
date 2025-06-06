@@ -11,7 +11,7 @@ import org.mapstruct.MappingTarget;
 public interface WorkspaceRoleMapper {
     WorkspaceRoleRead toDto(WorkspaceRoleEntity entity);
 
-    void updateEntityFromDto(WorkspaceRoleUpdate dto, @MappingTarget WorkspaceRoleEntity role);
+    WorkspaceRoleEntity updateEntityFromDto(WorkspaceRoleUpdate dto, @MappingTarget WorkspaceRoleEntity role);
 
     WorkspaceRoleEntity toEntity(WorkspaceRoleCreate dto);
 }

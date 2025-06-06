@@ -285,11 +285,8 @@ public class WorkspaceService {
             throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to create roles in this workspace");
         }
 
-        if (!role.isAbleToManageSettings()) {
-            throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to update this role");
-        }
-
         workspaceRoleMapper.updateEntityFromDto(dto, role);
+        workspaceRoleRepository.save(role);
 
         return workspaceRoleMapper.toDto(role);
     }

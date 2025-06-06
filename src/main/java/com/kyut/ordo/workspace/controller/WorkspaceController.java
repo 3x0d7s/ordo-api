@@ -80,7 +80,7 @@ public class WorkspaceController {
     public ResponseEntity<WorkspaceRoleRead> updateRole(@AuthenticationPrincipal UserEntity user,
                                                         @PathVariable long id,
                                                         @PathVariable long roleId,
-                                                        WorkspaceRoleUpdate dto)
+                                                        @RequestBody WorkspaceRoleUpdate dto)
             throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
         return ResponseEntity.ok(workspaceService.updateRole(user, roleId, dto));
     }
