@@ -76,4 +76,11 @@ public class LocalAuthService {
     public UserReadDTO getInfo(UserEntity user) {
         return userMapper.toDto(user);
     }
+
+    public UserReadDTO getCurrentUser(String email) {
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(
+                () -> new AuthUsernameNotFoundException("User not found")
+        );
+        return userMapper.toDto(user);
+    }
 }
