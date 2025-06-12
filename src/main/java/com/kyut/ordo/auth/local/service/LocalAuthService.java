@@ -1,4 +1,4 @@
-package com.kyut.ordo.auth.local;
+package com.kyut.ordo.auth.local.service;
 
 import com.kyut.ordo.auth.common.exception.DifferentAuthenticationProviderException;
 import com.kyut.ordo.auth.common.exception.AuthUsernameNotFoundException;

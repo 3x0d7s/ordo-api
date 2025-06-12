@@ -56,9 +56,6 @@ app:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
   oauth2:
     redirect-uri: ${FRONTEND_URL:http://localhost:5173/auth/callback}
-#    authorized-redirect-uris:
-#      - http://localhost:5173/auth/callback
-#      - http://localhost:5173/oauth2/redirect
 
 springdoc:
   swagger-ui:

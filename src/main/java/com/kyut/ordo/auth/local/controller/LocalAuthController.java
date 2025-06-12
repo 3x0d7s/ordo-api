@@ -1,5 +1,6 @@
-package com.kyut.ordo.auth.local;
+package com.kyut.ordo.auth.local.controller;
 
+import com.kyut.ordo.auth.local.service.LocalAuthService;
 import com.kyut.ordo.auth.local.dto.LocalLoginRequest;
 import com.kyut.ordo.auth.common.dto.LoginResponse;
 import com.kyut.ordo.user.dto.UserCreateDTO;
