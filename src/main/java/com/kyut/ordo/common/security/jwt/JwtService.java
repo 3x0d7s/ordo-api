@@ -6,7 +6,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -18,13 +17,10 @@ public class JwtService {
     private final JwtProperties jwtProperties;
 
     public String generateToken(Authentication authentication) {
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtProperties.getExpirationMs());
 
         return Jwts.builder()
-//                .subject(userDetails.getUsername())
                 .subject(authentication.getName())
                 .issuedAt(new Date())
                 .expiration(expiryDate)
