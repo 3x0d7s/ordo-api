@@ -7,9 +7,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface BoardMemberMapper {
-    
-    @Mapping(target = "userId", source = "user.id")
-    @Mapping(target = "username", source = "user.username")
+
     @Mapping(target = "joinedAt", source = "joinedAt", dateFormat = "yyyy-MM-dd HH:mm:ss")
     BoardMemberRead toDto(BoardMemberEntity entity);
 }
