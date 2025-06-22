@@ -135,6 +135,7 @@ public class WorkspaceService {
         }
 
         workspaceMapper.updateEntityFromDto(dto, workspace);
+        workspace = workspaceRepository.save(workspace);
 
         return workspaceMapper.toDto(workspace);
     }
