@@ -7,10 +7,10 @@ import com.kyut.ordo.card.dto.CardRead;
 import com.kyut.ordo.card.dto.CardWithItsListRead;
 import com.kyut.ordo.card.entity.CardEntity;
 import com.kyut.ordo.card.mapper.CardMapper;
-import com.kyut.ordo.common.dto.WebSocketMessage;
-import com.kyut.ordo.common.dto.WebSocketMessage.WebSocketMessageType;
-import com.kyut.ordo.common.service.WebSocketService;
+import com.kyut.ordo.core.websocket.dto.WebSocketMessage;
+import com.kyut.ordo.core.websocket.service.WebSocketService;
 import com.kyut.ordo.user.repository.UserRepository;
+
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -118,7 +118,7 @@ public class CardService {
         
         // Відправляємо повідомлення через веб-сокети
         WebSocketMessage<CardWithItsListRead> message = WebSocketMessage.<CardWithItsListRead>builder()
-                .type(WebSocketMessageType.CARD_CREATED)
+                .type(WebSocketMessage.WebSocketMessageType.CARD_CREATED)
                 .payload(result)
                 .entityId(task.getId().toString())
                 .build();
@@ -175,7 +175,7 @@ public class CardService {
         CardWithItsListRead result = cardMapper.toDtoWithItsList(task);
         
         WebSocketMessage<CardWithItsListRead> message = WebSocketMessage.<CardWithItsListRead>builder()
-                .type(WebSocketMessageType.CARD_UPDATED)
+                .type(WebSocketMessage.WebSocketMessageType.CARD_UPDATED)
                 .payload(result)
                 .entityId(id.toString())
                 .build();
@@ -215,7 +215,7 @@ public class CardService {
         
         // Надсилаємо повідомлення про оновлення позицій
         WebSocketMessage<List<Long>> message = WebSocketMessage.<List<Long>>builder()
-                .type(WebSocketMessageType.CARD_POSITIONS_UPDATED)
+                .type(WebSocketMessage.WebSocketMessageType.CARD_POSITIONS_UPDATED)
                 .payload(cardIds)
                 .entityId(listId.toString())
                 .build();
@@ -243,7 +243,7 @@ public class CardService {
         cardRepository.deleteById(task.getId());
 
         WebSocketMessage<CardWithItsListRead> message = WebSocketMessage.<CardWithItsListRead>builder()
-                .type(WebSocketMessageType.CARD_DELETED)
+                .type(WebSocketMessage.WebSocketMessageType.CARD_DELETED)
                 .payload(result)
                 .entityId(id.toString())
                 .build();

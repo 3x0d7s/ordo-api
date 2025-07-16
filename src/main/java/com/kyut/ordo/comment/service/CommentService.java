@@ -3,9 +3,8 @@ package com.kyut.ordo.comment.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.kyut.ordo.common.dto.WebSocketMessage;
-import com.kyut.ordo.common.service.WebSocketService;
-import com.kyut.ordo.list.dto.ListRead;
+import com.kyut.ordo.core.websocket.dto.WebSocketMessage;
+import com.kyut.ordo.core.websocket.service.WebSocketService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

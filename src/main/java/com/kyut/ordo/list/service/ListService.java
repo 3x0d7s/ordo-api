@@ -2,13 +2,13 @@ package com.kyut.ordo.list.service;
 
 import java.util.List;
 
+import com.kyut.ordo.core.websocket.dto.WebSocketMessage;
+import com.kyut.ordo.core.websocket.service.WebSocketService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kyut.ordo.common.dto.WebSocketMessage;
-import com.kyut.ordo.common.service.WebSocketService;
 import com.kyut.ordo.list.dto.ListRead;
 import com.kyut.ordo.list.entity.ListEntity;
 import com.kyut.ordo.board.entity.BoardEntity;
@@ -162,7 +162,6 @@ public class ListService {
             }
         }
         
-        // Надсилаємо повідомлення про оновлення позицій
         WebSocketMessage<List<Long>> message = WebSocketMessage.<List<Long>>builder()
                 .type(WebSocketMessage.WebSocketMessageType.LIST_POSITIONS_UPDATED)
                 .payload(listIds)

@@ -3,7 +3,7 @@ package com.kyut.ordo.board.service;
 import com.kyut.ordo.board.entity.BoardEntity;
 import com.kyut.ordo.board.entity.BoardRoleEntity;
 import com.kyut.ordo.board.repository.BoardRoleRepository;
-import com.kyut.ordo.common.role.RoleFactory;
+import com.kyut.ordo.core.role.RoleFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,8 +1,9 @@
 package com.kyut.ordo.auth.oauth2.controller;
-import com.kyut.ordo.auth.common.dto.LoginResponse;
 
 import com.kyut.ordo.auth.oauth2.service.GoogleOAuth2Service;
 import com.kyut.ordo.auth.oauth2.dto.OAuth2CodeOnTokenRequest;
+import com.kyut.ordo.auth.provider.dto.LoginResponse;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

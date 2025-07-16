@@ -183,19 +183,14 @@ public class BoardService {
     }
 
     private boolean canUserAccessBoard(UserEntity user, BoardEntity board) {
-        // Перевіряємо чи користувач є прямим членом дошки
         if (boardMemberRepository.findByBoardIdAndUserId(board.getId(), user.getId()).isPresent()) {
             return true;
         }
 
-        // Для публічних дошок дозволяємо доступ всім
-        // (BoardMemberEntity з Guest роллю буде створено автоматично в getMyRole)
         if (board.getVisibility() == BoardVisibility.PUBLIC) {
             return true;
         }
 
-        // Для дошок воркспейсу дозволяємо доступ членам воркспейсу
-        // (BoardMemberEntity з Member роллю буде створено автоматично в getMyRole)
         if (board.getVisibility() == BoardVisibility.WORKSPACE && board.getWorkspace() != null) {
             return workspaceMemberRepository.findByWorkspaceIdAndUserId(
                 board.getWorkspace().getId(), user.getId()).isPresent();

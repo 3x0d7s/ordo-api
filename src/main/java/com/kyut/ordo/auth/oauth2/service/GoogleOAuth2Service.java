@@ -1,13 +1,15 @@
 package com.kyut.ordo.auth.oauth2.service;
 
-import com.kyut.ordo.auth.common.AuthProvider;
-import com.kyut.ordo.auth.common.dto.LoginResponse;
+
 import com.kyut.ordo.auth.oauth2.dto.OAuth2TokenResponse;
-import com.kyut.ordo.auth.common.exception.DifferentAuthenticationProviderException;
-import com.kyut.ordo.common.security.jwt.JwtService;
+import com.kyut.ordo.auth.provider.AuthProvider;
+import com.kyut.ordo.auth.provider.dto.LoginResponse;
+import com.kyut.ordo.auth.provider.exception.DifferentAuthenticationProviderException;
+import com.kyut.ordo.auth.security.jwt.JwtService;
 import com.kyut.ordo.user.entity.UserEntity;
 import com.kyut.ordo.user.repository.UserRepository;
 import com.kyut.ordo.user.dto.UserReadDTO;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;

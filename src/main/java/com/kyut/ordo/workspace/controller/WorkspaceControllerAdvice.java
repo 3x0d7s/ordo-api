@@ -1,8 +1,9 @@
 package com.kyut.ordo.workspace.controller;
 
-import com.kyut.ordo.common.dto.ErrorResponse;
+import com.kyut.ordo.core.dto.ErrorResponse;
 import com.kyut.ordo.workspace.exception.WorkspaceNotFoundException;
 import com.kyut.ordo.workspace.exception.WorkspaceRoleInsuficientRightsExceptions;
+
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

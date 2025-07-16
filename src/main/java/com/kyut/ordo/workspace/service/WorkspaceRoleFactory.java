@@ -1,9 +1,10 @@
 package com.kyut.ordo.workspace.service;
 
-import com.kyut.ordo.common.role.RoleFactory;
+import com.kyut.ordo.core.role.RoleFactory;
 import com.kyut.ordo.workspace.entity.WorkspaceEntity;
 import com.kyut.ordo.workspace.entity.WorkspaceRoleEntity;
 import com.kyut.ordo.workspace.repository.WorkspaceRoleRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
