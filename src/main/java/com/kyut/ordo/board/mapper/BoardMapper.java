@@ -13,9 +13,9 @@ import java.util.Collection;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface BoardMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(source = "dto.title", target = "title")
-    @Mapping(source = "dto.description", target = "description")
-    @Mapping(source = "dto.visibility", target = "visibility")
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "visibility", target = "visibility")
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "members", ignore = true)
     @Mapping(source = "workspaceId", target = "workspace.id")

@@ -161,8 +161,7 @@ public class BoardService {
         BoardEntity board = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
 
-        UserEntity newUser = new UserEntity(); // TODO: Get user from UserService
-        newUser.setId(newUserId);
+        UserEntity newUser = userRepository.findById(newUserId).get();
 
         BoardRoleEntity role = boardRoleRepository.findById(roleId)
             .orElseThrow(() -> new IllegalArgumentException("Role not found"));
