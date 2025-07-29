@@ -1,4 +1,4 @@
-package com.kyut.ordo.core.controller;
+package com.kyut.ordo.core.common.controller;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.kyut.ordo.core.dto.ErrorResponse;
+import com.kyut.ordo.core.common.dto.ErrorResponse;
 
 import jakarta.validation.ConstraintViolationException;
 import java.util.HashMap;

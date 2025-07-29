@@ -1,6 +1,6 @@
 package com.kyut.ordo.list.controller;
 
-import com.kyut.ordo.core.dto.ErrorResponse;
+import com.kyut.ordo.core.common.dto.ErrorResponse;
 import com.kyut.ordo.list.exception.ListNotFoundException;
 
 import io.swagger.v3.oas.annotations.Hidden;

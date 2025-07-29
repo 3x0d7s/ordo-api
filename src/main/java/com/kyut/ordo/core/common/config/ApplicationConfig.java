@@ -1,4 +1,4 @@
-package com.kyut.ordo.core.config;
+package com.kyut.ordo.core.common.config;
 
 import com.kyut.ordo.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

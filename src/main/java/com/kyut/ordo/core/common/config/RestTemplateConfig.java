@@ -1,4 +1,4 @@
-package com.kyut.ordo.core.config;
+package com.kyut.ordo.core.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

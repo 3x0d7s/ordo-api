@@ -1,4 +1,4 @@
-package com.kyut.ordo.core.dto;
+package com.kyut.ordo.core.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.kyut.ordo.task.controller;
 
-import com.kyut.ordo.core.dto.ErrorResponse;
+import com.kyut.ordo.core.common.dto.ErrorResponse;
 import com.kyut.ordo.task.exception.InsufficientTaskPermissionsException;
 import com.kyut.ordo.task.exception.TaskNotFoundException;
 

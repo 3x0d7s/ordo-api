@@ -2,7 +2,7 @@ package com.kyut.ordo.auth.oauth2.controller;
 
 import com.kyut.ordo.auth.oauth2.exception.GoogleOAuth2CodeForTokenExchangeException;
 import com.kyut.ordo.auth.oauth2.exception.OAuth2AuthenticationException;
-import com.kyut.ordo.core.dto.ErrorResponse;
+import com.kyut.ordo.core.common.dto.ErrorResponse;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;

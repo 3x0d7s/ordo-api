@@ -1,6 +1,6 @@
 package com.kyut.ordo.workspace.controller;
 
-import com.kyut.ordo.core.dto.ErrorResponse;
+import com.kyut.ordo.core.common.dto.ErrorResponse;
 import com.kyut.ordo.workspace.exception.WorkspaceNotFoundException;
 import com.kyut.ordo.workspace.exception.WorkspaceRoleInsuficientRightsExceptions;
 

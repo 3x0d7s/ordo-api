@@ -2,7 +2,7 @@ package com.kyut.ordo.auth.provider.controller;
 
 import com.kyut.ordo.auth.provider.exception.AuthUsernameNotFoundException;
 import com.kyut.ordo.auth.provider.exception.DifferentAuthenticationProviderException;
-import com.kyut.ordo.core.dto.ErrorResponse;
+import com.kyut.ordo.core.common.dto.ErrorResponse;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
