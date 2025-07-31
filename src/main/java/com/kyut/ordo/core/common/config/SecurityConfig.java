@@ -1,6 +1,7 @@
 package com.kyut.ordo.core.common.config;
 
-import com.kyut.ordo.common.security.jwt.JwtAuthenticationFilter;
+import com.kyut.ordo.auth.security.jwt.JwtAuthenticationFilter;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +37,6 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/",
                                 "/auth/**",
                                 "/swagger-ui/**",
                                 "/api-docs*/**",

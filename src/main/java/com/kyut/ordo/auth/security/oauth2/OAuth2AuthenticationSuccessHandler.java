@@ -1,6 +1,6 @@
 package com.kyut.ordo.auth.security.oauth2;
 
-import com.kyut.ordo.auth.provider.AuthProvider;
+import com.kyut.ordo.auth.provider.common.AuthProvider;
 import com.kyut.ordo.auth.security.jwt.JwtService;
 import com.kyut.ordo.user.entity.UserEntity;
 import com.kyut.ordo.user.repository.UserRepository;
@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 

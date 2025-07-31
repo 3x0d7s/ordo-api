@@ -1,6 +1,5 @@
-package com.kyut.ordo.common.security.jwt;
+package com.kyut.ordo.auth.security.jwt;
 
-import com.kyut.ordo.auth.security.jwt.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
