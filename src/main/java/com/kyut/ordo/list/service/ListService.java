@@ -93,7 +93,6 @@ public class ListService {
         }
 
         ListEntity taskList = listMapper.toEntity(dto, board);
-//        taskList.setCreatedAt(LocalDateTime.now());
         taskList = listRepository.save(taskList);
 
         ListRead result = listMapper.toDto(taskList);
@@ -151,7 +150,6 @@ public class ListService {
             throw new InsufficientBoardPermissionsException("User does not have permission to update list positions");
         }
         
-        // Оновлюємо позиції списків
         for (int i = 0; i < listIds.size(); i++) {
             Long listId = listIds.get(i);
             ListEntity list = listRepository.findById(listId).orElse(null);
