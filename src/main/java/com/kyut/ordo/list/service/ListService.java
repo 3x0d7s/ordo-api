@@ -2,8 +2,11 @@ package com.kyut.ordo.list.service;
 
 import java.util.List;
 
-import com.kyut.ordo.core.websocket.dto.WebSocketMessage;
-import com.kyut.ordo.core.websocket.service.WebSocketService;
+import com.kyut.ordo.list.event.ListCreatedEvent;
+import com.kyut.ordo.list.event.ListDeletedEvent;
+import com.kyut.ordo.list.event.ListPositionsUpdatedEvent;
+import com.kyut.ordo.list.event.ListUpdatedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,7 +34,7 @@ public class ListService {
     private final BoardRepository boardRepository;
     private final BoardPermissionService boardPermissionService;
     private final ListMapper listMapper;
-    private final WebSocketService webSocketService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public List<ListRead> findAllByBoard(UserEntity user, Long boardId)
@@ -97,13 +100,11 @@ public class ListService {
 
         ListRead result = listMapper.toDto(taskList);
 
-        WebSocketMessage<ListRead> message = WebSocketMessage.<ListRead>builder()
-                .type(WebSocketMessage.WebSocketMessageType.LIST_CREATED)
-                .payload(result)
-                .entityId(taskList.getId().toString())
-                .build();
-
-        webSocketService.sendBoardMessage(taskList.getBoard().getId(), message);
+        eventPublisher.publishEvent(new ListCreatedEvent(
+            taskList.getId(),
+            taskList.getBoard().getId(),
+            result
+        ));
 
         return result;
     }
@@ -128,14 +129,11 @@ public class ListService {
 
         ListRead result = listMapper.toDto(taskList);
 
-        WebSocketMessage<ListRead> message = WebSocketMessage.<ListRead>builder()
-                .type(WebSocketMessage.WebSocketMessageType.LIST_UPDATED)
-                .payload(result)
-                .entityId(id.toString())
-                .build();
-
-        webSocketService.sendBoardMessage(result.getBoard().getId(), message);
-        webSocketService.sendListMessage(id, message);
+        eventPublisher.publishEvent(new ListUpdatedEvent(
+            id,
+            result.getBoard().getId(),
+            result
+        ));
 
         return result;
     }
@@ -160,13 +158,7 @@ public class ListService {
             }
         }
         
-        WebSocketMessage<List<Long>> message = WebSocketMessage.<List<Long>>builder()
-                .type(WebSocketMessage.WebSocketMessageType.LIST_POSITIONS_UPDATED)
-                .payload(listIds)
-                .entityId(boardId.toString())
-                .build();
-                
-        webSocketService.sendBoardMessage(boardId, message);
+        eventPublisher.publishEvent(new ListPositionsUpdatedEvent(boardId, listIds));
     }
     
     @Transactional
@@ -188,14 +180,12 @@ public class ListService {
 
         ListRead listRead = listMapper.toDto(list);
 
-        WebSocketMessage<ListRead> message = WebSocketMessage.<ListRead>builder()
-                .type(WebSocketMessage.WebSocketMessageType.LIST_DELETED)
-                .payload(listRead)
-                .entityId(listRead.getId().toString())
-                .build();
-
-        webSocketService.sendBoardMessage(listRead.getBoard().getId(), message);
-        webSocketService.sendListMessage(id, message);
+        // Публікуємо подію видалення списку
+        eventPublisher.publishEvent(new ListDeletedEvent(
+            id,
+            boardId,
+            listRead
+        ));
 
         return listRead;
     }

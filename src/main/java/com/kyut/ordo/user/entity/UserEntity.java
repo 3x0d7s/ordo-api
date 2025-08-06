@@ -30,7 +30,7 @@ import java.util.Objects;
        uniqueConstraints = {
            @UniqueConstraint(columnNames = "email")
        })
-@NoArgsConstructor
+//@NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class UserEntity implements UserDetails {

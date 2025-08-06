@@ -1,4 +1,4 @@
-package com.kyut.ordo.core.role;
+package com.kyut.ordo.core.common.role;
 
 import java.util.HashMap;
 import java.util.Map;
