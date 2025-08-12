@@ -6,12 +6,15 @@ import com.kyut.ordo.card.dto.CardCreate;
 import com.kyut.ordo.card.dto.CardRead;
 import com.kyut.ordo.card.dto.CardWithItsListRead;
 import com.kyut.ordo.card.entity.CardEntity;
+import com.kyut.ordo.card.event.CardCreatedEvent;
+import com.kyut.ordo.card.event.CardDeletedEvent;
+import com.kyut.ordo.card.event.CardPositionsUpdatedEvent;
+import com.kyut.ordo.card.event.CardUpdatedEvent;
 import com.kyut.ordo.card.mapper.CardMapper;
-import com.kyut.ordo.core.websocket.dto.WebSocketMessage;
-import com.kyut.ordo.core.websocket.service.WebSocketService;
 import com.kyut.ordo.user.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,8 +39,9 @@ public class CardService {
     private final UserRepository userRepository;
     private final BoardPermissionService boardPermissionService;
     private final CardMapper cardMapper;
-    private final WebSocketService webSocketService;
-    
+    //    private final WebSocketService webSocketService;
+    private final ApplicationEventPublisher eventPublisher;
+
     @Transactional()
     public List<CardRead> findAllByList(UserEntity user, Long listId)
             throws ListNotFoundException, InsufficientBoardPermissionsException {
@@ -90,15 +94,15 @@ public class CardService {
     @Transactional
     public CardWithItsListRead createCard(UserEntity user, CardCreate dto)
             throws ListNotFoundException, InsufficientCardPermissionsException {
-        ListEntity taskList = listRepository.findById(dto.getListId())
+        ListEntity list = listRepository.findById(dto.getListId())
             .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + dto.getListId()));
         
-        if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "CREATE_TASKS")) {
+        if (!boardPermissionService.hasPermission(list.getBoard().getId(), user.getId(), "CREATE_TASKS")) {
             throw new InsufficientCardPermissionsException("User does not have permission to create tasks in this list");
         }
         
         if (dto.getPosition() == null) {
-            Integer taskCount = cardRepository.countByList(taskList);
+            Integer taskCount = cardRepository.countByList(list);
             dto.setPosition(taskCount);
         }
         
@@ -111,81 +115,66 @@ public class CardService {
                             new CardNotFoundException("User not found with id: " + dto.getAssignedToId()));
         }
         
-        CardEntity task = cardMapper.toEntity(dto, taskList, user, assignedTo);
-        task = cardRepository.save(task);
+        CardEntity card = cardMapper.toEntity(dto, list, user, assignedTo);
+        card = cardRepository.save(card);
         
-        CardWithItsListRead result = cardMapper.toDtoWithItsList(task);
-        
-        // Відправляємо повідомлення через веб-сокети
-        WebSocketMessage<CardWithItsListRead> message = WebSocketMessage.<CardWithItsListRead>builder()
-                .type(WebSocketMessage.WebSocketMessageType.CARD_CREATED)
-                .payload(result)
-                .entityId(task.getId().toString())
-                .build();
+        CardWithItsListRead result = cardMapper.toDtoWithItsList(card);
 
-        // Відправляємо повідомлення на дошку та список
-        webSocketService.sendBoardMessage(taskList.getBoard().getId(), message);
-        webSocketService.sendListMessage(taskList.getId(), message);
-        
+        eventPublisher.publishEvent(new CardCreatedEvent(
+                card.getId(),
+                list.getId(),
+                list.getBoard().getId(),
+                result)
+        );
+
         return result;
     }
     
     @Transactional
     public CardWithItsListRead updateCard(UserEntity user, Long id, CardCreate dto)
             throws CardNotFoundException, InsufficientCardPermissionsException {
-        CardEntity task = cardRepository.findById(id)
+        CardEntity card = cardRepository.findById(id)
             .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + id));
         
-        if (!boardPermissionService.hasPermission(task.getList().getBoard().getId(), user.getId(), "EDIT")) {
-            throw new InsufficientCardPermissionsException("User does not have permission to edit this task");
+        if (!boardPermissionService.hasPermission(card.getList().getBoard().getId(), user.getId(), "EDIT")) {
+            throw new InsufficientCardPermissionsException("User does not have permission to edit this card");
         }
-        
-        Long oldListId = task.getList().getId();
-        Long boardId = task.getList().getBoard().getId();
-        boolean listChanged = false;
-        
+
         // Don't allow changing the list if it's provided and different
-        if (dto.getListId() != null && !dto.getListId().equals(task.getList().getId())) {
+        if (dto.getListId() != null && !dto.getListId().equals(card.getList().getId())) {
             ListEntity newList = listRepository.findById(dto.getListId())
                 .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + dto.getListId()));
             
             // Ensure the new list is in the same board
-            if (!newList.getBoard().getId().equals(task.getList().getBoard().getId())) {
-                throw new IllegalArgumentException("Cannot move task to a list in a different board");
+            if (!newList.getBoard().getId().equals(card.getList().getBoard().getId())) {
+                throw new IllegalArgumentException("Cannot move card to a list in a different board");
             }
             
-            task.setList(newList);
-            listChanged = true;
+            card.setList(newList);
         }
         
         // Update assigned user if changed
         if (dto.getAssignedToId() != null) {
-            if (task.getAssignedTo() == null || !dto.getAssignedToId().equals(task.getAssignedTo().getId())) {
+            if (card.getAssignedTo() == null || !dto.getAssignedToId().equals(card.getAssignedTo().getId())) {
                 UserEntity assignedTo = userRepository
                         .findById(dto.getAssignedToId()).get();
-                task.setAssignedTo(assignedTo);
+                card.setAssignedTo(assignedTo);
             }
-        } else if (task.getAssignedTo() != null) {
-            task.setAssignedTo(null);
+        } else if (card.getAssignedTo() != null) {
+            card.setAssignedTo(null);
         }
         
-        cardMapper.updateEntityFromDto(dto, task);
-        task = cardRepository.save(task);
+        cardMapper.updateEntityFromDto(dto, card);
+        card = cardRepository.save(card);
         
-        CardWithItsListRead result = cardMapper.toDtoWithItsList(task);
-        
-        WebSocketMessage<CardWithItsListRead> message = WebSocketMessage.<CardWithItsListRead>builder()
-                .type(WebSocketMessage.WebSocketMessageType.CARD_UPDATED)
-                .payload(result)
-                .entityId(id.toString())
-                .build();
-                
-        webSocketService.sendBoardMessage(boardId, message);
-        webSocketService.sendListMessage(task.getList().getId(), message);
-        
-        if (listChanged) {
-            webSocketService.sendListMessage(oldListId, message);
-        }
+        CardWithItsListRead result = cardMapper.toDtoWithItsList(card);
+
+        eventPublisher.publishEvent(new CardUpdatedEvent(
+                card.getId(),
+                card.getList().getId(),
+                card.getList().getBoard().getId(),
+                result
+        ));
         
         return result;
     }
@@ -212,44 +201,38 @@ public class CardService {
                 cardRepository.save(card);
             }
         }
-        
-        // Надсилаємо повідомлення про оновлення позицій
-        WebSocketMessage<List<Long>> message = WebSocketMessage.<List<Long>>builder()
-                .type(WebSocketMessage.WebSocketMessageType.CARD_POSITIONS_UPDATED)
-                .payload(cardIds)
-                .entityId(listId.toString())
-                .build();
-                
-        webSocketService.sendBoardMessage(boardId, message);
-        webSocketService.sendListMessage(listId, message);
+
+        eventPublisher.publishEvent(new CardPositionsUpdatedEvent(
+                listId,
+                boardId,
+                cardIds
+        ));
     }
     
     @Transactional
     public CardWithItsListRead deleteCard(UserEntity user, Long id)
             throws CardNotFoundException, InsufficientCardPermissionsException {
-        CardEntity task = cardRepository.findById(id)
+        CardEntity card = cardRepository.findById(id)
             .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + id));
         
-        if (!boardPermissionService.hasPermission(task.getList().getBoard().getId(), user.getId(), "EDIT")) {
+        if (!boardPermissionService.hasPermission(card.getList().getBoard().getId(), user.getId(), "EDIT")) {
             throw new InsufficientCardPermissionsException("User does not have permission to delete this task");
         }
 
-        Long boardId = task.getList().getBoard().getId();
-        Long listId = task.getList().getId();
-        CardWithItsListRead result = cardMapper.toDtoWithItsList(task);
+        Long boardId = card.getList().getBoard().getId();
+        Long listId = card.getList().getId();
+        CardWithItsListRead result = cardMapper.toDtoWithItsList(card);
 
         cardRepository.deleteCommentsByCardId(id);
         cardRepository.deleteTasksByCardId(id);
-        cardRepository.deleteById(task.getId());
+        cardRepository.deleteById(card.getId());
 
-        WebSocketMessage<CardWithItsListRead> message = WebSocketMessage.<CardWithItsListRead>builder()
-                .type(WebSocketMessage.WebSocketMessageType.CARD_DELETED)
-                .payload(result)
-                .entityId(id.toString())
-                .build();
-                
-        webSocketService.sendBoardMessage(boardId, message);
-        webSocketService.sendListMessage(listId, message);
+        eventPublisher.publishEvent(new CardDeletedEvent(
+                card.getId(),
+                listId,
+                boardId,
+                result
+        ));
         
         return result;
     }
