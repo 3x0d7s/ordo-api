@@ -2,8 +2,10 @@ package com.kyut.ordo.task.service;
 
 import java.util.List;
 
-import com.kyut.ordo.core.websocket.dto.WebSocketMessage;
-import com.kyut.ordo.core.websocket.service.WebSocketService;
+import com.kyut.ordo.task.event.TaskCreatedEvent;
+import com.kyut.ordo.task.event.TaskDeletedEvent;
+import com.kyut.ordo.task.event.TaskUpdatedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import com.kyut.ordo.task.dto.TaskWithItsCardRead;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +35,7 @@ public class TaskService {
     private final CardRepository cardRepository;
     private final BoardPermissionService boardPermissionService;
     private final TaskMapper taskMapper;
-    private final WebSocketService webSocketService;
+    private final ApplicationEventPublisher eventPublisher;
     
     @Transactional
     public List<TaskRead> findAllByCard(UserEntity user, Long cardId)
@@ -101,13 +103,13 @@ public class TaskService {
         task = taskRepository.save(task);
 
         TaskRead taskRead = taskMapper.toDto(task);
-        WebSocketMessage<TaskRead> message = WebSocketMessage.<TaskRead>builder()
-                .type(WebSocketMessage.WebSocketMessageType.TASK_CREATED)
-                .payload(taskRead)
-                .entityId(task.getId().toString())
-                .build();
-
-        webSocketService.sendCardMessage(task.getCard().getId(), message);
+        
+        // Публікуємо подію створення завдання
+        eventPublisher.publishEvent(new TaskCreatedEvent(
+            task.getId(),
+            task.getCard().getId(),
+            taskRead
+        ));
         
         return taskMapper.toDtoWithItsCard(task);
     }
@@ -139,13 +141,13 @@ public class TaskService {
         task = taskRepository.save(task);
 
         TaskRead taskRead = taskMapper.toDto(task);
-        WebSocketMessage<TaskRead> message = WebSocketMessage.<TaskRead>builder()
-                .type(WebSocketMessage.WebSocketMessageType.TASK_UPDATED)
-                .payload(taskRead)
-                .entityId(id.toString())
-                .build();
-
-        webSocketService.sendCardMessage(task.getCard().getId(), message);
+        
+        // Публікуємо подію оновлення завдання
+        eventPublisher.publishEvent(new TaskUpdatedEvent(
+            id,
+            task.getCard().getId(),
+            taskRead
+        ));
 
         return taskRead;
     }
@@ -161,16 +163,15 @@ public class TaskService {
         }
 
         TaskRead taskRead = taskMapper.toDto(task);
+        Long cardId = task.getCard().getId();
+        
         taskRepository.delete(task);
 
-        WebSocketMessage<TaskRead> message = WebSocketMessage.<TaskRead>builder()
-                .type(WebSocketMessage.WebSocketMessageType.TASK_DELETED)
-                .payload(taskRead)
-                .entityId(id.toString())
-                .build();
-
-//        webSocketService.sendBoardMessage(task.getCard().getList().getBoard().getId(), message);
-        webSocketService.sendCardMessage(task.getCard().getId(), message);
+        eventPublisher.publishEvent(new TaskDeletedEvent(
+            id,
+            cardId,
+            taskRead
+        ));
         
         return taskRead;
     }

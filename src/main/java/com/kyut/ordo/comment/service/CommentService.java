@@ -3,8 +3,10 @@ package com.kyut.ordo.comment.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.kyut.ordo.core.websocket.dto.WebSocketMessage;
-import com.kyut.ordo.core.websocket.service.WebSocketService;
+import com.kyut.ordo.comment.event.CommentCreatedEvent;
+import com.kyut.ordo.comment.event.CommentDeletedEvent;
+import com.kyut.ordo.comment.event.CommentUpdatedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,7 @@ public class CommentService {
     private final CardRepository cardRepository;
     private final BoardPermissionService boardPermissionService;
     private final CommentMapper commentMapper;
-    private final WebSocketService webSocketService;
+    private final ApplicationEventPublisher eventPublisher;
     
     @Transactional(readOnly = true)
     public List<CommentRead> findAllByCard(UserEntity user, Long cardId)
@@ -100,15 +102,14 @@ public class CommentService {
 
         CommentRead result = commentMapper.toDto(comment);
 
-        WebSocketMessage<CommentRead> message = WebSocketMessage.<CommentRead>builder()
-                .type(WebSocketMessage.WebSocketMessageType.COMMENT_CREATED)
-                .payload(result)
-                .entityId(result.getId().toString())
-                .build();
-
-        webSocketService.sendBoardMessage(card.getList().getBoard().getId(), message);
-        webSocketService.sendListMessage(card.getList().getId(), message);
-        webSocketService.sendCardMessage(card.getId(), message);
+        // Публікуємо подію створення коментаря
+        eventPublisher.publishEvent(new CommentCreatedEvent(
+            comment.getId(),
+            card.getId(),
+            card.getList().getId(),
+            card.getList().getBoard().getId(),
+            result
+        ));
         
         return result;
     }
@@ -137,15 +138,14 @@ public class CommentService {
         CardEntity card = comment.getCard();
         CommentRead result = commentMapper.toDto(comment);
 
-        WebSocketMessage<CommentRead> message = WebSocketMessage.<CommentRead>builder()
-                .type(WebSocketMessage.WebSocketMessageType.COMMENT_UPDATED)
-                .payload(result)
-                .entityId(result.getId().toString())
-                .build();
-
-        webSocketService.sendBoardMessage(card.getList().getBoard().getId(), message);
-        webSocketService.sendListMessage(card.getList().getId(), message);
-        webSocketService.sendCardMessage(card.getId(), message);
+        // Публікуємо подію оновлення коментаря
+        eventPublisher.publishEvent(new CommentUpdatedEvent(
+            comment.getId(),
+            card.getId(),
+            card.getList().getId(),
+            card.getList().getBoard().getId(),
+            result
+        ));
 
         return result;
     }
@@ -162,21 +162,19 @@ public class CommentService {
             throw new InsufficientCommentPermissionsException("User does not have permission to delete this comment");
         }
         
-        commentRepository.delete(comment);
-
         CommentRead result = commentMapper.toDto(comment);
         CardEntity card = comment.getCard();
-
-        WebSocketMessage<CommentRead> message = WebSocketMessage.<CommentRead>builder()
-                .type(WebSocketMessage.WebSocketMessageType.COMMENT_DELETED)
-                .payload(result)
-                .entityId(result.getId().toString())
-                .build();
-
-        webSocketService.sendBoardMessage(card.getList().getBoard().getId(), message);
-        webSocketService.sendListMessage(card.getList().getId(), message);
-        webSocketService.sendCardMessage(card.getId(), message);
         
-        return commentMapper.toDto(comment);
+        commentRepository.delete(comment);
+
+        eventPublisher.publishEvent(new CommentDeletedEvent(
+            comment.getId(),
+            card.getId(),
+            card.getList().getId(),
+            card.getList().getBoard().getId(),
+            result
+        ));
+        
+        return result;
     }
 }
