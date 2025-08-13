@@ -269,16 +269,14 @@ public class BoardService {
             throw new InsufficientBoardPermissionsException("User does not have access to this board");
         }
         
-        // Спочатку шукаємо BoardMemberEntity
+        // First search BoardMemberEntity
         BoardMemberEntity boardMember = boardMemberRepository.findByBoardIdAndUserId(boardId, user.getId())
             .orElse(null);
             
         if (boardMember != null) {
-            // Якщо користувач є членом дошки, повертаємо його роль
             return boardRoleMapper.toDto(boardMember.getRole());
         }
         
-        // Для публічних дошок створюємо Guest роль
         if (board.getVisibility() == BoardVisibility.PUBLIC) {
             BoardRoleEntity guestRole = boardRoleRepository
                 .findByBoardAndName(board, "Guest")
@@ -296,32 +294,33 @@ public class BoardService {
             return boardRoleMapper.toDto(guestRole);
         }
         
-        // Для дошок воркспейсу створюємо Member роль (існуючий код)
-        if (board.getVisibility() == BoardVisibility.WORKSPACE && board.getWorkspace() != null) {
-            WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
+        if (board.getVisibility() != BoardVisibility.WORKSPACE || board.getWorkspace() == null) {
+            throw new BoardNotFoundException("User is not a member of this board and has no access");
+        }
+
+        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
                 .findByWorkspaceIdAndUserId(board.getWorkspace().getId(), user.getId())
                 .orElse(null);
-                
-            if (workspaceMember != null) {
-                // Автоматично створюємо BoardMemberEntity з роллю Member для члена воркспейсу
-                BoardRoleEntity memberRole = boardRoleRepository
-                    .findByBoardAndName(board, "Member")
-                    .orElseGet(() -> boardRoleFactory.createMemberRole(board));
-                
-                BoardMemberEntity newBoardMember = BoardMemberEntity.builder()
-                    .board(board)
-                    .user(user)
-                    .role(memberRole)
-                    .joinedAt(LocalDateTime.now())
-                    .build();
-                    
-                boardMemberRepository.save(newBoardMember);
-                
-                return boardRoleMapper.toDto(memberRole);
-            }
+
+        if (workspaceMember != null) {
+            throw new BoardNotFoundException("User is not a member of this board and has no access");
         }
-        
-        throw new BoardNotFoundException("User is not a member of this board and has no access");
+
+        BoardRoleEntity memberRole = boardRoleRepository
+                .findByBoardAndName(board, "Member")
+                .orElseGet(() -> boardRoleFactory.createMemberRole(board));
+
+        BoardMemberEntity newBoardMember = BoardMemberEntity.builder()
+                .board(board)
+                .user(user)
+                .role(memberRole)
+                .joinedAt(LocalDateTime.now())
+                .build();
+
+        boardMemberRepository.save(newBoardMember);
+
+        return boardRoleMapper.toDto(memberRole);
+
     }
     
     @Transactional
