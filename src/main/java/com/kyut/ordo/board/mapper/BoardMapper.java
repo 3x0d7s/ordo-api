@@ -27,6 +27,7 @@ public interface BoardMapper {
     @Mapping(source = "dto.visibility", target = "visibility")
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "members", ignore = true)
+    @Mapping(target = "lists", ignore = true)
     @Mapping(source = "workspaceEntity", target = "workspace")
     BoardEntity toEntity(BoardCreate dto, WorkspaceEntity workspaceEntity);
 
@@ -50,5 +51,11 @@ public interface BoardMapper {
     @Mapping(source = "rolesCollection", target = "roles")
     BoardRead toDto(BoardEntity entity, Collection<BoardRoleEntity> rolesCollection);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "workspace", ignore = true)
+    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "members", ignore = true)
+    @Mapping(target = "lists", ignore = true)
     void updateEntityFromDto(BoardCreate dto, @MappingTarget BoardEntity board);
 }

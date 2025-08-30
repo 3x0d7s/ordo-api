@@ -31,6 +31,14 @@ public interface CardMapper {
     CardWithItsListRead toDtoWithItsList(CardEntity entity);
 
     CardRead toDto(CardEntity entity);
-    
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "list", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "assignedTo", ignore = true)
+    @Mapping(target = "comments", ignore = true)
+    @Mapping(target = "tasks", ignore = true)
+
     void updateEntityFromDto(CardCreate dto, @MappingTarget CardEntity task);
 }

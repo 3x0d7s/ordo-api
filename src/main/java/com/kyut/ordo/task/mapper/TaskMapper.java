@@ -35,6 +35,8 @@ public interface TaskMapper {
     @Mapping(source = "entity.position", target = "position")
     @Mapping(source = "entity.completed", target = "completed")
     TaskWithItsCardRead toDtoWithItsCard(TaskEntity entity);
-    
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "card", ignore = true)
     void updateEntityFromDto(TaskCreate dto, @MappingTarget TaskEntity task);
 }

@@ -29,6 +29,10 @@ public interface ListMapper {
     @Mapping(source = "entity.createdAt", target = "createdAt")
     @Mapping(source = "entity.board", target = "board")
     ListRead toDto(ListEntity entity);
-    
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "board", ignore = true)
+    @Mapping(target = "cards", ignore = true)
     void updateEntityFromDto(ListCreate dto, @MappingTarget ListEntity taskList);
 }

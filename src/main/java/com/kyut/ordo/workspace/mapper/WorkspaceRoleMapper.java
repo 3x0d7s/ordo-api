@@ -6,8 +6,9 @@ import com.kyut.ordo.workspace.dto.WorkspaceRoleUpdate;
 import com.kyut.ordo.workspace.entity.WorkspaceRoleEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface WorkspaceRoleMapper {
     WorkspaceRoleRead toDto(WorkspaceRoleEntity entity);
 

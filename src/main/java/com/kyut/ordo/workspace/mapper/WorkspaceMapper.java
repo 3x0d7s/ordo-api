@@ -9,10 +9,11 @@ import com.kyut.ordo.workspace.entity.WorkspaceRoleEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.Collection;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface WorkspaceMapper {
     WorkspaceEntity toEntity(WorkspaceCreate dto);
 

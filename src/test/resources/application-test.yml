@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: ordo-test
+    
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+    
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    database: h2
+    properties:
+      hibernate:
+        format_sql: true
+        
+  flyway:
+    enabled: false # Відключаємо для H2 тестів
+    
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test-client-id
+            client-secret: test-client-secret
+            redirect-uri: http://localhost:8080/test/callback
+          github:
+            clientId: test-github-client-id
+            clientSecret: test-github-client-secret
+            redirect-uri: http://localhost:8080/test/callback
+
+app:
+  cors:
+    allowed-origins: http://localhost:3000,http://localhost:5173
+  oauth2:
+    redirect-uri: http://localhost:5173/auth/callback
+
+jwt:
+  secret: dGVzdC1zZWNyZXQtZm9yLXRlc3RpbmctcHVycG9zZXMtb25seQ==  # base64 encoded "test-secret-for-testing-purposes-only"
+  expiration-ms: 3600000  # 1 година для тестів
+
+logging:
+  level:
+    com.kyut.ordo: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.transaction: DEBUG
