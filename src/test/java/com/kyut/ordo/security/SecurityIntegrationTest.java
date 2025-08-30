@@ -83,17 +83,17 @@ class SecurityIntegrationTest {
     @Test
     @DisplayName("Доступ до захищених endpoints без токена - 401")
     void accessProtectedEndpoints_WithoutToken() throws Exception {
-        mockMvc.perform(get("/api/boards"))
+        mockMvc.perform(get("/boards"))
             .andExpect(status().isUnauthorized());
 
-        mockMvc.perform(get("/api/lists"))
+        mockMvc.perform(get("/workspaces"))
             .andExpect(status().isUnauthorized());
     }
 
     @Test
     @DisplayName("Доступ до захищених endpoints з валідним токеном")
     void accessProtectedEndpoints_WithValidToken() throws Exception {
-        mockMvc.perform(get("/api/lists")
+        mockMvc.perform(get("/workspaces")
                 .header("Authorization", "Bearer " + validJwtToken))
             .andExpect(status().isOk());
     }
@@ -101,7 +101,7 @@ class SecurityIntegrationTest {
     @Test
     @DisplayName("Доступ з недійсним токеном - 401")
     void accessProtectedEndpoints_WithInvalidToken() throws Exception {
-        mockMvc.perform(get("/api/lists")
+        mockMvc.perform(get("/workspaces")
                 .header("Authorization", "Bearer invalid.jwt.token"))
             .andExpect(status().isUnauthorized());
     }
@@ -109,7 +109,7 @@ class SecurityIntegrationTest {
     @Test
     @DisplayName("Доступ з токеном без Bearer prefix - 401")
     void accessProtectedEndpoints_WithoutBearerPrefix() throws Exception {
-        mockMvc.perform(get("/api/lists")
+        mockMvc.perform(get("/workspaces")
                 .header("Authorization", validJwtToken))
             .andExpect(status().isUnauthorized());
     }
@@ -117,7 +117,7 @@ class SecurityIntegrationTest {
     @Test
     @DisplayName("CORS headers присутні в response")
     void corsHeadersPresent() throws Exception {
-        mockMvc.perform(get("/api/lists")
+        mockMvc.perform(get("/workspaces/joined")
                 .header("Authorization", "Bearer " + validJwtToken)
                 .header("Origin", "http://localhost:5173"))
             .andExpect(header().exists("Access-Control-Allow-Origin"));
