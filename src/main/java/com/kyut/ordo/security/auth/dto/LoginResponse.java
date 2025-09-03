@@ -1,4 +1,4 @@
-package com.kyut.ordo.security.auth.common.dto;
+package com.kyut.ordo.security.auth.dto;
 
 import com.kyut.ordo.feature.user.dto.UserReadDTO;
 import lombok.AllArgsConstructor;

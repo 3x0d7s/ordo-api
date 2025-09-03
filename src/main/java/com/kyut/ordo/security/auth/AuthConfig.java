@@ -1,4 +1,4 @@
-package com.kyut.ordo.security.auth.common;
+package com.kyut.ordo.security.auth;
 
 import com.kyut.ordo.feature.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

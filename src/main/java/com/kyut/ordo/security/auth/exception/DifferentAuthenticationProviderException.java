@@ -1,4 +1,4 @@
-package com.kyut.ordo.security.auth.common.exception;
+package com.kyut.ordo.security.auth.exception;
 
 public class DifferentAuthenticationProviderException extends RuntimeException {
     public DifferentAuthenticationProviderException(String message) {

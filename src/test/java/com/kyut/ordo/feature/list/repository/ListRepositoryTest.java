@@ -1,6 +1,6 @@
 package com.kyut.ordo.feature.list.repository;
 
-import com.kyut.ordo.security.auth.common.AuthProvider;
+import com.kyut.ordo.security.auth.provider.AuthProvider;
 import com.kyut.ordo.feature.board.entity.BoardEntity;
 import com.kyut.ordo.feature.board.entity.BoardVisibility;
 import com.kyut.ordo.feature.list.entity.ListEntity;

@@ -1,4 +1,4 @@
-package com.kyut.ordo.security.auth.oauth2;
+package com.kyut.ordo.security.auth.provider.oauth2;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
@@ -7,10 +7,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleOAuthConstants;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.kyut.ordo.security.auth.oauth2.dto.OAuth2TokenResponse;
-import com.kyut.ordo.security.auth.oauth2.exception.GoogleOAuth2CodeForTokenExchangeException;
-import com.kyut.ordo.security.auth.oauth2.exception.GoogleOAuth2FetchUserInfoException;
-import com.kyut.ordo.security.auth.oauth2.exception.OAuth2AuthenticationException;
+import com.kyut.ordo.security.auth.provider.oauth2.dto.OAuth2TokenResponse;
+import com.kyut.ordo.security.auth.provider.oauth2.exception.GoogleOAuth2CodeForTokenExchangeException;
+import com.kyut.ordo.security.auth.provider.oauth2.exception.GoogleOAuth2FetchUserInfoException;
+import com.kyut.ordo.security.auth.provider.oauth2.exception.OAuth2AuthenticationException;
 import com.kyut.ordo.feature.user.dto.UserReadDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

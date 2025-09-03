@@ -1,6 +1,6 @@
 package com.kyut.ordo.feature.user.entity;
 
-import com.kyut.ordo.security.auth.common.AuthProvider;
+import com.kyut.ordo.security.auth.provider.AuthProvider;
 import com.kyut.ordo.feature.board.entity.BoardMemberEntity;
 import com.kyut.ordo.feature.card.entity.CardEntity;
 import com.kyut.ordo.feature.comment.entity.CommentEntity;

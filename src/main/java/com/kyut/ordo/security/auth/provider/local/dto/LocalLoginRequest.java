@@ -1,4 +1,4 @@
-package com.kyut.ordo.security.auth.local.dto;
+package com.kyut.ordo.security.auth.provider.local.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

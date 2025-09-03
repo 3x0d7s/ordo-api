@@ -1,10 +1,10 @@
-package com.kyut.ordo.security.auth.local;
+package com.kyut.ordo.security.auth.provider.local;
 
-import com.kyut.ordo.security.auth.common.dto.LoginResponse;
+import com.kyut.ordo.security.auth.dto.LoginResponse;
 import com.kyut.ordo.feature.user.dto.UserCreateDTO;
 import com.kyut.ordo.feature.user.dto.UserReadDTO;
 
-import com.kyut.ordo.security.auth.local.dto.LocalLoginRequest;
+import com.kyut.ordo.security.auth.provider.local.dto.LocalLoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

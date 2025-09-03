@@ -1,4 +1,4 @@
-package com.kyut.ordo.security.auth.oauth2.exception;
+package com.kyut.ordo.security.auth.provider.oauth2.exception;
 
 public class GoogleOAuth2FetchUserInfoException extends RuntimeException {
     public GoogleOAuth2FetchUserInfoException(String message) {

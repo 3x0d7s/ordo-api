@@ -1,7 +1,7 @@
-package com.kyut.ordo.security.auth.oauth2;
+package com.kyut.ordo.security.auth.provider.oauth2;
 
-import com.kyut.ordo.security.auth.oauth2.dto.OAuth2CodeOnTokenRequest;
-import com.kyut.ordo.security.auth.common.dto.LoginResponse;
+import com.kyut.ordo.security.auth.provider.oauth2.dto.OAuth2CodeOnTokenRequest;
+import com.kyut.ordo.security.auth.dto.LoginResponse;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

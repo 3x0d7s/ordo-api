@@ -1,7 +1,7 @@
-package com.kyut.ordo.security.auth.common;
+package com.kyut.ordo.security.auth;
 
-import com.kyut.ordo.security.auth.common.exception.AuthUsernameNotFoundException;
-import com.kyut.ordo.security.auth.common.exception.DifferentAuthenticationProviderException;
+import com.kyut.ordo.security.auth.exception.AuthUsernameNotFoundException;
+import com.kyut.ordo.security.auth.exception.DifferentAuthenticationProviderException;
 import com.kyut.ordo.common.dto.ErrorResponse;
 
 import io.swagger.v3.oas.annotations.Hidden;

@@ -1,4 +1,4 @@
-package com.kyut.ordo.security.auth.common.exception;
+package com.kyut.ordo.security.auth.exception;
 
 public class AuthUsernameNotFoundException extends RuntimeException {
     public AuthUsernameNotFoundException(String message) {

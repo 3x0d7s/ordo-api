@@ -1,10 +1,10 @@
-package com.kyut.ordo.security.auth.oauth2;
+package com.kyut.ordo.security.auth.provider.oauth2;
 
 
-import com.kyut.ordo.security.auth.oauth2.dto.OAuth2TokenResponse;
-import com.kyut.ordo.security.auth.common.AuthProvider;
-import com.kyut.ordo.security.auth.common.dto.LoginResponse;
-import com.kyut.ordo.security.auth.common.exception.DifferentAuthenticationProviderException;
+import com.kyut.ordo.security.auth.provider.oauth2.dto.OAuth2TokenResponse;
+import com.kyut.ordo.security.auth.provider.AuthProvider;
+import com.kyut.ordo.security.auth.dto.LoginResponse;
+import com.kyut.ordo.security.auth.exception.DifferentAuthenticationProviderException;
 import com.kyut.ordo.security.jwt.JwtService;
 import com.kyut.ordo.feature.user.entity.UserEntity;
 import com.kyut.ordo.feature.user.repository.UserRepository;

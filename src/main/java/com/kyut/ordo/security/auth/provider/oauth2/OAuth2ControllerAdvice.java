@@ -1,7 +1,7 @@
-package com.kyut.ordo.security.auth.oauth2;
+package com.kyut.ordo.security.auth.provider.oauth2;
 
-import com.kyut.ordo.security.auth.oauth2.exception.GoogleOAuth2CodeForTokenExchangeException;
-import com.kyut.ordo.security.auth.oauth2.exception.OAuth2AuthenticationException;
+import com.kyut.ordo.security.auth.provider.oauth2.exception.GoogleOAuth2CodeForTokenExchangeException;
+import com.kyut.ordo.security.auth.provider.oauth2.exception.OAuth2AuthenticationException;
 import com.kyut.ordo.common.dto.ErrorResponse;
 
 import io.swagger.v3.oas.annotations.Hidden;

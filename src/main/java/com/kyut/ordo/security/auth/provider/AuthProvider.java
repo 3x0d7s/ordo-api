@@ -1,4 +1,4 @@
-package com.kyut.ordo.security.auth.common;
+package com.kyut.ordo.security.auth.provider;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

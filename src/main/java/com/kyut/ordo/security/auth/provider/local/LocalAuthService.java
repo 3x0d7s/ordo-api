@@ -1,10 +1,10 @@
-package com.kyut.ordo.security.auth.local;
+package com.kyut.ordo.security.auth.provider.local;
 
-import com.kyut.ordo.security.auth.common.AuthProvider;
-import com.kyut.ordo.security.auth.common.dto.LoginResponse;
-import com.kyut.ordo.security.auth.common.exception.AuthUsernameNotFoundException;
-import com.kyut.ordo.security.auth.common.exception.DifferentAuthenticationProviderException;
-import com.kyut.ordo.security.auth.local.dto.LocalLoginRequest;
+import com.kyut.ordo.security.auth.provider.AuthProvider;
+import com.kyut.ordo.security.auth.dto.LoginResponse;
+import com.kyut.ordo.security.auth.exception.AuthUsernameNotFoundException;
+import com.kyut.ordo.security.auth.exception.DifferentAuthenticationProviderException;
+import com.kyut.ordo.security.auth.provider.local.dto.LocalLoginRequest;
 import com.kyut.ordo.security.jwt.JwtService;
 import com.kyut.ordo.feature.user.mapper.UserMapper;
 import com.kyut.ordo.feature.user.repository.UserRepository;

@@ -4,7 +4,7 @@ import com.kyut.ordo.TestConfig;
 import com.kyut.ordo.security.jwt.JwtService;
 import com.kyut.ordo.feature.user.entity.UserEntity;
 import com.kyut.ordo.feature.user.repository.UserRepository;
-import com.kyut.ordo.security.auth.common.AuthProvider;
+import com.kyut.ordo.security.auth.provider.AuthProvider;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

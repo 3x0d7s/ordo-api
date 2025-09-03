@@ -1,4 +1,4 @@
-package com.kyut.ordo.security.auth.common;
+package com.kyut.ordo.security.auth;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
