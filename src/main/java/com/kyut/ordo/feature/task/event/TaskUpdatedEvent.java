@@ -2,6 +2,7 @@ package com.kyut.ordo.feature.task.event;
 
 import com.kyut.ordo.common.DomainEvent;
 import com.kyut.ordo.feature.task.dto.TaskRead;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,6 +12,7 @@ import java.util.UUID;
  * Подія оновлення завдання
  */
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = true)
 public class TaskUpdatedEvent extends DomainEvent {
     private final Long taskId;

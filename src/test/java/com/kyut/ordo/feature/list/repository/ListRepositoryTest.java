@@ -4,7 +4,6 @@ import com.kyut.ordo.security.auth.common.AuthProvider;
 import com.kyut.ordo.feature.board.entity.BoardEntity;
 import com.kyut.ordo.feature.board.entity.BoardVisibility;
 import com.kyut.ordo.feature.list.entity.ListEntity;
-import com.kyut.ordo.feature.list.repository.ListRepository;
 import com.kyut.ordo.feature.user.entity.UserEntity;
 import com.kyut.ordo.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +48,7 @@ class ListRepositoryTest {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        testUser = entityManager.persistAndFlush(testUser);
+        entityManager.persistAndFlush(testUser);
 
         // Створюємо тестову дошку
         testBoard = new BoardEntity();

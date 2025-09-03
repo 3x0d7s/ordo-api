@@ -2,8 +2,10 @@ package com.kyut.ordo.feature.task.event;
 
 import com.kyut.ordo.common.DomainEvent;
 import com.kyut.ordo.feature.task.dto.TaskRead;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
 
@@ -11,6 +13,7 @@ import java.util.UUID;
  * Подія створення завдання
  */
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = true)
 public class TaskCreatedEvent extends DomainEvent {
     private final Long taskId;

@@ -6,7 +6,6 @@ import com.kyut.ordo.feature.list.dto.ListRead;
 import com.kyut.ordo.feature.list.event.ListCreatedEvent;
 import com.kyut.ordo.feature.list.event.ListDeletedEvent;
 import com.kyut.ordo.feature.list.event.ListUpdatedEvent;
-import com.kyut.ordo.feature.list.listener.ListEventListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -3,6 +3,7 @@ package com.kyut.ordo.feature.board.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -169,7 +170,8 @@ public class BoardService {
         BoardEntity board = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
 
-        UserEntity newUser = userRepository.findById(newUserId).get();
+        UserEntity newUser = userRepository.findById(newUserId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         BoardRoleEntity role = boardRoleRepository.findById(roleId)
             .orElseThrow(() -> new IllegalArgumentException("Role not found"));

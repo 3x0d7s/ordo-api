@@ -8,9 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 
 
 public interface WorkspaceRoleRepository extends CrudRepository<WorkspaceRoleEntity, Long> {
-    void deleteAllByWorkspace(WorkspaceEntity workspace);
 
     Page<WorkspaceRoleEntity> findAllByWorkspace(WorkspaceEntity workspace, Pageable pageable);
 
-    WorkspaceRoleEntity findByNameAndWorkspace(String name, WorkspaceEntity workspace);
 }

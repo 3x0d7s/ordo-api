@@ -11,13 +11,9 @@ import com.kyut.ordo.feature.card.entity.CardEntity;
 import com.kyut.ordo.feature.task.entity.TaskEntity;
 
 public interface TaskRepository extends CrudRepository<TaskEntity, Long> {
-    
-    List<TaskEntity> findAllByCard(CardEntity card);
-    
+
     List<TaskEntity> findAllByCardOrderByPosition(CardEntity card);
 
-    Optional<TaskEntity> findByIdAndCard(Long id, CardEntity card);
-    
     Page<TaskEntity> findAllByCard(CardEntity card, Pageable pageable);
 
     Integer countByCard(CardEntity card);

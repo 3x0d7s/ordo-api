@@ -2,6 +2,7 @@ package com.kyut.ordo.feature.comment.event;
 
 import com.kyut.ordo.feature.comment.dto.CommentRead;
 import com.kyut.ordo.common.DomainEvent;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,6 +12,7 @@ import java.util.UUID;
  * Подія оновлення коментаря
  */
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = true)
 public class CommentUpdatedEvent extends DomainEvent {
     private final Long commentId;
