@@ -1,7 +1,7 @@
 package com.kyut.ordo;
 
-import com.kyut.ordo.auth.provider.common.AuthProvider;
-import com.kyut.ordo.user.entity.UserEntity;
+import com.kyut.ordo.security.auth.common.AuthProvider;
+import com.kyut.ordo.feature.user.entity.UserEntity;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;

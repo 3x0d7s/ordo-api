@@ -1,9 +1,11 @@
 package com.kyut.ordo.security;
 
 import com.kyut.ordo.TestConfig;
-import com.kyut.ordo.auth.security.jwt.JwtService;
-import com.kyut.ordo.user.entity.UserEntity;
-import com.kyut.ordo.user.repository.UserRepository;
+import com.kyut.ordo.security.jwt.JwtService;
+import com.kyut.ordo.feature.user.entity.UserEntity;
+import com.kyut.ordo.feature.user.repository.UserRepository;
+import com.kyut.ordo.security.auth.common.AuthProvider;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,7 +60,7 @@ class SecurityIntegrationTest {
                 .email("test@example.com")
                 .name("Test User")
                 .password("$2a$10$test.password.hash")
-                .provider(com.kyut.ordo.auth.provider.common.AuthProvider.LOCAL)
+                .provider(AuthProvider.LOCAL)
                 .build();
         testUser = userRepository.save(testUser);
 
