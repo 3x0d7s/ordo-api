@@ -1,14 +1,10 @@
 package com.kyut.ordo.feature.list.repository;
 
-import com.kyut.ordo.security.auth.provider.AuthProvider;
 import com.kyut.ordo.feature.board.entity.BoardEntity;
-import com.kyut.ordo.feature.board.entity.BoardVisibility;
 import com.kyut.ordo.feature.list.entity.ListEntity;
-import com.kyut.ordo.feature.user.entity.UserEntity;
-import com.kyut.ordo.feature.user.repository.UserRepository;
-import com.kyut.ordo.feature.board.repository.BoardRepository;
 import com.kyut.ordo.TestConfig;
 import com.kyut.ordo.testcontainers.AbstractPostgreSQLIntegrationTest;
+import com.kyut.ordo.testcontainers.PostgreSQLTestDataBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,40 +27,19 @@ class ListRepositoryTest extends AbstractPostgreSQLIntegrationTest {
 
     @Autowired
     private ListRepository listRepository;
-    
+
     @Autowired
-    private UserRepository userRepository;
-    
-    @Autowired
-    private BoardRepository boardRepository;
+    private PostgreSQLTestDataBuilder dataBuilder;
 
     private BoardEntity testBoard;
 
     @BeforeEach
     void setUp() {
-        // Clean up any existing data
-        listRepository.deleteAll();
-        boardRepository.deleteAll();
-        userRepository.deleteAll();
-        
-        // Створюємо тестового користувача
-        UserEntity testUser = UserEntity.builder()
-                .email("test@example.com")
-                .name("Test User")
-                .password("$2a$10$test.password.hash")
-                .provider(AuthProvider.LOCAL)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-        userRepository.save(testUser);
+        dataBuilder.cleanAllData();
 
-        // Створюємо тестову дошку
-        testBoard = new BoardEntity();
-        testBoard.setTitle("Test Board");
-        testBoard.setDescription("Test Description");
-        testBoard.setVisibility(BoardVisibility.PRIVATE);
-        testBoard.setCreatedAt(LocalDateTime.now());
-        testBoard = boardRepository.save(testBoard);
+        dataBuilder.createTestUser("test@example.com", "name");
+
+        testBoard = dataBuilder.createTestBoard("Test Board", "Test Description");
     }
 
     @Test

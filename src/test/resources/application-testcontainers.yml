@@ -20,6 +20,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+#        jdbc:
+#          time_zone: UTC
         
   flyway:
     enabled: true # Enable Flyway for PostgreSQL tests to test real migration scenarios
@@ -59,3 +61,16 @@ logging:
 # Set system timezone to UTC for tests
 server:
   timezone: UTC
+
+# Custom config for Testcontainers PostgreSQL (consumed by PostgreSQLContainerConfig)
+#testcontainers:
+#  postgres:
+#    image: postgres:17.5
+#    db-name: testdb
+#    username: test
+#    password: test
+#    timezone: UTC
+
+testcontainers:
+  reuse:
+    enable: true

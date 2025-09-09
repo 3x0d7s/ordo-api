@@ -3,7 +3,6 @@ package com.kyut.ordo.testcontainers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
@@ -16,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Integration test to verify PostgreSQL connection and basic functionality with Testcontainers
  */
-@Import(PostgreSQLTestDataBuilder.class)
 @DisplayName("PostgreSQL Connection Tests with Testcontainers")
 @Transactional
 class PostgreSQLConnectionTest extends AbstractPostgreSQLIntegrationTest {
