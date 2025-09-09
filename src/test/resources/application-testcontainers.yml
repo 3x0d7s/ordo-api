@@ -1,24 +1,29 @@
 spring:
   application:
-    name: ordo-test
+    name: ordo-testcontainers
     
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password: 
-    driver-class-name: org.h2.Driver
+    # These properties will be dynamically set by Testcontainers
+    # url: will be set to the container's JDBC URL
+    # username: will be set to the container's username  
+    # password: will be set to the container's password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-init-sql: "SET timezone = 'UTC'"
     
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: false
-    database: h2
+    show-sql: true
+    database: postgresql
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         
   flyway:
-    enabled: false 
+    enabled: true # Enable Flyway for PostgreSQL tests to test real migration scenarios
+
     
   security:
     oauth2:
@@ -41,10 +46,16 @@ app:
 
 jwt:
   secret: dGVzdC1zZWNyZXQtZm9yLXRlc3RpbmctcHVycG9zZXMtb25seQ==  # base64 encoded "test-secret-for-testing-purposes-only"
-  expiration-ms: 3600000  # 1 година для тестів
+  expiration-ms: 3600000  # 1 hour for tests
 
 logging:
   level:
     com.kyut.ordo: DEBUG
     org.springframework.security: DEBUG
     org.springframework.transaction: DEBUG
+    org.testcontainers: DEBUG
+    org.flywaydb: DEBUG
+
+# Set system timezone to UTC for tests
+server:
+  timezone: UTC

@@ -1,6 +1,7 @@
 package com.kyut.ordo.security;
 
 import com.kyut.ordo.TestConfig;
+import com.kyut.ordo.testcontainers.AbstractPostgreSQLIntegrationTest;
 import com.kyut.ordo.security.jwt.JwtService;
 import com.kyut.ordo.feature.user.entity.UserEntity;
 import com.kyut.ordo.feature.user.repository.UserRepository;
@@ -11,11 +12,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,15 +25,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Integration тести для Security конфігурації
+ * Integration tests for Security configuration using PostgreSQL with Testcontainers
  */
-@SpringBootTest
-@ActiveProfiles("test")
 @AutoConfigureWebMvc
 @Import(TestConfig.class)
 @Transactional
-@DisplayName("Security Integration Tests")
-class SecurityIntegrationTest {
+@DisplayName("Security Integration Tests with PostgreSQL")
+class SecurityIntegrationTest extends AbstractPostgreSQLIntegrationTest {
 
     @Autowired
     private WebApplicationContext context;
@@ -50,12 +47,14 @@ class SecurityIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        // Clean up any existing data
+        userRepository.deleteAll();
+        
         mockMvc = MockMvcBuilders
             .webAppContextSetup(context)
             .apply(springSecurity())
             .build();
 
-        // Створюємо користувача без встановлення ID - хай JPA сам призначить
         UserEntity testUser = UserEntity.builder()
                 .email("test@example.com")
                 .name("Test User")

@@ -5,15 +5,16 @@ import com.kyut.ordo.feature.board.entity.BoardEntity;
 import com.kyut.ordo.feature.board.entity.BoardVisibility;
 import com.kyut.ordo.feature.list.entity.ListEntity;
 import com.kyut.ordo.feature.user.entity.UserEntity;
+import com.kyut.ordo.feature.user.repository.UserRepository;
+import com.kyut.ordo.feature.board.repository.BoardRepository;
 import com.kyut.ordo.TestConfig;
+import com.kyut.ordo.testcontainers.AbstractPostgreSQLIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,24 +22,31 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration тести для ListRepository
+ * Integration tests for ListRepository using PostgreSQL with Testcontainers
  */
-@DataJpaTest
-@ActiveProfiles("test")
 @Import(TestConfig.class)
-@DisplayName("ListRepository Integration Tests")
-class ListRepositoryTest {
-
-    @Autowired
-    private TestEntityManager entityManager;
+@DisplayName("ListRepository Integration Tests with PostgreSQL")
+@Transactional
+class ListRepositoryTest extends AbstractPostgreSQLIntegrationTest {
 
     @Autowired
     private ListRepository listRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private BoardRepository boardRepository;
 
     private BoardEntity testBoard;
 
     @BeforeEach
     void setUp() {
+        // Clean up any existing data
+        listRepository.deleteAll();
+        boardRepository.deleteAll();
+        userRepository.deleteAll();
+        
         // Створюємо тестового користувача
         UserEntity testUser = UserEntity.builder()
                 .email("test@example.com")
@@ -48,7 +56,7 @@ class ListRepositoryTest {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        entityManager.persistAndFlush(testUser);
+        userRepository.save(testUser);
 
         // Створюємо тестову дошку
         testBoard = new BoardEntity();
@@ -56,7 +64,7 @@ class ListRepositoryTest {
         testBoard.setDescription("Test Description");
         testBoard.setVisibility(BoardVisibility.PRIVATE);
         testBoard.setCreatedAt(LocalDateTime.now());
-        testBoard = entityManager.persistAndFlush(testBoard);
+        testBoard = boardRepository.save(testBoard);
     }
 
     @Test
@@ -67,9 +75,9 @@ class ListRepositoryTest {
         ListEntity list2 = createList("List 2", 0);
         ListEntity list3 = createList("List 3", 1);
         
-        entityManager.persistAndFlush(list1);
-        entityManager.persistAndFlush(list2);
-        entityManager.persistAndFlush(list3);
+        listRepository.save(list1);
+        listRepository.save(list2);
+        listRepository.save(list3);
 
         // When
         List<ListEntity> result = listRepository.findAllByBoardOrderByPosition(testBoard);
@@ -115,7 +123,6 @@ class ListRepositoryTest {
 
         // When
         listRepository.deleteById(listId); // Використовуємо стандартний метод JPA
-        entityManager.flush();
 
         // Then
         assertThat(listRepository.findById(listId)).isEmpty();
@@ -132,6 +139,6 @@ class ListRepositoryTest {
 
     private ListEntity createAndPersistList(String title, int position) {
         ListEntity list = createList(title, position);
-        return entityManager.persistAndFlush(list);
+        return listRepository.save(list);
     }
 }
