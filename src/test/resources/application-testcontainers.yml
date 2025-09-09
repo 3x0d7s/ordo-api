@@ -9,19 +9,26 @@ spring:
     # password: will be set to the container's password
     driver-class-name: org.postgresql.Driver
     hikari:
+      # Ensure pool doesn't hand out stale connections across long test phases
       connection-init-sql: "SET timezone = 'UTC'"
+      maximum-pool-size: 10
+      minimum-idle: 1
+      idle-timeout: 20000
+      max-lifetime: 300000   # 5 minutes (less than default PG idle timeout in some envs)
+      validation-timeout: 5000
+      keepalive-time: 30000  # ping connections periodically
     
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: true
     database: postgresql
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-#        jdbc:
-#          time_zone: UTC
+        jdbc:
+          time_zone: UTC
         
   flyway:
     enabled: true # Enable Flyway for PostgreSQL tests to test real migration scenarios
@@ -70,7 +77,3 @@ server:
 #    username: test
 #    password: test
 #    timezone: UTC
-
-testcontainers:
-  reuse:
-    enable: true
