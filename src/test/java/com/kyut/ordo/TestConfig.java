@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 
 /**
- * Тестова конфігурація для створення test beans та utilities
+ * Test configuration for creating test beans and utilities
  */
 @TestConfiguration
 public class TestConfig {
@@ -23,7 +23,7 @@ public class TestConfig {
     }
     
     /**
-     * Утиліта для створення тестових користувачів
+     * Utility for creating test users
      */
     public static class TestDataFactory {
         

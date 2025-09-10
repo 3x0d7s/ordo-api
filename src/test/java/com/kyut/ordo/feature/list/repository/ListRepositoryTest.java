@@ -43,7 +43,7 @@ class ListRepositoryTest extends AbstractPostgreSQLIntegrationTest {
     }
 
     @Test
-    @DisplayName("Знаходження списків по дошці з сортуванням по позиції")
+    @DisplayName("Find lists by board ordered by position")
     void findAllByBoardOrderByPosition() {
         // Given
         ListEntity list1 = createList("List 1", 2);
@@ -65,7 +65,7 @@ class ListRepositoryTest extends AbstractPostgreSQLIntegrationTest {
     }
 
     @Test
-    @DisplayName("Підрахунок кількості списків в дошці")
+    @DisplayName("Count lists in board")
     void countByBoard() {
         // Given
         createAndPersistList("List 1", 0);
@@ -80,7 +80,7 @@ class ListRepositoryTest extends AbstractPostgreSQLIntegrationTest {
     }
 
     @Test
-    @DisplayName("Підрахунок кількості списків в порожній дошці")
+    @DisplayName("Count lists in empty board")
     void countByBoard_EmptyBoard() {
         // When
         Integer count = listRepository.countByBoard(testBoard);
@@ -90,14 +90,14 @@ class ListRepositoryTest extends AbstractPostgreSQLIntegrationTest {
     }
 
     @Test
-    @DisplayName("Видалення списку по ID")
+    @DisplayName("Delete list by ID")
     void deleteListById() {
         // Given
         ListEntity list = createAndPersistList("Test List", 0);
         Long listId = list.getId();
 
         // When
-        listRepository.deleteById(listId); // Використовуємо стандартний метод JPA
+        listRepository.deleteById(listId); // Use standard JPA method
 
         // Then
         assertThat(listRepository.findById(listId)).isEmpty();

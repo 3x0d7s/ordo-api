@@ -24,7 +24,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 /**
- * Unit тести для ListEventListener
+ * Unit tests for ListEventListener
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ListEventListener Unit Tests")
@@ -47,7 +47,7 @@ class ListEventListenerTest {
     }
 
     @Test
-    @DisplayName("Обробка події створення списку")
+    @DisplayName("Handle list creation event")
     void handleListCreated() {
         // Given
         ListCreatedEvent event = new ListCreatedEvent(1L, 10L, testListRead);
@@ -63,12 +63,12 @@ class ListEventListenerTest {
         assertThat(capturedMessage.getType()).isEqualTo(WebSocketMessage.WebSocketMessageType.LIST_CREATED);
         assertThat(capturedMessage.getPayload()).isEqualTo(testListRead);
         assertThat(capturedMessage.getEntityId()).isEqualTo("1");
-        // Timestamp встановлюється в WebSocketService.sendBoardMessage(), тому тут він ще null
+        // Timestamp is set in WebSocketService.sendBoardMessage(), so it's still null here
         // assertThat(capturedMessage.getTimestamp()).isNotNull();
     }
 
     @Test
-    @DisplayName("Обробка події оновлення списку")
+    @DisplayName("Handle list update event")
     void handleListUpdated() {
         // Given
         ListUpdatedEvent event = new ListUpdatedEvent(1L, 10L, testListRead);
@@ -88,7 +88,7 @@ class ListEventListenerTest {
     }
 
     @Test
-    @DisplayName("Обробка події видалення списку")
+    @DisplayName("Handle list deletion event")
     void handleListDeleted() {
         // Given
         ListDeletedEvent event = new ListDeletedEvent(1L, 10L, testListRead);
@@ -108,14 +108,14 @@ class ListEventListenerTest {
     }
 
     @Test
-    @DisplayName("Обробка помилки WebSocket - не повинна кидати exception")
+    @DisplayName("Handle WebSocket error - should not throw exception")
     void handleListCreated_WebSocketError() {
         // Given
         ListCreatedEvent event = new ListCreatedEvent(1L, 10L, testListRead);
         doThrow(new RuntimeException("WebSocket connection failed"))
             .when(webSocketService).sendBoardMessage(anyLong(), any());
 
-        // When & Then - не повинно кинути exception
+        // When & Then - should not throw exception
         assertThatCode(() -> listEventListener.handleListCreated(event))
             .doesNotThrowAnyException();
     }

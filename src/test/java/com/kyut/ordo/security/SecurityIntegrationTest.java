@@ -63,14 +63,14 @@ class SecurityIntegrationTest extends AbstractPostgreSQLIntegrationTest {
                 .build();
         testUser = userRepository.save(testUser);
 
-        // Створюємо валідний JWT токен для тестування
+        // Create a valid JWT token for testing
         Authentication auth = new UsernamePasswordAuthenticationToken(
             testUser.getEmail(), null, testUser.getAuthorities());
         validJwtToken = jwtService.generateToken(auth);
     }
 
     @Test
-    @DisplayName("Доступ до публічних endpoints без аутентифікації")
+    @DisplayName("Access to public endpoints without authentication")
     void accessPublicEndpoints() throws Exception {
         // Swagger UI
         mockMvc.perform(get("/swagger-ui/index.html"))
@@ -82,7 +82,7 @@ class SecurityIntegrationTest extends AbstractPostgreSQLIntegrationTest {
     }
 
     @Test
-    @DisplayName("Доступ до захищених endpoints без токена - 401")
+    @DisplayName("Access to protected endpoints without token - 401")
     void accessProtectedEndpoints_WithoutToken() throws Exception {
         mockMvc.perform(get("/boards"))
             .andExpect(status().isUnauthorized());
@@ -92,7 +92,7 @@ class SecurityIntegrationTest extends AbstractPostgreSQLIntegrationTest {
     }
 
     @Test
-    @DisplayName("Доступ до захищених endpoints з валідним токеном")
+    @DisplayName("Access to protected endpoints with valid token")
     void accessProtectedEndpoints_WithValidToken() throws Exception {
         mockMvc.perform(get("/workspaces")
                 .header("Authorization", "Bearer " + validJwtToken))
@@ -100,7 +100,7 @@ class SecurityIntegrationTest extends AbstractPostgreSQLIntegrationTest {
     }
 
     @Test
-    @DisplayName("Доступ з недійсним токеном - 401")
+    @DisplayName("Access with invalid token - 401")
     void accessProtectedEndpoints_WithInvalidToken() throws Exception {
         mockMvc.perform(get("/workspaces")
                 .header("Authorization", "Bearer invalid.jwt.token"))
@@ -108,7 +108,7 @@ class SecurityIntegrationTest extends AbstractPostgreSQLIntegrationTest {
     }
 
     @Test
-    @DisplayName("Доступ з токеном без Bearer prefix - 401")
+    @DisplayName("Access with token without Bearer prefix - 401")
     void accessProtectedEndpoints_WithoutBearerPrefix() throws Exception {
         mockMvc.perform(get("/workspaces")
                 .header("Authorization", validJwtToken))
@@ -116,7 +116,7 @@ class SecurityIntegrationTest extends AbstractPostgreSQLIntegrationTest {
     }
 
     @Test
-    @DisplayName("CORS headers присутні в response")
+    @DisplayName("CORS headers present in response")
     void corsHeadersPresent() throws Exception {
         mockMvc.perform(get("/workspaces/joined")
                 .header("Authorization", "Bearer " + validJwtToken)

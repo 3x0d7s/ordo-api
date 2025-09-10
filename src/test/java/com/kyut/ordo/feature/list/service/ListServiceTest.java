@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit тести для ListService
+ * Unit tests for ListService
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ListService Unit Tests")
@@ -91,7 +91,7 @@ class ListServiceTest {
     }
 
     @Test
-    @DisplayName("Створення списку - успішний сценарій")
+    @DisplayName("Create list - success scenario")
     void createTaskList_Success() throws InsufficientBoardPermissionsException {
         // Given
         when(boardRepository.findById(1L)).thenReturn(Optional.of(testBoard));
@@ -107,7 +107,7 @@ class ListServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("Test List");
         
-        // Перевіряємо що подія була опублікована
+        // Verify that the event was published
         ArgumentCaptor<ListCreatedEvent> eventCaptor = ArgumentCaptor.forClass(ListCreatedEvent.class);
         verify(eventPublisher).publishEvent(eventCaptor.capture());
         
@@ -116,14 +116,14 @@ class ListServiceTest {
         assertThat(publishedEvent.getBoardId()).isEqualTo(1L);
         assertThat(publishedEvent.getListData()).isEqualTo(listReadDto);
         
-        // Перевіряємо виклики
+        // Verify method calls
         verify(boardRepository).findById(1L);
         verify(boardPermissionService).hasPermission(1L, testUser.getId(), "CREATE_LISTS");
         verify(listRepository).save(testList);
     }
 
     @Test
-    @DisplayName("Створення списку - дошка не знайдена")
+    @DisplayName("Create list - board not found")
     void createTaskList_BoardNotFound() {
         // Given
         when(boardRepository.findById(1L)).thenReturn(Optional.empty());
@@ -133,12 +133,12 @@ class ListServiceTest {
             .isInstanceOf(BoardNotFoundException.class)
             .hasMessageContaining("Board not found with id: 1");
         
-        // Перевіряємо що подія НЕ була опублікована
+        // Verify that the event was NOT published
         verify(eventPublisher, never()).publishEvent(any());
     }
 
     @Test
-    @DisplayName("Створення списку - недостатньо прав")
+    @DisplayName("Create list - insufficient permissions")
     void createTaskList_InsufficientPermissions() {
         // Given
         when(boardRepository.findById(1L)).thenReturn(Optional.of(testBoard));
@@ -149,18 +149,18 @@ class ListServiceTest {
             .isInstanceOf(InsufficientBoardPermissionsException.class)
             .hasMessageContaining("User does not have permission to create lists");
         
-        // Перевіряємо що подія НЕ була опублікована
+        // Verify that the event was NOT published
         verify(eventPublisher, never()).publishEvent(any());
     }
 
     @Test
-    @DisplayName("Створення списку - автоматичне встановлення позиції")
+    @DisplayName("Create list - automatic position setting")
     void createTaskList_AutoPosition() throws InsufficientBoardPermissionsException {
         // Given
-        listCreateDto.setPosition(null); // Не вказуємо позицію
+        listCreateDto.setPosition(null); // Do not specify position
         when(boardRepository.findById(1L)).thenReturn(Optional.of(testBoard));
         when(boardPermissionService.hasPermission(1L, testUser.getId(), "CREATE_LISTS")).thenReturn(true);
-        when(listRepository.countByBoard(testBoard)).thenReturn(3); // Вже є 3 списки
+        when(listRepository.countByBoard(testBoard)).thenReturn(3); // Already have 3 lists
         when(listMapper.toEntity(listCreateDto, testBoard)).thenReturn(testList);
         when(listRepository.save(testList)).thenReturn(testList);
         when(listMapper.toDto(testList)).thenReturn(listReadDto);
@@ -169,12 +169,12 @@ class ListServiceTest {
         listService.createTaskList(testUser, listCreateDto);
 
         // Then
-        assertThat(listCreateDto.getPosition()).isEqualTo(3); // Повинна встановитись позиція 3
+        assertThat(listCreateDto.getPosition()).isEqualTo(3); // Should set position to 3
         verify(listRepository).countByBoard(testBoard);
     }
 
     @Test
-    @DisplayName("Отримання списку по ID - успішний сценарій")
+    @DisplayName("Get list by ID - success scenario")
     void findById_Success() throws InsufficientBoardPermissionsException {
         // Given
         when(listRepository.findById(1L)).thenReturn(Optional.of(testList));
@@ -193,7 +193,7 @@ class ListServiceTest {
     }
 
     @Test
-    @DisplayName("Отримання списку по ID - список не знайдено")
+    @DisplayName("Get list by ID - list not found")
     void findById_ListNotFound() {
         // Given
         when(listRepository.findById(1L)).thenReturn(Optional.empty());
