@@ -1,8 +1,14 @@
 package com.kyut.ordo.testcontainers;
 
 import com.kyut.ordo.feature.board.entity.BoardEntity;
+import com.kyut.ordo.feature.board.entity.BoardMemberEntity;
+import com.kyut.ordo.feature.board.entity.BoardRoleEntity;
 import com.kyut.ordo.feature.board.entity.BoardVisibility;
 import com.kyut.ordo.feature.board.repository.BoardRepository;
+import com.kyut.ordo.feature.board.repository.BoardMemberRepository;
+import com.kyut.ordo.feature.board.repository.BoardRoleRepository;
+import com.kyut.ordo.feature.board.service.BoardRoleFactory;
+import com.kyut.ordo.feature.board.service.BoardPermissionService;
 import com.kyut.ordo.feature.list.entity.ListEntity;
 import com.kyut.ordo.feature.list.repository.ListRepository;
 import com.kyut.ordo.feature.user.entity.UserEntity;
@@ -13,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * Utility class for creating test data in PostgreSQL integration tests.
@@ -30,6 +37,18 @@ public class PostgreSQLTestDataBuilder {
     
     @Autowired
     private ListRepository listRepository;
+    
+    @Autowired
+    private BoardRoleRepository boardRoleRepository;
+    
+    @Autowired
+    private BoardMemberRepository boardMemberRepository;
+    
+    @Autowired
+    private BoardRoleFactory boardRoleFactory;
+    
+    @Autowired
+    private BoardPermissionService boardPermissionService;
 
     /**
      * Creates and saves a test user
@@ -59,6 +78,45 @@ public class PostgreSQLTestDataBuilder {
     }
 
     /**
+     * Creates and saves a test board with a user as owner
+     */
+    public BoardEntity createTestBoardWithOwner(String title, String description, UserEntity owner) {
+        BoardEntity board = createTestBoard(title, description);
+        
+        // Create roles for the board
+        Map<String, BoardRoleEntity> roles = boardRoleFactory.rolesAsMap(board);
+        
+        // Add the user as owner of the board
+        boardPermissionService.addMember(board, owner, roles.get("Owner"));
+        
+        return board;
+    }
+
+    /**
+     * Adds a user as a member to a board with specified role
+     */
+    public BoardMemberEntity addUserToBoardWithRole(BoardEntity board, UserEntity user, String roleName) {
+        // Find or create the role
+        BoardRoleEntity role = boardRoleRepository.findByBoardAndName(board, roleName)
+            .orElseGet(() -> {
+                switch (roleName) {
+                    case "Owner" -> {
+                        return boardRoleFactory.createOwnerRole(board);
+                    }
+                    case "Member" -> {
+                        return boardRoleFactory.createMemberRole(board);
+                    }
+                    case "Guest" -> {
+                        return boardRoleFactory.createGuestRole(board);
+                    }
+                    default -> throw new IllegalArgumentException("Unknown role: " + roleName);
+                }
+            });
+        
+        return boardPermissionService.addMember(board, user, role);
+    }
+
+    /**
      * Creates and saves a test list for a given board
      */
     public ListEntity createTestList(String title, int position, BoardEntity board) {
@@ -75,6 +133,8 @@ public class PostgreSQLTestDataBuilder {
      */
     public void cleanAllData() {
         listRepository.deleteAll();
+        boardMemberRepository.deleteAll();
+        boardRoleRepository.deleteAll();
         boardRepository.deleteAll();
         userRepository.deleteAll();
     }

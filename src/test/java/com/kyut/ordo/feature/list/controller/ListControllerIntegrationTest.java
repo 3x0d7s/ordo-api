@@ -70,8 +70,8 @@ class ListControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
         // Create test user
         testUser = dataBuilder.createTestUser("test@example.com", "Test User");
 
-        // Create test board
-        testBoard = dataBuilder.createTestBoard("Test Board", "Test Description");
+        // Create test board with user as owner (this will also create board roles and membership)
+        testBoard = dataBuilder.createTestBoardWithOwner("Test Board", "Test Description", testUser);
 
         // Create test list
         testList = dataBuilder.createTestList("Test List", 0, testBoard);

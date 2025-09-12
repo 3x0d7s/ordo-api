@@ -88,6 +88,10 @@ public class ListService {
         if (!boardPermissionService.hasPermission(dto.getBoardId(), user.getId(), "CREATE_LISTS")) {
             throw new InsufficientBoardPermissionsException("User does not have permission to create lists in this board");
         }
+
+        if (dto.getTitle().isBlank()) {
+            throw new IllegalArgumentException("Title cannot be blank");
+        }
         
         // If position is not provided, add to the end
         if (dto.getPosition() == null) {
