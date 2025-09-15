@@ -180,7 +180,7 @@ public class ListService {
         listRepository.deleteCommentsByCardsOfList(id);
         
         listRepository.deleteCardsByListId(id);
-        listRepository.deleteListById(id);
+        listRepository.delete(list);
 
         ListRead listRead = listMapper.toDto(list);
 

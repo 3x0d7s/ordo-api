@@ -45,13 +45,4 @@ public interface ListRepository extends CrudRepository<ListEntity, Long> {
     @Query(value = "DELETE FROM cards WHERE list_id = :listId", nativeQuery = true)
     void deleteCardsByListId(@Param("listId") Long listId);
 
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM lists WHERE board_id = :boardId", nativeQuery = true)
-    void deleteListsByBoardId(@Param("boardId") Long boardId);
-
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM lists WHERE id = :listId", nativeQuery = true)
-    void deleteListById(@Param("listId") Long listId);
 }

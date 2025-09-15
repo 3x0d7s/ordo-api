@@ -3,16 +3,11 @@ package com.kyut.ordo.feature.list.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kyut.ordo.TestConfig;
 import com.kyut.ordo.feature.board.entity.BoardEntity;
-import com.kyut.ordo.feature.board.entity.BoardVisibility;
-import com.kyut.ordo.feature.board.repository.BoardRepository;
 import com.kyut.ordo.feature.list.dto.ListCreate;
 import com.kyut.ordo.feature.list.dto.ListPositionUpdate;
-import com.kyut.ordo.feature.list.dto.ListRead;
 import com.kyut.ordo.feature.list.entity.ListEntity;
 import com.kyut.ordo.feature.list.repository.ListRepository;
 import com.kyut.ordo.feature.user.entity.UserEntity;
-import com.kyut.ordo.feature.user.repository.UserRepository;
-import com.kyut.ordo.security.auth.provider.AuthProvider;
 import com.kyut.ordo.testcontainers.AbstractPostgreSQLIntegrationTest;
 import com.kyut.ordo.testcontainers.PostgreSQLTestDataBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +23,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -195,7 +189,7 @@ class ListControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
 
         ListPositionUpdate positionUpdate = new ListPositionUpdate();
         positionUpdate.setBoardId(testBoard.getId());
-        positionUpdate.setListIds(Arrays.asList(list3.getId(), list1.getId(), list2.getId())); // Reorder
+        positionUpdate.setListIds(Arrays.asList(list3.getId(), list1.getId(), list2.getId(), testList.getId())); // Reorder
 
         // When & Then
         mockMvc.perform(put("/lists/positions")
