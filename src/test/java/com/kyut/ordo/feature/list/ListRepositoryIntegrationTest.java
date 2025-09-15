@@ -1,8 +1,9 @@
-package com.kyut.ordo.feature.list.repository;
+package com.kyut.ordo.feature.list;
 
 import com.kyut.ordo.feature.board.entity.BoardEntity;
 import com.kyut.ordo.feature.list.entity.ListEntity;
 import com.kyut.ordo.TestConfig;
+import com.kyut.ordo.feature.list.repository.ListRepository;
 import com.kyut.ordo.testcontainers.AbstractPostgreSQLIntegrationTest;
 import com.kyut.ordo.testcontainers.PostgreSQLTestDataBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import(TestConfig.class)
 @DisplayName("ListRepository Integration Tests with PostgreSQL")
 @Transactional
-class ListRepositoryTest extends AbstractPostgreSQLIntegrationTest {
+class ListRepositoryIntegrationTest extends AbstractPostgreSQLIntegrationTest {
 
     @Autowired
     private ListRepository listRepository;

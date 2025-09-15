@@ -1,4 +1,4 @@
-package com.kyut.ordo.feature.list.controller;
+package com.kyut.ordo.feature.list;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kyut.ordo.TestConfig;

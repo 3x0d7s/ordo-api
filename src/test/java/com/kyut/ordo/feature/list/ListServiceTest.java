@@ -1,4 +1,4 @@
-package com.kyut.ordo.feature.list.service;
+package com.kyut.ordo.feature.list;
 
 import com.kyut.ordo.TestConfig;
 import com.kyut.ordo.feature.board.entity.BoardEntity;
@@ -13,6 +13,7 @@ import com.kyut.ordo.feature.list.event.ListCreatedEvent;
 import com.kyut.ordo.feature.list.exception.ListNotFoundException;
 import com.kyut.ordo.feature.list.mapper.ListMapper;
 import com.kyut.ordo.feature.list.repository.ListRepository;
+import com.kyut.ordo.feature.list.service.ListService;
 import com.kyut.ordo.feature.user.entity.UserEntity;
 
 import org.junit.jupiter.api.BeforeEach;

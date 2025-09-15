@@ -1,5 +1,6 @@
-package com.kyut.ordo.feature.list.listener;
+package com.kyut.ordo.feature.list;
 
+import com.kyut.ordo.feature.list.listener.ListEventListener;
 import com.kyut.ordo.websocket.WebSocketMessage;
 import com.kyut.ordo.websocket.WebSocketService;
 import com.kyut.ordo.feature.list.dto.ListRead;
