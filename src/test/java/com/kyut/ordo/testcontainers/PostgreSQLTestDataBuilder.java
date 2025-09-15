@@ -13,8 +13,16 @@ import com.kyut.ordo.feature.list.entity.ListEntity;
 import com.kyut.ordo.feature.list.repository.ListRepository;
 import com.kyut.ordo.feature.user.entity.UserEntity;
 import com.kyut.ordo.feature.user.repository.UserRepository;
+import com.kyut.ordo.feature.workspace.entity.WorkspaceEntity;
+import com.kyut.ordo.feature.workspace.entity.WorkspaceMemberEntity;
+import com.kyut.ordo.feature.workspace.entity.WorkspaceRoleEntity;
+import com.kyut.ordo.feature.workspace.repository.WorkspaceRepository;
+import com.kyut.ordo.feature.workspace.repository.WorkspaceMemberRepository;
+import com.kyut.ordo.feature.workspace.repository.WorkspaceRoleRepository;
+import com.kyut.ordo.feature.workspace.service.WorkspaceRoleFactory;
 import com.kyut.ordo.security.auth.provider.AuthProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +57,18 @@ public class PostgreSQLTestDataBuilder {
     
     @Autowired
     private BoardPermissionService boardPermissionService;
+    
+    @Autowired
+    private WorkspaceRepository workspaceRepository;
+    
+    @Autowired
+    private WorkspaceRoleRepository workspaceRoleRepository;
+    
+    @Autowired
+    private WorkspaceMemberRepository workspaceMemberRepository;
+    
+    @Autowired
+    private WorkspaceRoleFactory workspaceRoleFactory;
 
     /**
      * Creates and saves a test user
@@ -117,6 +137,88 @@ public class PostgreSQLTestDataBuilder {
     }
 
     /**
+     * Creates and saves a test workspace
+     */
+    public WorkspaceEntity createTestWorkspace(String title, String description, UserEntity owner) {
+        WorkspaceEntity workspace = new WorkspaceEntity();
+        workspace.setTitle(title);
+        workspace.setDescription(description);
+        workspace.setOwner(owner);
+        workspace.setCreatedAt(LocalDateTime.now());
+        workspace = workspaceRepository.save(workspace);
+
+        // Create roles for the workspace
+        Map<String, WorkspaceRoleEntity> roles = workspaceRoleFactory.rolesAsMap(workspace);
+
+        // Add the user as owner of the workspace
+        WorkspaceMemberEntity member = WorkspaceMemberEntity.builder()
+                .workspace(workspace)
+                .user(owner)
+                .role(roles.get("Owner"))
+                .joinedAt(LocalDateTime.now())
+                .build();
+        
+        workspaceMemberRepository.save(member);
+
+        return workspace;
+    }
+
+    /**
+     * Adds a user as a member to a workspace with specified role
+     */
+    public WorkspaceMemberEntity addUserToWorkspaceWithRole(WorkspaceEntity workspace, UserEntity user, String roleName) {
+        // Find or create the role
+        WorkspaceRoleEntity role = workspaceRoleRepository.findAllByWorkspace(workspace, Pageable.unpaged())
+            .getContent().stream()
+            .filter(r -> roleName.equals(r.getName()))
+            .findFirst()
+            .orElseGet(() -> {
+                switch (roleName) {
+                    case "Owner" -> {
+                        return workspaceRoleFactory.createOwnerRole(workspace);
+                    }
+                    case "Member" -> {
+                        return workspaceRoleFactory.createMemberRole(workspace);
+                    }
+                    case "Guest" -> {
+                        return workspaceRoleFactory.createGuestRole(workspace);
+                    }
+                    default -> throw new IllegalArgumentException("Unknown role: " + roleName);
+                }
+            });
+
+        WorkspaceMemberEntity member = WorkspaceMemberEntity.builder()
+                .workspace(workspace)
+                .user(user)
+                .role(role)
+                .joinedAt(LocalDateTime.now())
+                .build();
+
+        return workspaceMemberRepository.save(member);
+    }
+
+    /**
+     * Creates and saves a test board with workspace
+     */
+    public BoardEntity createTestBoardWithWorkspace(String title, String description, UserEntity owner, WorkspaceEntity workspace) {
+        BoardEntity board = new BoardEntity();
+        board.setTitle(title);
+        board.setDescription(description);
+        board.setVisibility(BoardVisibility.WORKSPACE);
+        board.setWorkspace(workspace);
+        board.setCreatedAt(LocalDateTime.now());
+        board = boardRepository.save(board);
+        
+        // Create roles for the board
+        Map<String, BoardRoleEntity> roles = boardRoleFactory.rolesAsMap(board);
+        
+        // Add the user as owner of the board
+        boardPermissionService.addMember(board, owner, roles.get("Owner"));
+        
+        return board;
+    }
+
+    /**
      * Creates and saves a test list for a given board
      */
     public ListEntity createTestList(String title, int position, BoardEntity board) {
@@ -136,6 +238,9 @@ public class PostgreSQLTestDataBuilder {
         boardMemberRepository.deleteAll();
         boardRoleRepository.deleteAll();
         boardRepository.deleteAll();
+        workspaceMemberRepository.deleteAll();
+        workspaceRoleRepository.deleteAll();
+        workspaceRepository.deleteAll();
         userRepository.deleteAll();
     }
 }
