@@ -1,4 +1,4 @@
-package com.kyut.ordo.feature.workspace.controller;
+package com.kyut.ordo.feature.workspace;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kyut.ordo.TestConfig;
@@ -69,7 +69,6 @@ class WorkspaceControllerIntegrationTest extends AbstractPostgreSQLIntegrationTe
     private UserEntity otherUser;
     private WorkspaceEntity testWorkspace;
     private WorkspaceRoleEntity memberRole;
-    private WorkspaceMemberEntity testWorkspaceMember;
 
     @BeforeEach
     void setUp() {

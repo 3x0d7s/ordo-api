@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class WorkspaceInviteCreate {
-    private final Long workspaceId;
-    private final Long roleId;
-    private final Integer expiresInDays;
+    private Long workspaceId;
+    private Long roleId;
+    private Integer expiresInDays;
 } 
