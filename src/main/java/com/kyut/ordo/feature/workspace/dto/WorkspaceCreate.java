@@ -1,9 +1,13 @@
 package com.kyut.ordo.feature.workspace.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class WorkspaceCreate {
-    private final String title;
-    private final String description;
+    private String title;
+    private String description;
 }

@@ -69,6 +69,7 @@ class WorkspaceControllerIntegrationTest extends AbstractPostgreSQLIntegrationTe
     private UserEntity otherUser;
     private WorkspaceEntity testWorkspace;
     private WorkspaceRoleEntity memberRole;
+    private WorkspaceMemberEntity testWorkspaceMember;
 
     @BeforeEach
     void setUp() {
@@ -347,6 +348,9 @@ class WorkspaceControllerIntegrationTest extends AbstractPostgreSQLIntegrationTe
                 .with(user(testUser))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(memberCreate)))
+                .andDo(handler ->
+                                System.out.println(handler.getResponse().getContentAsString())
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user.id").value(otherUser.getId()))
                 .andExpect(jsonPath("$.role.id").value(memberRole.getId()));

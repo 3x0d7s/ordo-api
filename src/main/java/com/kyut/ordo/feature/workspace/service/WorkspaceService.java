@@ -22,6 +22,7 @@ import com.kyut.ordo.feature.workspace.mapper.WorkspaceRoleMapper;
 import com.kyut.ordo.feature.workspace.repository.WorkspaceMemberRepository;
 import com.kyut.ordo.feature.workspace.repository.WorkspaceRepository;
 import com.kyut.ordo.feature.workspace.repository.WorkspaceRoleRepository;
+import com.kyut.ordo.feature.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +39,7 @@ public class WorkspaceService {
     private final WorkspaceRoleRepository workspaceRoleRepository;
     private final WorkspaceMemberRepository workspaceMemberRepository;
     private final WorkspaceRoleFactory workspaceRoleFactory;
+    private final UserRepository userRepository;
 
     private final WorkspaceRoleMapper workspaceRoleMapper;
     private final WorkspaceMemberMapper workspaceMemberMapper;
@@ -237,15 +239,26 @@ public class WorkspaceService {
             throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to create members in this workspace");
         }
 
-        WorkspaceMemberEntity member = workspaceMemberRepository
-                .findByWorkspaceIdAndUserId(workspaceId, dto.getUserId())
-                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
-
         WorkspaceRoleEntity role = workspaceRoleRepository
                 .findById(dto.getWorkspaceRoleId())
                 .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceRole not found by this id"));
 
-        member.setRole(role);
+        WorkspaceMemberEntity member = workspaceMemberRepository
+                .findByWorkspaceIdAndUserId(workspaceId, dto.getUserId())
+                .orElse(null);
+
+        if (member == null) {
+            var newUser = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new WorkspaceNotFoundException("User not found by this id"));
+            member = WorkspaceMemberEntity.builder()
+                    .workspace(workspace)
+                    .user(newUser)
+                    .role(role)
+                    .build();
+        } else {
+            // If member already existed, update their role
+            member.setRole(role);
+        }
 
         WorkspaceMemberEntity savedMember = workspaceMemberRepository.save(member);
 

@@ -58,7 +58,7 @@ public class WorkspaceController {
     @PutMapping("/{id}")
     public ResponseEntity<WorkspaceRead> updateWorkspace(@AuthenticationPrincipal UserEntity user,
                                                          @PathVariable long id,
-                                                         WorkspaceUpdate dto)
+                                                         @RequestBody WorkspaceUpdate dto)
             throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
         return ResponseEntity.ok(workspaceService.updateWorkspace(user, id, dto));
     }
@@ -74,7 +74,7 @@ public class WorkspaceController {
     @PostMapping("/{id}/roles")
     public ResponseEntity<WorkspaceRoleRead> createRole(@AuthenticationPrincipal UserEntity user,
                                                         @PathVariable long id,
-                                                        WorkspaceRoleCreate dto)
+                                                        @RequestBody WorkspaceRoleCreate dto)
             throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
         return ResponseEntity.ok(workspaceService.createRole(user, dto));
     }
@@ -113,7 +113,7 @@ public class WorkspaceController {
     @PostMapping("/{id}/members")
     public ResponseEntity<WorkspaceMemberRead> createMember(@AuthenticationPrincipal UserEntity user,
                                                             @PathVariable long id,
-                                                            WorkspaceMemberCreate dto)
+                                                            @RequestBody WorkspaceMemberCreate dto)
             throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
         return ResponseEntity.ok(workspaceService.createMember(user, id, dto));
     }
@@ -129,7 +129,7 @@ public class WorkspaceController {
 
     @PostMapping
     public ResponseEntity<WorkspaceRead> createWorkspace(@AuthenticationPrincipal UserEntity user,
-                                                         WorkspaceCreate dto) {
+                                                         @RequestBody WorkspaceCreate dto) {
         return ResponseEntity.ok(workspaceService.createWorkspace(user, dto));
     }
 
