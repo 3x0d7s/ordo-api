@@ -132,7 +132,7 @@ class BoardControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
                 .andExpect(jsonPath("$.title").value("New Board"))
                 .andExpect(jsonPath("$.description").value("New Description"))
                 .andExpect(jsonPath("$.visibility").value("PRIVATE"))
-                .andExpect(jsonPath("$.workspaceId").value(testWorkspace.getId()));
+                .andExpect(jsonPath("$.workspace.id").value(testWorkspace.getId()));
 
         // Verify board was created in database
         List<BoardEntity> boards = (List<BoardEntity>) boardRepository.findAll();

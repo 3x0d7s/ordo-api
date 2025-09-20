@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -58,7 +59,7 @@ class BoardPermissionServiceTest {
         // Create admin role with all permissions
         adminRole = new BoardRoleEntity();
         adminRole.setId(1L);
-        adminRole.setName("Admin");
+        adminRole.setName("Owner");
         adminRole.setBoard(testBoard);
         adminRole.setAbleToEdit(true);
         adminRole.setAbleToDelete(true);
@@ -101,7 +102,7 @@ class BoardPermissionServiceTest {
         assertThat(boardPermissionService.hasPermission(1L, testUser.getId(), "CREATE_LISTS")).isTrue();
         assertThat(boardPermissionService.hasPermission(1L, testUser.getId(), "CREATE_TASKS")).isTrue();
 
-        verify(boardMemberRepository).findByBoardIdAndUserId(1L, testUser.getId());
+        verify(boardMemberRepository, times(6)).findByBoardIdAndUserId(1L, testUser.getId());
     }
 
     @Test

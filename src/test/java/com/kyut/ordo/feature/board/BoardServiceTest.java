@@ -27,6 +27,8 @@ import com.kyut.ordo.feature.board.service.BoardService;
 import com.kyut.ordo.feature.user.entity.UserEntity;
 import com.kyut.ordo.feature.user.repository.UserRepository;
 import com.kyut.ordo.feature.workspace.entity.WorkspaceEntity;
+import com.kyut.ordo.feature.workspace.entity.WorkspaceMemberEntity;
+import com.kyut.ordo.feature.workspace.entity.WorkspaceRoleEntity;
 import com.kyut.ordo.feature.workspace.repository.WorkspaceMemberRepository;
 import com.kyut.ordo.feature.workspace.repository.WorkspaceRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,13 +44,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -137,7 +142,9 @@ class BoardServiceTest {
     void findById_Success() throws BoardNotFoundException, InsufficientBoardPermissionsException {
         // Given
         when(boardRepository.findById(1L)).thenReturn(Optional.of(testBoard));
-        when(boardPermissionService.hasPermission(1L, testUser.getId(), "VIEW")).thenReturn(true);
+        // Mock canUserAccessBoard - user is member of board
+        when(boardMemberRepository.findByBoardIdAndUserId(1L, testUser.getId()))
+            .thenReturn(Optional.of(testMember));
         when(boardMapper.toDto(testBoard)).thenReturn(boardReadDto);
 
         // When
@@ -167,7 +174,9 @@ class BoardServiceTest {
     void findById_InsufficientPermissions() {
         // Given
         when(boardRepository.findById(1L)).thenReturn(Optional.of(testBoard));
-        when(boardPermissionService.hasPermission(1L, testUser.getId(), "VIEW")).thenReturn(false);
+        // Mock canUserAccessBoard - user is NOT member and board is private
+        when(boardMemberRepository.findByBoardIdAndUserId(1L, testUser.getId()))
+            .thenReturn(Optional.empty());
 
         // When & Then
         assertThatThrownBy(() -> boardService.findById(testUser, 1L))
@@ -178,15 +187,19 @@ class BoardServiceTest {
     @Test
     @DisplayName("Create board - success")
     void createBoard_Success() throws InsufficientBoardPermissionsException {
-        // Given
+        // Given - create workspace member to simulate user access
+        WorkspaceMemberEntity workspaceMember = new WorkspaceMemberEntity();
+        WorkspaceRoleEntity workspaceRole = new WorkspaceRoleEntity();
+        workspaceRole.setAbleToManageContent(true);
+        workspaceMember.setRole(workspaceRole);
+        
         when(workspaceRepository.findById(1L)).thenReturn(Optional.of(testWorkspace));
-        when(boardPermissionService.hasPermission(1L, testUser.getId(), "CREATE_BOARDS")).thenReturn(true);
+        when(workspaceMemberRepository.findByWorkspaceIdAndUserId(1L, testUser.getId()))
+            .thenReturn(Optional.of(workspaceMember));
         when(boardMapper.toEntity(boardCreateDto, testWorkspace)).thenReturn(testBoard);
         when(boardRepository.save(testBoard)).thenReturn(testBoard);
-        when(boardRoleFactory.createOwnerRole(testBoard)).thenReturn(testRole);
-        when(boardRoleRepository.save(testRole)).thenReturn(testRole);
-        when(boardMemberRepository.save(any(BoardMemberEntity.class))).thenReturn(testMember);
-        when(boardMapper.toDto(testBoard)).thenReturn(boardReadDto);
+        when(boardRoleFactory.rolesAsMap(testBoard)).thenReturn(Map.of("Owner", testRole));
+        when(boardMapper.toDto(any(BoardEntity.class), any(Collection.class))).thenReturn(boardReadDto);
 
         // When
         BoardRead result = boardService.createBoard(testUser, boardCreateDto);
@@ -195,8 +208,6 @@ class BoardServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("Test Board");
         verify(boardRepository).save(testBoard);
-        verify(boardRoleRepository).save(testRole);
-        verify(boardMemberRepository).save(any(BoardMemberEntity.class));
     }
 
     @Test
@@ -204,12 +215,13 @@ class BoardServiceTest {
     void createBoard_InsufficientPermissions() {
         // Given
         when(workspaceRepository.findById(1L)).thenReturn(Optional.of(testWorkspace));
-        when(boardPermissionService.hasPermission(1L, testUser.getId(), "CREATE_BOARDS")).thenReturn(false);
+        when(workspaceMemberRepository.findByWorkspaceIdAndUserId(1L, testUser.getId()))
+            .thenReturn(Optional.empty()); // User is not member of workspace
 
         // When & Then
         assertThatThrownBy(() -> boardService.createBoard(testUser, boardCreateDto))
             .isInstanceOf(InsufficientBoardPermissionsException.class)
-            .hasMessageContaining("User does not have permission to create boards in this workspace");
+            .hasMessageContaining("User does not have access to this workspace");
     }
 
     @Test
@@ -221,7 +233,9 @@ class BoardServiceTest {
         Page<BoardEntity> boardPage = new PageImpl<>(boards, pageable, 1);
         
         when(boardRepository.findAll(pageable)).thenReturn(boardPage);
-        when(boardPermissionService.hasPermission(1L, testUser.getId(), "VIEW")).thenReturn(true);
+        // Mock canUserAccessBoard - user is member of board
+        when(boardMemberRepository.findByBoardIdAndUserId(1L, testUser.getId()))
+            .thenReturn(Optional.of(testMember));
         when(boardMapper.toDto(testBoard)).thenReturn(boardReadDto);
 
         // When
@@ -243,7 +257,9 @@ class BoardServiceTest {
         Page<BoardEntity> boardPage = new PageImpl<>(boards, pageable, 1);
         
         when(boardRepository.findAllByWorkspaceId(1L, pageable)).thenReturn(boardPage);
-        when(boardPermissionService.hasPermission(1L, testUser.getId(), "VIEW")).thenReturn(true);
+        // Mock canUserAccessBoard - user is member of board
+        when(boardMemberRepository.findByBoardIdAndUserId(1L, testUser.getId()))
+            .thenReturn(Optional.of(testMember));
         when(boardMapper.toDto(testBoard)).thenReturn(boardReadDto);
 
         // When
@@ -305,9 +321,10 @@ class BoardServiceTest {
         UserEntity memberUser = TestConfig.TestDataFactory.createTestUserWithId(2L, "member@example.com", "Member User");
         when(boardRepository.findById(1L)).thenReturn(Optional.of(testBoard));
         when(userRepository.findById(2L)).thenReturn(Optional.of(memberUser));
-        when(boardPermissionService.hasPermission(1L, testUser.getId(), "MANAGE_MEMBERS")).thenReturn(true);
-        // Mock role lookup by name - simplified for test
-        when(boardMemberRepository.save(any(BoardMemberEntity.class))).thenReturn(testMember);
+        when(boardPermissionService.hasPermission(1L, testUser.getId(), "INVITE")).thenReturn(true);
+        when(boardRoleRepository.findById(testRole.getId())).thenReturn(Optional.of(testRole));
+        when(boardPermissionService.addMember(any(BoardEntity.class), any(UserEntity.class), any(BoardRoleEntity.class)))
+            .thenReturn(testMember);
 
         // When
         boardService.addMember(testUser, 1L, 2L, testRole.getId());
@@ -315,20 +332,19 @@ class BoardServiceTest {
         // Then
         verify(boardRepository).findById(1L);
         verify(userRepository).findById(2L);
-        verify(boardMemberRepository).save(any(BoardMemberEntity.class));
+        verify(boardPermissionService).addMember(any(BoardEntity.class), any(UserEntity.class), any(BoardRoleEntity.class));
     }
 
     @Test
     @DisplayName("Add member to board - insufficient permissions")
     void addMember_InsufficientPermissions() {
         // Given
-        when(boardRepository.findById(1L)).thenReturn(Optional.of(testBoard));
-        when(boardPermissionService.hasPermission(1L, testUser.getId(), "MANAGE_MEMBERS")).thenReturn(false);
+        when(boardPermissionService.hasPermission(1L, testUser.getId(), "INVITE")).thenReturn(false);
 
         // When & Then
         assertThatThrownBy(() -> boardService.addMember(testUser, 1L, 2L, testRole.getId()))
             .isInstanceOf(InsufficientBoardPermissionsException.class)
-            .hasMessageContaining("User does not have permission to manage members of this board");
+            .hasMessageContaining("User does not have permission to add members");
     }
 
     @Test
@@ -340,8 +356,9 @@ class BoardServiceTest {
         roleRead.setName("Admin");
 
         when(boardRepository.findById(1L)).thenReturn(Optional.of(testBoard));
-        when(boardPermissionService.hasPermission(1L, testUser.getId(), "VIEW")).thenReturn(true);
-        when(boardMemberRepository.findByBoardIdAndUserId(1L, testUser.getId())).thenReturn(Optional.of(testMember));
+        // Mock canUserAccessBoard - user is member of board (first call for access check)
+        when(boardMemberRepository.findByBoardIdAndUserId(1L, testUser.getId()))
+            .thenReturn(Optional.of(testMember)); // This will be called twice
         when(boardRoleMapper.toDto(testRole)).thenReturn(roleRead);
 
         // When
@@ -351,7 +368,6 @@ class BoardServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo("Admin");
         verify(boardRepository).findById(1L);
-        verify(boardMemberRepository).findByBoardIdAndUserId(1L, testUser.getId());
     }
 
     @Test
@@ -359,12 +375,14 @@ class BoardServiceTest {
     void getMyRole_UserNotMember() {
         // Given
         when(boardRepository.findById(1L)).thenReturn(Optional.of(testBoard));
-        when(boardPermissionService.hasPermission(1L, testUser.getId(), "VIEW")).thenReturn(true);
-        when(boardMemberRepository.findByBoardIdAndUserId(1L, testUser.getId())).thenReturn(Optional.empty());
+        // Mock canUserAccessBoard - user is NOT member of board and board is private (default)
+        // testBoard visibility is PRIVATE by default
+        when(boardMemberRepository.findByBoardIdAndUserId(1L, testUser.getId()))
+            .thenReturn(Optional.empty()); // User is not member
 
         // When & Then
         assertThatThrownBy(() -> boardService.getMyRole(testUser, 1L))
             .isInstanceOf(InsufficientBoardPermissionsException.class)
-            .hasMessageContaining("User is not a member of this board");
+            .hasMessageContaining("User does not have access to this board");
     }
 }
