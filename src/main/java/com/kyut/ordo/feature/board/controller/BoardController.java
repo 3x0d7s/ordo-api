@@ -44,7 +44,7 @@ public class BoardController {
     @PostMapping
     public ResponseEntity<BoardRead> createBoard(
             @AuthenticationPrincipal UserEntity user,
-            BoardCreate dto)
+            @RequestBody BoardCreate dto)
             throws InsufficientBoardPermissionsException {
         BoardRead board = boardService.createBoard(user, dto);
         return ResponseEntity.ok(board);
@@ -72,7 +72,7 @@ public class BoardController {
     public ResponseEntity<BoardRead> updateBoard(
             @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id,
-            BoardCreate dto)
+            @RequestBody BoardCreate dto)
             throws InsufficientBoardPermissionsException {
         BoardRead board = boardService.updateBoard(user, id, dto);
         return ResponseEntity.ok(board);
