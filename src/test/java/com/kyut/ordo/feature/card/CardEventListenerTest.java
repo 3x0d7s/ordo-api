@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 
 /**
  * Unit tests for CardEventListener
@@ -103,8 +104,8 @@ class CardEventListenerTest {
 
         // Verify sendBoardMessage was called and failed
         verify(webSocketService).sendBoardMessage(eq(boardId), any());
-        // sendListMessage should still be called even if sendBoardMessage failed
-        verify(webSocketService).sendListMessage(eq(listId), any());
+        // sendListMessage should NOT be called when sendBoardMessage throws exception
+        verify(webSocketService, never()).sendListMessage(anyLong(), any());
     }
 
     @Test
@@ -229,9 +230,10 @@ class CardEventListenerTest {
         // When & Then - should not throw exception
         cardEventListener.handleCardPositionsUpdated(event);
 
-        // Verify both methods were called despite the exception
+        // Verify sendBoardMessage was called and failed
         verify(webSocketService).sendBoardMessage(eq(boardId), any());
-        verify(webSocketService).sendListMessage(eq(listId), any());
+        // sendListMessage should NOT be called when sendBoardMessage throws exception
+        verify(webSocketService, never()).sendListMessage(anyLong(), any());
     }
 
     @Test
