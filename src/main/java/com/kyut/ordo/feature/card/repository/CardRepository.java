@@ -54,5 +54,5 @@ public interface CardRepository extends CrudRepository<CardEntity, Long> {
     @Query(
             value = "DELETE FROM cards WHERE id = :id",
             nativeQuery = true)
-    void deleteById(@Param("id") Long id);
+    void deleteByIdWithQuery(@Param("id") Long id);
 }
