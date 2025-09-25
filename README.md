@@ -1,11 +1,6 @@
 # Ordo - Project Management System
 
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Latest-blue.svg)](https://www.postgresql.org/)
-[![Vue.js](https://img.shields.io/badge/Vue.js-3-green.svg)](https://vuejs.org/)
-
-Ordo is a modern project management system inspired by Trello, built with Spring Boot and Vue.js. It provides a collaborative workspace for teams to organize projects using boards, lists, and cards with real-time updates.
+Ordo is a project management system inspired by Trello, built with Spring Boot. It provides a collaborative workspace for teams to organize projects using boards, lists, and cards with real-time updates and flexible functionalities of managing workspace/board member roles.
 
 ## ✨ Features
 
@@ -47,22 +42,10 @@ src/main/java/com/kyut/ordo/
 └── common/            # Shared utilities
 ```
 
-### Frontend (Vue.js)
-```
-src/
-├── components/        # Reusable UI components
-├── views/            # Page-level components
-├── stores/           # Pinia state management
-├── services/         # API communication
-├── composables/      # Vue composition utilities
-└── router/           # Route definitions
-```
-
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Java 21+
-- Node.js 18+
 - PostgreSQL 13+
 - Docker (for testing)
 
@@ -101,57 +84,6 @@ src/
 
 The backend will be available at `http://localhost:8080`
 
-### Frontend Setup
-
-1. **Navigate to frontend directory**
-   ```bash
-   cd ordo-frontend
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables**
-   ```bash
-   # Create .env file
-   echo "VITE_API_URL=http://localhost:8080" > .env
-   echo "VITE_GOOGLE_CLIENT_ID=your_google_client_id" >> .env
-   ```
-
-4. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-The frontend will be available at `http://localhost:5173`
-
-## 🧪 Testing
-
-### Backend Testing
-
-**Run all tests with H2 (fast)**
-```bash
-./mvnw test
-```
-
-**Run integration tests with PostgreSQL Testcontainers**
-```bash
-./mvnw test -Dspring.profiles.active=testcontainers
-```
-
-**Run specific test class**
-```bash
-./mvnw test -Dtest=WorkspaceServiceTest
-```
-
-### Frontend Testing
-```bash
-cd ordo-frontend
-npm run lint
-```
-
 ## 📚 API Documentation
 
 When the backend is running, visit:
@@ -171,15 +103,6 @@ When the backend is running, visit:
 - **Database Migration**: Flyway
 - **Mapping**: MapStruct
 - **Real-time**: WebSocket + STOMP
-
-### Frontend
-- **Framework**: Vue.js 3
-- **State Management**: Pinia
-- **Routing**: Vue Router 4
-- **Styling**: TailwindCSS 4
-- **HTTP Client**: Axios
-- **Build Tool**: Vite
-- **Real-time**: STOMP.js + SockJS
 
 ## 🗄️ Database Schema
 
@@ -203,27 +126,11 @@ Workspace 1:N Board 1:N List 1:N Card 1:N Task
 
 ### Application Profiles
 - **default** - Production configuration
-- **test** - H2 in-memory database for fast testing
 - **testcontainers** - PostgreSQL with Docker for integration testing
 
 ### Key Configuration Files
 - `application.yml` - Main application configuration
-- `application-test.yml` - Test-specific settings
 - `application-testcontainers.yml` - Testcontainers configuration
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-- Follow Spring Boot best practices
-- Write tests for new features
-- Use conventional commit messages
-- Ensure code passes linting and tests
 
 ## 📋 Development Status
 
@@ -237,24 +144,3 @@ Workspace 1:N Board 1:N List 1:N Card 1:N Task
 - Full CRUD operations for all entities
 - Responsive UI with TailwindCSS
 - Comprehensive testing strategy
-
-### 🚧 In Progress
-- Drag and drop functionality
-- File attachments
-- Email notifications
-- Performance optimizations
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙋‍♂️ Support
-
-If you have questions or need help, please:
-1. Check the [API documentation](http://localhost:8080/swagger-ui)
-2. Review the [testing guide](TESTING-WITH-TESTCONTAINERS.md)
-3. Open an issue on GitHub
-
----
-
-**Built with ❤️ using Spring Boot and Vue.js**
