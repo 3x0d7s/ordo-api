@@ -144,3 +144,4 @@ Workspace 1:N Board 1:N List 1:N Card 1:N Task
 - Full CRUD operations for all entities
 - Responsive UI with TailwindCSS
 - Comprehensive testing strategy
+
