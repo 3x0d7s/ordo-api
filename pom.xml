@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.kyut</groupId>
 	<artifactId>ordo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<name>ordo</name>
 	<description>Ordo - Project management system</description>
 	<url/>
@@ -190,6 +190,15 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Duser.timezone=UTC</argLine>
+                </configuration>
+            </plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

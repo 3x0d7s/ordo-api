@@ -272,6 +272,29 @@ public class BoardService {
     @Transactional
     public BoardRoleRead getMyRole(UserEntity user, Long boardId)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
+        BoardEntity board = findBoardAndVerifyAccess(user, boardId);
+        
+        // Return existing role if user is already a member
+        BoardMemberEntity existingMember = boardMemberRepository
+                .findByBoardIdAndUserId(boardId, user.getId())
+                .orElse(null);
+                
+        if (existingMember != null) {
+            return boardRoleMapper.toDto(existingMember.getRole());
+        }
+        
+        // Auto-join user based on board visibility
+        BoardRoleEntity role = determineAndCreateRoleForNewMember(user, board);
+        createBoardMembership(board, user, role);
+        
+        return boardRoleMapper.toDto(role);
+    }
+    
+    /**
+     * Finds board by ID and verifies user has access to it
+     */
+    private BoardEntity findBoardAndVerifyAccess(UserEntity user, Long boardId) 
+            throws BoardNotFoundException, InsufficientBoardPermissionsException {
         BoardEntity board = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
             
@@ -279,58 +302,70 @@ public class BoardService {
             throw new InsufficientBoardPermissionsException("User does not have access to this board");
         }
         
-        // First search BoardMemberEntity
-        BoardMemberEntity boardMember = boardMemberRepository.findByBoardIdAndUserId(boardId, user.getId())
-            .orElse(null);
-            
-        if (boardMember != null) {
-            return boardRoleMapper.toDto(boardMember.getRole());
+        return board;
+    }
+    
+    /**
+     * Determines appropriate role for new member based on board visibility
+     */
+    private BoardRoleEntity determineAndCreateRoleForNewMember(UserEntity user, BoardEntity board) 
+            throws BoardNotFoundException {
+        if (board.getVisibility() == BoardVisibility.PUBLIC) {
+            return getOrCreateGuestRole(board);
         }
         
-        if (board.getVisibility() == BoardVisibility.PUBLIC) {
-            BoardRoleEntity guestRole = boardRoleRepository
+        if (board.getVisibility() == BoardVisibility.WORKSPACE && board.getWorkspace() != null) {
+            verifyWorkspaceMembership(user, board);
+            return getOrCreateMemberRole(board);
+        }
+        
+        throw new BoardNotFoundException("User is not a member of this board and has no access");
+    }
+    
+    /**
+     * Gets existing Guest role or creates new one
+     */
+    private BoardRoleEntity getOrCreateGuestRole(BoardEntity board) {
+        return boardRoleRepository
                 .findByBoardAndName(board, "Guest")
                 .orElseGet(() -> boardRoleFactory.createGuestRole(board));
-            
-            BoardMemberEntity newBoardMember = BoardMemberEntity.builder()
+    }
+    
+    /**
+     * Gets existing Member role or creates new one
+     */
+    private BoardRoleEntity getOrCreateMemberRole(BoardEntity board) {
+        return boardRoleRepository
+                .findByBoardAndName(board, "Member")
+                .orElseGet(() -> boardRoleFactory.createMemberRole(board));
+    }
+    
+    /**
+     * Verifies that user is a member of the workspace
+     */
+    private void verifyWorkspaceMembership(UserEntity user, BoardEntity board) 
+            throws BoardNotFoundException {
+        boolean isWorkspaceMember = workspaceMemberRepository
+                .findByWorkspaceIdAndUserId(board.getWorkspace().getId(), user.getId())
+                .isPresent();
+                
+        if (!isWorkspaceMember) {
+            throw new BoardNotFoundException("User is not a member of this board and has no access");
+        }
+    }
+    
+    /**
+     * Creates board membership for user with specified role
+     */
+    private void createBoardMembership(BoardEntity board, UserEntity user, BoardRoleEntity role) {
+        BoardMemberEntity newMember = BoardMemberEntity.builder()
                 .board(board)
                 .user(user)
-                .role(guestRole)
+                .role(role)
                 .joinedAt(LocalDateTime.now())
                 .build();
                 
-            boardMemberRepository.save(newBoardMember);
-            
-            return boardRoleMapper.toDto(guestRole);
-        }
-        
-        if (board.getVisibility() != BoardVisibility.WORKSPACE || board.getWorkspace() == null) {
-            throw new BoardNotFoundException("User is not a member of this board and has no access");
-        }
-
-        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
-                .findByWorkspaceIdAndUserId(board.getWorkspace().getId(), user.getId())
-                .orElse(null);
-
-        if (workspaceMember != null) {
-            throw new BoardNotFoundException("User is not a member of this board and has no access");
-        }
-
-        BoardRoleEntity memberRole = boardRoleRepository
-                .findByBoardAndName(board, "Member")
-                .orElseGet(() -> boardRoleFactory.createMemberRole(board));
-
-        BoardMemberEntity newBoardMember = BoardMemberEntity.builder()
-                .board(board)
-                .user(user)
-                .role(memberRole)
-                .joinedAt(LocalDateTime.now())
-                .build();
-
-        boardMemberRepository.save(newBoardMember);
-
-        return boardRoleMapper.toDto(memberRole);
-
+        boardMemberRepository.save(newMember);
     }
     
     @Transactional
