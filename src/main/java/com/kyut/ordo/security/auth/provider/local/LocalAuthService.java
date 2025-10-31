@@ -64,11 +64,13 @@ public class LocalAuthService {
         );
 
         String jwtToken = jwtService.generateToken(authentication);
+        String csrfToken = jwtService.getCsrfTokenFromJwt(jwtToken);
 
         user = (UserEntity) authentication.getPrincipal();
 
         return LoginResponse.builder()
                 .accessToken(jwtToken)
+                .csrfToken(csrfToken)
                 .user(userMapper.toDto(user))
                 .build();
     }

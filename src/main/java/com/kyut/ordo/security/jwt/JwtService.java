@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -19,9 +20,13 @@ public class JwtService {
     public String generateToken(Authentication authentication) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtProperties.getExpirationMs());
+        
+        // Generate unique CSRF token
+        String csrfToken = UUID.randomUUID().toString();
 
         return Jwts.builder()
                 .subject(authentication.getName())
+                .claim("csrfToken", csrfToken)
                 .issuedAt(new Date())
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
@@ -36,6 +41,16 @@ public class JwtService {
                 .getPayload();
 
         return claims.getSubject();
+    }
+    
+    public String getCsrfTokenFromJwt(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        
+        return claims.get("csrfToken", String.class);
     }
 
     public boolean validateToken(String token) {

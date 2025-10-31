@@ -45,10 +45,12 @@ public class GoogleOAuth2Service {
 
         Authentication authentication = createOAuth2Authentication(userEntity);
         String jwtToken = jwtService.generateToken(authentication);
+        String csrfToken = jwtService.getCsrfTokenFromJwt(jwtToken);
 
         return LoginResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(tokens.getRefreshToken())
+                .csrfToken(csrfToken)
                 .user(userInfo)
                 .build();
     }
