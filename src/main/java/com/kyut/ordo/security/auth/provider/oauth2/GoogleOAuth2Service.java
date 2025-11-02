@@ -57,8 +57,6 @@ public class GoogleOAuth2Service {
 
     private UserEntity validateExistingUser(UserEntity user) {
         if (!user.getProvider().equals(AuthProvider.GOOGLE)) {
-            log.error("User {} exists with different auth provider: {}", 
-                    user.getEmail(), user.getProvider());
             throw new DifferentAuthenticationProviderException(
                     "Account exists with different authentication provider"
             );
@@ -74,7 +72,6 @@ public class GoogleOAuth2Service {
                 .provider(AuthProvider.GOOGLE)
                 .build();
 
-        log.debug("Creating new Google user: {}", userInfo.getEmail());
         return userRepository.save(newUser);
     }
 
