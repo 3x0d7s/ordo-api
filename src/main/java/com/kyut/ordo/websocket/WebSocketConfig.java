@@ -1,7 +1,9 @@
 package com.kyut.ordo.websocket;
 
 import com.kyut.ordo.security.jwt.JwtService;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -34,10 +36,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.setApplicationDestinationPrefixes("/app");
     }
 
+    @Value("${app.cors.allowed-origins}")
+    private String[] allowedOrigins;
+    
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
+//                .setAllowedOrigins(allowedOrigins)
                 .withSockJS();
     }
     

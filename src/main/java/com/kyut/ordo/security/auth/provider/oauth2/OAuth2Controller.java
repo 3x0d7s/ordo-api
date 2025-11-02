@@ -4,6 +4,7 @@ import com.kyut.ordo.security.auth.provider.oauth2.dto.OAuth2CodeOnTokenRequest;
 import com.kyut.ordo.security.auth.dto.LoginResponse;
 
 import com.kyut.ordo.security.jwt.JwtProperties;
+import com.kyut.ordo.security.cookie.CookieProperties;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class OAuth2Controller {
 
     private final GoogleOAuth2Service oAuth2Service;
     private final JwtProperties jwtProperties;
+    private final CookieProperties cookieProperties;
 
     @PostMapping("/google")
     public ResponseEntity<LoginResponse> exchangeGoogleCode(@RequestBody OAuth2CodeOnTokenRequest request,
@@ -29,10 +31,10 @@ public class OAuth2Controller {
         // Set JWT in HttpOnly cookie
         Cookie jwtCookie = new Cookie("jwt", loginResponse.getAccessToken());
         jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(true);  // Only over HTTPS
+        jwtCookie.setSecure(cookieProperties.isSecure());
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge((int) (jwtProperties.getExpirationMs() / 1000));
-        jwtCookie.setAttribute("SameSite", "Strict");
+        jwtCookie.setAttribute("SameSite", cookieProperties.getSameSite());
         response.addCookie(jwtCookie);
         
         // Return CSRF token in header

@@ -6,6 +6,7 @@ import com.kyut.ordo.feature.user.dto.UserReadDTO;
 
 import com.kyut.ordo.security.auth.provider.local.dto.LocalLoginRequest;
 import com.kyut.ordo.security.jwt.JwtProperties;
+import com.kyut.ordo.security.cookie.CookieProperties;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import jakarta.validation.Valid;
 public class LocalAuthController {
     private final LocalAuthService authService;
     private final JwtProperties jwtProperties;
+    private final CookieProperties cookieProperties;
 
     @PostMapping("/register")
     public ResponseEntity<UserReadDTO> register(@Valid @RequestBody UserCreateDTO request) {
@@ -42,10 +44,10 @@ public class LocalAuthController {
         // Set JWT in HttpOnly cookie
         Cookie jwtCookie = new Cookie("jwt", loginResponse.getAccessToken());
         jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(true);  // Only over HTTPS
+        jwtCookie.setSecure(cookieProperties.isSecure());  // configurable
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge((int) (jwtProperties.getExpirationMs() / 1000));
-        jwtCookie.setAttribute("SameSite", "Strict");
+        jwtCookie.setAttribute("SameSite", cookieProperties.getSameSite());
         response.addCookie(jwtCookie);
         
         // Return CSRF token in header
@@ -69,7 +71,7 @@ public class LocalAuthController {
         // Clear JWT cookie
         Cookie jwtCookie = new Cookie("jwt", null);
         jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(true);
+        jwtCookie.setSecure(cookieProperties.isSecure());
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(0);  // Delete cookie immediately
         response.addCookie(jwtCookie);
