@@ -205,7 +205,7 @@ class WorkspaceControllerIntegrationTest extends AbstractPostgreSQLIntegrationTe
                 .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(1));
+                .andExpect(jsonPath("$.page.totalElements").value(1));
     }
 
     @Test
@@ -218,7 +218,7 @@ class WorkspaceControllerIntegrationTest extends AbstractPostgreSQLIntegrationTe
                 .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(1));
+                .andExpect(jsonPath("$.page.totalElements").value(1));
     }
 
     @Test
@@ -234,7 +234,7 @@ class WorkspaceControllerIntegrationTest extends AbstractPostgreSQLIntegrationTe
                 .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(1));
+                .andExpect(jsonPath("$.page.totalElements").value(1));
     }
 
     @Test
@@ -247,7 +247,7 @@ class WorkspaceControllerIntegrationTest extends AbstractPostgreSQLIntegrationTe
                 .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(3)); // Owner, Member, Guest
+                .andExpect(jsonPath("$.page.totalElements").value(3)); // Owner, Member, Guest
     }
 
     @Test
@@ -330,7 +330,7 @@ class WorkspaceControllerIntegrationTest extends AbstractPostgreSQLIntegrationTe
                 .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(2)); // testUser as Owner + otherUser as Member
+                .andExpect(jsonPath("$.page.totalElements").value(2)); // testUser as Owner + otherUser as Member
     }
 
     @Test
@@ -347,9 +347,6 @@ class WorkspaceControllerIntegrationTest extends AbstractPostgreSQLIntegrationTe
                 .with(user(testUser))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(memberCreate)))
-                .andDo(handler ->
-                                System.out.println(handler.getResponse().getContentAsString())
-                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user.id").value(otherUser.getId()))
                 .andExpect(jsonPath("$.role.id").value(memberRole.getId()));
@@ -427,6 +424,6 @@ class WorkspaceControllerIntegrationTest extends AbstractPostgreSQLIntegrationTe
                 .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(1));
+                .andExpect(jsonPath("$.page.totalElements").value(1));
     }
 }

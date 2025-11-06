@@ -216,7 +216,7 @@ class ListControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest {
                 .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(0)); // No cards yet
+                .andExpect(jsonPath("$.page.totalElements").value(0));
     }
 
     @Test

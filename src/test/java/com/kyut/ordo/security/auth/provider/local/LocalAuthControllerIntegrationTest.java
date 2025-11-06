@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -177,8 +178,9 @@ class LocalAuthControllerIntegrationTest extends AbstractPostgreSQLIntegrationTe
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").exists())
-                .andExpect(jsonPath("$.accessToken").isNotEmpty())
+                .andExpect(cookie().exists("jwt"))
+                .andExpect(header().string("X-CSRF-Token", notNullValue()))
+                .andExpect(jsonPath("$.accessToken").doesNotExist())
                 .andExpect(jsonPath("$.user.email").value("test@example.com"))
                 .andExpect(jsonPath("$.user.name").value("Test User"))
                 .andExpect(jsonPath("$.user.id").exists())
@@ -325,7 +327,9 @@ class LocalAuthControllerIntegrationTest extends AbstractPostgreSQLIntegrationTe
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").exists())
+                .andExpect(cookie().exists("jwt"))
+                .andExpect(header().string("X-CSRF-Token", notNullValue()))
+                .andExpect(jsonPath("$.accessToken").doesNotExist())
                 .andExpect(jsonPath("$.user.email").value("flow@example.com"));
     }
 
