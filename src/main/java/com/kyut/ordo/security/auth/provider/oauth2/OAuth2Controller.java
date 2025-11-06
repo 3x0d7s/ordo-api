@@ -3,6 +3,10 @@ package com.kyut.ordo.security.auth.provider.oauth2;
 import com.kyut.ordo.security.auth.provider.oauth2.dto.OAuth2CodeOnTokenRequest;
 import com.kyut.ordo.security.auth.dto.LoginResponse;
 
+import com.kyut.ordo.security.jwt.JwtCookieBuilder;
+import com.kyut.ordo.security.jwt.JwtProperties;
+import com.kyut.ordo.security.cookie.CookieProperties;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,10 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class OAuth2Controller {
 
     private final GoogleOAuth2Service oAuth2Service;
+    private final JwtProperties jwtProperties;
+    private final CookieProperties cookieProperties;
 
     @PostMapping("/google")
-    public ResponseEntity<LoginResponse> exchangeGoogleCode(@RequestBody OAuth2CodeOnTokenRequest request) {
+    public ResponseEntity<LoginResponse> exchangeGoogleCode(@RequestBody OAuth2CodeOnTokenRequest request,
+                                                            HttpServletResponse response) {
         LoginResponse loginResponse = oAuth2Service.authenticateFromCode(request.getCode());
+        
+        response.addCookie(JwtCookieBuilder.buildFromEnvironmentProperties(
+                loginResponse.getAccessToken(),
+                (int)(jwtProperties.getExpirationMs() / 1000),
+                cookieProperties));
+        response.setHeader("X-CSRF-Token", loginResponse.getCsrfToken());
+        
         return ResponseEntity.ok(loginResponse);
     }
 

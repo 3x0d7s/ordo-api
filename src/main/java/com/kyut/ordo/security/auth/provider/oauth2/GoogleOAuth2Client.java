@@ -51,7 +51,7 @@ public class GoogleOAuth2Client {
                     .build();
         } catch (IOException e) {
             log.error("Failed to exchange code for token", e);
-            throw new GoogleOAuth2CodeForTokenExchangeException("Failed to exchange code for token", e);
+            throw new GoogleOAuth2CodeForTokenExchangeException("Failed to exchange code for token: ".concat(e.getMessage()), e);
         }
     }
 

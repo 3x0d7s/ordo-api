@@ -184,7 +184,6 @@ public class ListService {
 
         ListRead listRead = listMapper.toDto(list);
 
-        // Публікуємо подію видалення списку
         eventPublisher.publishEvent(new ListDeletedEvent(
             id,
             boardId,

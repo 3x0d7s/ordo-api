@@ -45,18 +45,18 @@ public class GoogleOAuth2Service {
 
         Authentication authentication = createOAuth2Authentication(userEntity);
         String jwtToken = jwtService.generateToken(authentication);
+        String csrfToken = jwtService.getCsrfTokenFromJwt(jwtToken);
 
         return LoginResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(tokens.getRefreshToken())
+                .csrfToken(csrfToken)
                 .user(userInfo)
                 .build();
     }
 
     private UserEntity validateExistingUser(UserEntity user) {
         if (!user.getProvider().equals(AuthProvider.GOOGLE)) {
-            log.error("User {} exists with different auth provider: {}", 
-                    user.getEmail(), user.getProvider());
             throw new DifferentAuthenticationProviderException(
                     "Account exists with different authentication provider"
             );
@@ -72,7 +72,6 @@ public class GoogleOAuth2Service {
                 .provider(AuthProvider.GOOGLE)
                 .build();
 
-        log.debug("Creating new Google user: {}", userInfo.getEmail());
         return userRepository.save(newUser);
     }
 

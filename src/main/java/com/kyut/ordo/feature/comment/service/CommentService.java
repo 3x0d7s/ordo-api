@@ -138,7 +138,6 @@ public class CommentService {
         CardEntity card = comment.getCard();
         CommentRead result = commentMapper.toDto(comment);
 
-        // Публікуємо подію оновлення коментаря
         eventPublisher.publishEvent(new CommentUpdatedEvent(
             comment.getId(),
             card.getId(),

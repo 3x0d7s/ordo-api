@@ -5,6 +5,11 @@ import com.kyut.ordo.feature.user.dto.UserCreateDTO;
 import com.kyut.ordo.feature.user.dto.UserReadDTO;
 
 import com.kyut.ordo.security.auth.provider.local.dto.LocalLoginRequest;
+import com.kyut.ordo.security.jwt.JwtCookieBuilder;
+import com.kyut.ordo.security.jwt.JwtProperties;
+import com.kyut.ordo.security.cookie.CookieProperties;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +28,8 @@ import jakarta.validation.Valid;
 @RequestMapping("/auth/local")
 public class LocalAuthController {
     private final LocalAuthService authService;
+    private final JwtProperties jwtProperties;
+    private final CookieProperties cookieProperties;
 
     @PostMapping("/register")
     public ResponseEntity<UserReadDTO> register(@Valid @RequestBody UserCreateDTO request) {
@@ -31,8 +38,19 @@ public class LocalAuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LocalLoginRequest request) {
-        return ResponseEntity.ok(authService.authenticate(request));
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LocalLoginRequest request,
+                                               HttpServletResponse response) {
+        LoginResponse loginResponseBody = authService.authenticate(request);
+
+        response.addCookie(JwtCookieBuilder.buildFromEnvironmentProperties(
+                loginResponseBody.getAccessToken(),
+                (int)(jwtProperties.getExpirationMs() / 1000),
+                cookieProperties));
+        response.setHeader("X-CSRF-Token", loginResponseBody.getCsrfToken());
+        loginResponseBody.setAccessToken(null);
+        loginResponseBody.setCsrfToken(null);
+        
+        return ResponseEntity.ok(loginResponseBody);
     }
 
     @GetMapping("/verify")
@@ -43,5 +61,12 @@ public class LocalAuthController {
         
         UserReadDTO user = authService.getCurrentUser(userDetails.getUsername());
         return ResponseEntity.ok(user);
+    }
+    
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        response.addCookie(JwtCookieBuilder.buildEmpty());
+        
+        return ResponseEntity.ok().build();
     }
 }
