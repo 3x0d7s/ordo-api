@@ -47,15 +47,17 @@ spring:
             clientSecret: test-github-client-secret
             redirect-uri: http://localhost:8080/test/callback
 
-app:
+custom:
   cors:
     allowed-origins: http://localhost:3000,http://localhost:5173
+  cookie:
+    same-site: None
+    secure: false
   oauth2:
     redirect-uri: http://localhost:5173/auth/callback
-
-jwt:
-  secret: dGVzdC1zZWNyZXQtZm9yLXRlc3RpbmctcHVycG9zZXMtb25seQ==  # base64 encoded "test-secret-for-testing-purposes-only"
-  expiration-ms: 3600000  # 1 hour for tests
+  jwt:
+    secret: dGVzdC1zZWNyZXQtZm9yLXRlc3RpbmctcHVycG9zZXMtb25seQ==  # base64 encoded "test-secret-for-testing-purposes-only"
+    expiration-ms: 3600000  # 1 hour for tests
 
 logging:
   level:

@@ -48,11 +48,18 @@ public class CsrfTokenFilter extends OncePerRequestFilter {
         try {
             // Get JWT from cookie
             String jwt = getJwtFromCookie(request);
-            
+
+            // If no JWT is present, allow the request to proceed so that
+            // Spring Security can return the appropriate 401 response.
+            if (!StringUtils.hasText(jwt)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             // Get CSRF token from header
             String csrfTokenFromHeader = request.getHeader("X-CSRF-Token");
-            
-            if (!StringUtils.hasText(jwt) || !StringUtils.hasText(csrfTokenFromHeader)) {
+
+            if (!StringUtils.hasText(csrfTokenFromHeader)) {
                 sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, "CSRF token missing");
                 return;
             }
