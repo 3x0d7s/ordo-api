@@ -15,6 +15,3 @@ public class CookieProperties {
     // SameSite policy. Use "None" for cross-site SPA <-> API on different ports.
     private String sameSite;
 }
-
-
-

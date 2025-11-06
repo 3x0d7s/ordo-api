@@ -3,6 +3,7 @@ package com.kyut.ordo.security.auth.provider.oauth2;
 import com.kyut.ordo.security.auth.provider.oauth2.dto.OAuth2CodeOnTokenRequest;
 import com.kyut.ordo.security.auth.dto.LoginResponse;
 
+import com.kyut.ordo.security.jwt.JwtCookieBuilder;
 import com.kyut.ordo.security.jwt.JwtProperties;
 import com.kyut.ordo.security.cookie.CookieProperties;
 import jakarta.servlet.http.Cookie;
@@ -28,16 +29,10 @@ public class OAuth2Controller {
                                                             HttpServletResponse response) {
         LoginResponse loginResponse = oAuth2Service.authenticateFromCode(request.getCode());
         
-        // Set JWT in HttpOnly cookie
-        Cookie jwtCookie = new Cookie("jwt", loginResponse.getAccessToken());
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(cookieProperties.isSecure());
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge((int) (jwtProperties.getExpirationMs() / 1000));
-        jwtCookie.setAttribute("SameSite", cookieProperties.getSameSite());
-        response.addCookie(jwtCookie);
-        
-        // Return CSRF token in header
+        response.addCookie(JwtCookieBuilder.buildFromEnvironmentProperties(
+                loginResponse.getAccessToken(),
+                (int)(jwtProperties.getExpirationMs() / 1000),
+                cookieProperties));
         response.setHeader("X-CSRF-Token", loginResponse.getCsrfToken());
         
         return ResponseEntity.ok(loginResponse);

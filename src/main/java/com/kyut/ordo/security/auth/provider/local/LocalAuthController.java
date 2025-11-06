@@ -5,6 +5,7 @@ import com.kyut.ordo.feature.user.dto.UserCreateDTO;
 import com.kyut.ordo.feature.user.dto.UserReadDTO;
 
 import com.kyut.ordo.security.auth.provider.local.dto.LocalLoginRequest;
+import com.kyut.ordo.security.jwt.JwtCookieBuilder;
 import com.kyut.ordo.security.jwt.JwtProperties;
 import com.kyut.ordo.security.cookie.CookieProperties;
 import jakarta.servlet.http.Cookie;
@@ -39,21 +40,17 @@ public class LocalAuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LocalLoginRequest request,
                                                HttpServletResponse response) {
-        LoginResponse loginResponse = authService.authenticate(request);
+        LoginResponse loginResponseBody = authService.authenticate(request);
+
+        response.addCookie(JwtCookieBuilder.buildFromEnvironmentProperties(
+                loginResponseBody.getAccessToken(),
+                (int)(jwtProperties.getExpirationMs() / 1000),
+                cookieProperties));
+        response.setHeader("X-CSRF-Token", loginResponseBody.getCsrfToken());
+        loginResponseBody.setAccessToken(null);
+        loginResponseBody.setCsrfToken(null);
         
-        // Set JWT in HttpOnly cookie
-        Cookie jwtCookie = new Cookie("jwt", loginResponse.getAccessToken());
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(cookieProperties.isSecure());  // configurable
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge((int) (jwtProperties.getExpirationMs() / 1000));
-        jwtCookie.setAttribute("SameSite", cookieProperties.getSameSite());
-        response.addCookie(jwtCookie);
-        
-        // Return CSRF token in header
-        response.setHeader("X-CSRF-Token", loginResponse.getCsrfToken());
-        
-        return ResponseEntity.ok(loginResponse);
+        return ResponseEntity.ok(loginResponseBody);
     }
 
     @GetMapping("/verify")
@@ -68,13 +65,7 @@ public class LocalAuthController {
     
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        // Clear JWT cookie
-        Cookie jwtCookie = new Cookie("jwt", null);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(cookieProperties.isSecure());
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(0);  // Delete cookie immediately
-        response.addCookie(jwtCookie);
+        response.addCookie(JwtCookieBuilder.buildEmpty());
         
         return ResponseEntity.ok().build();
     }
