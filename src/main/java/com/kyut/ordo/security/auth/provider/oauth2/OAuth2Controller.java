@@ -6,7 +6,6 @@ import com.kyut.ordo.security.auth.dto.LoginResponse;
 import com.kyut.ordo.security.jwt.JwtCookieBuilder;
 import com.kyut.ordo.security.jwt.JwtProperties;
 import com.kyut.ordo.security.cookie.CookieProperties;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

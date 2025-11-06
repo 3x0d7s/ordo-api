@@ -30,7 +30,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final CsrfTokenFilter csrfTokenFilter;
 
-    @Value("${app.cors.allowed-origins}")
+    @Value("${custom.cors.allowed-origins}")
     private String[] allowedOrigins;
 
     @Bean

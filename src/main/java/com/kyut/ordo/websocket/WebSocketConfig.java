@@ -36,14 +36,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.setApplicationDestinationPrefixes("/app");
     }
 
-    @Value("${app.cors.allowed-origins}")
+    @Value("${custom.cors.allowed-origins}")
     private String[] allowedOrigins;
     
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*")
-//                .setAllowedOrigins(allowedOrigins)
+                .setAllowedOrigins(allowedOrigins)
                 .withSockJS();
     }
     
