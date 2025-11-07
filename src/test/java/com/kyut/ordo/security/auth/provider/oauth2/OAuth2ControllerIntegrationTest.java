@@ -9,15 +9,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,7 +36,7 @@ class OAuth2ControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest 
     @Autowired
     private WebApplicationContext context;
 
-    @MockBean
+    @MockitoBean
     private GoogleOAuth2Service googleOAuth2Service;
 
     @Autowired
@@ -59,9 +60,10 @@ class OAuth2ControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest 
                 .code("valid-google-code-123")
                 .build();
 
-        com.kyut.ordo.security.auth.dto.LoginResponse mockResponse = 
+        com.kyut.ordo.security.auth.dto.LoginResponse mockResponse =
             com.kyut.ordo.security.auth.dto.LoginResponse.builder()
                 .accessToken("jwt-access-token-123")
+                .csrfToken("csrf-token-789")
                 .refreshToken("refresh-token-456")
                 .user(createMockUserReadDTO())
                 .build();
@@ -74,8 +76,10 @@ class OAuth2ControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest 
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value("jwt-access-token-123"))
-                .andExpect(jsonPath("$.refreshToken").value("refresh-token-456"))
+                .andExpect(cookie().exists("jwt"))
+                .andExpect(header().string("X-CSRF-Token", notNullValue()))
+                .andExpect(jsonPath("$.accessToken").doesNotExist())
+                .andExpect(jsonPath("$.refreshToken").doesNotExist())
                 .andExpect(jsonPath("$.user.email").value("google@example.com"))
                 .andExpect(jsonPath("$.user.name").value("Google User"))
                 .andExpect(jsonPath("$.user.id").value(1));
@@ -110,15 +114,18 @@ class OAuth2ControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest 
                 .andExpect(status().isOk());
     }
 
-    @Test
-    @DisplayName("Exchange Google code - invalid JSON")
-    void exchangeGoogleCode_InvalidJson() throws Exception {
-        // When & Then - Invalid JSON returns 400
-        mockMvc.perform(post("/auth/oauth2/google")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("invalid-json"))
-                .andExpect(status().isBadRequest());
-    }
+//    It passes test, but I commented it because IDE threw warn:
+//    "JSON standard does not allow such tokens" like "invalid-json" content
+//
+//    @Test
+//    @DisplayName("Exchange Google code - invalid JSON")
+//    void exchangeGoogleCode_InvalidJson() throws Exception {
+//        // When & Then - Invalid JSON returns 400
+//        mockMvc.perform(post("/auth/oauth2/google")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content("invalid-json"))
+//                .andExpect(status().isBadRequest());
+//    }
 
     @Test
     @DisplayName("Exchange Google code - service throws exception")
@@ -191,6 +198,7 @@ class OAuth2ControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest 
         com.kyut.ordo.security.auth.dto.LoginResponse mockResponse = 
             com.kyut.ordo.security.auth.dto.LoginResponse.builder()
                 .accessToken("jwt-access-token-123")
+                .csrfToken("csrf-token-789")
                 .refreshToken(null) // No refresh token
                 .user(createMockUserReadDTO())
                 .build();
@@ -203,7 +211,9 @@ class OAuth2ControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest 
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value("jwt-access-token-123"))
+                .andExpect(cookie().exists("jwt"))
+                .andExpect(header().string("X-CSRF-Token", notNullValue()))
+                .andExpect(jsonPath("$.accessToken").doesNotExist())
                 .andExpect(jsonPath("$.refreshToken").doesNotExist())
                 .andExpect(jsonPath("$.user.email").value("google@example.com"));
     }
@@ -235,6 +245,7 @@ class OAuth2ControllerIntegrationTest extends AbstractPostgreSQLIntegrationTest 
     private com.kyut.ordo.security.auth.dto.LoginResponse createMockResponse() {
         return com.kyut.ordo.security.auth.dto.LoginResponse.builder()
                 .accessToken("jwt-access-token-123")
+                .csrfToken("csrf-token-789")
                 .refreshToken("refresh-token-456")
                 .user(createMockUserReadDTO())
                 .build();
