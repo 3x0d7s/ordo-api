@@ -27,13 +27,21 @@ public class OAuth2Controller {
     public ResponseEntity<LoginResponse> exchangeGoogleCode(@RequestBody OAuth2CodeOnTokenRequest request,
                                                             HttpServletResponse response) {
         LoginResponse loginResponse = oAuth2Service.authenticateFromCode(request.getCode());
-        
+
+        if (loginResponse == null || loginResponse.getAccessToken() == null) {
+            return ResponseEntity.ok().build();
+        }
+
         response.addCookie(JwtCookieBuilder.buildFromEnvironmentProperties(
                 loginResponse.getAccessToken(),
                 (int)(jwtProperties.getExpirationMs() / 1000),
                 cookieProperties));
         response.setHeader("X-CSRF-Token", loginResponse.getCsrfToken());
-        
+
+        loginResponse.setAccessToken(null);
+        loginResponse.setCsrfToken(null);
+        loginResponse.setRefreshToken(null);
+
         return ResponseEntity.ok(loginResponse);
     }
 
