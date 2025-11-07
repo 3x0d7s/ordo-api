@@ -225,7 +225,9 @@ public class CardService {
 
         cardRepository.deleteCommentsByCardId(id);
         cardRepository.deleteTasksByCardId(id);
-        cardRepository.deleteByIdWithQuery(card.getId());
+        cardRepository.deleteById(card.getId());
+
+        cardRepository.deleteByIdWithQuery(id);
 
         eventPublisher.publishEvent(new CardDeletedEvent(
                 card.getId(),
