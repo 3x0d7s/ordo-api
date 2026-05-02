@@ -17,10 +17,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.kyut.ordo.feature.board.exception.InsufficientBoardPermissionsException;
-import com.kyut.ordo.feature.board.service.BoardPermissionService;
 import com.kyut.ordo.feature.list.entity.ListEntity;
 import com.kyut.ordo.feature.card.exception.InsufficientCardPermissionsException;
 import com.kyut.ordo.feature.list.exception.ListNotFoundException;
@@ -37,37 +37,30 @@ public class CardService {
     private final CardRepository cardRepository;
     private final ListRepository listRepository;
     private final UserRepository userRepository;
-    private final BoardPermissionService boardPermissionService;
     private final CardMapper cardMapper;
     //    private final WebSocketService webSocketService;
     private final ApplicationEventPublisher eventPublisher;
 
-    @Transactional()
+//    @Transactional()
+//    @PreAuthorize("@featureAuthService.canViewListCards(#p1, authentication)")
     public List<CardRead> findAllByList(UserEntity user, Long listId)
             throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListEntity taskList = listRepository.findById(listId)
             .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + listId));
-        
-//        if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
-//            throw new InsufficientBoardPermissionsException("User does not have permission to view tasks in this list");
-//        }
-        
+
         List<CardEntity> tasks = cardRepository.findAllByListOrderByPosition(taskList);
         return tasks.stream()
             .map(cardMapper::toDto)
             .toList();
     }
     
-    @Transactional()
+//    @Transactional()
+//    @PreAuthorize("@featureAuthService.canViewListCards(#p1, authentication)")
     public Page<CardRead> findAllByList(UserEntity user, Long listId, Pageable pageable)
             throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListEntity taskList = listRepository.findById(listId)
             .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + listId));
-        
-//        if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
-//            throw new InsufficientBoardPermissionsException("User does not have permission to view tasks in this list");
-//        }
-        
+
         return cardRepository.findAllByList(taskList, pageable)
             .map(cardMapper::toDto);
     }
@@ -79,28 +72,22 @@ public class CardService {
     }
     
     @Transactional()
+    @PreAuthorize("@featureAuthService.canAccessCard(#p1, authentication)")
     public CardWithItsListRead findById(UserEntity user, Long id)
             throws CardNotFoundException, InsufficientCardPermissionsException {
         CardEntity task = cardRepository.findById(id)
             .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + id));
-        
-        if (!boardPermissionService.hasPermission(task.getList().getBoard().getId(), user.getId(), "EDIT")) {
-            throw new InsufficientCardPermissionsException("User does not have permission to view this task");
-        }
-        
+
         return cardMapper.toDtoWithItsList(task);
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canCreateCard(#p1.listId, authentication)")
     public CardWithItsListRead createCard(UserEntity user, CardCreate dto)
             throws ListNotFoundException, InsufficientCardPermissionsException {
         ListEntity list = listRepository.findById(dto.getListId())
             .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + dto.getListId()));
-        
-        if (!boardPermissionService.hasPermission(list.getBoard().getId(), user.getId(), "CREATE_TASKS")) {
-            throw new InsufficientCardPermissionsException("User does not have permission to create tasks in this list");
-        }
-        
+
         if (dto.getPosition() == null) {
             Integer taskCount = cardRepository.countByList(list);
             dto.setPosition(taskCount);
@@ -131,14 +118,11 @@ public class CardService {
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canEditCard(#p1, authentication)")
     public CardWithItsListRead updateCard(UserEntity user, Long id, CardCreate dto)
             throws CardNotFoundException, InsufficientCardPermissionsException {
         CardEntity card = cardRepository.findById(id)
             .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + id));
-        
-        if (!boardPermissionService.hasPermission(card.getList().getBoard().getId(), user.getId(), "EDIT")) {
-            throw new InsufficientCardPermissionsException("User does not have permission to edit this card");
-        }
 
         // Don't allow changing the list if it's provided and different
         if (dto.getListId() != null && !dto.getListId().equals(card.getList().getId())) {
@@ -180,18 +164,15 @@ public class CardService {
     }
 
     @Transactional
+    @PreAuthorize("@featureAuthService.canEditBoardByList(#p1, authentication)")
     public void updateCardPositions(UserEntity user, Long listId, List<Long> cardIds) 
             throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListEntity list = listRepository.findById(listId)
             .orElseThrow(() -> new ListNotFoundException("List not found with id: " + listId));
         
         Long boardId = list.getBoard().getId();
-        
-        if (!boardPermissionService.hasPermission(boardId, user.getId(), "EDIT")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to update card positions");
-        }
-        
-        // Оновлюємо позиції карток
+
+        // Update card positions in the target list only.
         for (int i = 0; i < cardIds.size(); i++) {
             Long cardId = cardIds.get(i);
             CardEntity card = cardRepository.findById(cardId).orElse(null);
@@ -210,14 +191,11 @@ public class CardService {
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canEditCard(#p1, authentication)")
     public CardWithItsListRead deleteCard(UserEntity user, Long id)
             throws CardNotFoundException, InsufficientCardPermissionsException {
         CardEntity card = cardRepository.findById(id)
             .orElseThrow(() -> new CardNotFoundException("Task not found with id: " + id));
-        
-        if (!boardPermissionService.hasPermission(card.getList().getBoard().getId(), user.getId(), "EDIT")) {
-            throw new InsufficientCardPermissionsException("User does not have permission to delete this task");
-        }
 
         Long boardId = card.getList().getBoard().getId();
         Long listId = card.getList().getId();
