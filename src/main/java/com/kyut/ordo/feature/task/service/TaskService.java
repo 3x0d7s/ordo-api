@@ -102,7 +102,7 @@ public class TaskService {
     }
     
     @Transactional
-    @PreAuthorize("@featureAuthService.canAccessTask(#p1, authentication)")
+    @PreAuthorize("@featureAuthService.canEditTask(#p1, authentication)")
     public TaskRead updateTask(UserEntity user, Long id, TaskCreate dto)
             throws TaskNotFoundException, InsufficientTaskPermissionsException, CardNotFoundException {
         TaskEntity task = taskRepository.findById(id)
@@ -137,7 +137,7 @@ public class TaskService {
     }
 
     @Transactional
-    @PreAuthorize("@featureAuthService.canAccessTask(#p1, authentication)")
+    @PreAuthorize("@featureAuthService.canEditTask(#p1, authentication)")
     public TaskRead deleteTask(UserEntity user, Long id)
             throws TaskNotFoundException, InsufficientTaskPermissionsException {
         TaskEntity task = taskRepository.findById(id)

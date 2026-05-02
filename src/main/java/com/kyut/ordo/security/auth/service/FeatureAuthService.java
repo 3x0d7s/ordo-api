@@ -98,7 +98,7 @@ public class FeatureAuthService {
     }
 
     public boolean canViewListCards(Long listId, Authentication authentication) {
-        return hasPermissionByListId(listId, authentication, "EDIT");
+        return canAccessBoardByListId(listId, authentication);
     }
 
     public boolean canCreateCard(Long listId, Authentication authentication) {
@@ -106,7 +106,7 @@ public class FeatureAuthService {
     }
 
     public boolean canAccessCard(Long cardId, Authentication authentication) {
-        return hasPermissionByCardId(cardId, authentication, "EDIT");
+        return canAccessBoardByCardId(cardId, authentication);
     }
 
     public boolean canEditCard(Long cardId, Authentication authentication) {
@@ -118,11 +118,15 @@ public class FeatureAuthService {
     }
 
     public boolean canAccessTask(Long taskId, Authentication authentication) {
+        return canAccessBoardByTaskId(taskId, authentication);
+    }
+
+    public boolean canEditTask(Long taskId, Authentication authentication) {
         return hasPermissionByTaskId(taskId, authentication, "EDIT");
     }
 
     public boolean canViewCardTasks(Long cardId, Authentication authentication) {
-        return hasPermissionByCardId(cardId, authentication, "EDIT");
+        return canAccessBoardByCardId(cardId, authentication);
     }
 
     public boolean canCreateTask(Long cardId, Authentication authentication) {
@@ -130,7 +134,7 @@ public class FeatureAuthService {
     }
 
     public boolean canViewCardComments(Long cardId, Authentication authentication) {
-        return hasPermissionByCardId(cardId, authentication, "EDIT");
+        return canAccessBoardByCardId(cardId, authentication);
     }
 
     public boolean canAccessComment(Long commentId, Authentication authentication) {
@@ -139,7 +143,7 @@ public class FeatureAuthService {
         }
 
         return commentRepository.findById(commentId)
-                .map(comment -> hasBoardPermission(comment.getCard().getList().getBoard().getId(), authentication, "EDIT"))
+                .map(comment -> canAccessBoard(comment.getCard().getList().getBoard().getId(), authentication))
                 .orElse(false);
     }
 
@@ -230,6 +234,36 @@ public class FeatureAuthService {
 
         return taskRepository.findById(taskId)
                 .map(task -> hasBoardPermission(task.getCard().getList().getBoard().getId(), authentication, permission))
+                .orElse(false);
+    }
+
+    private boolean canAccessBoardByListId(Long listId, Authentication authentication) {
+        if (listId == null) {
+            return false;
+        }
+
+        return listRepository.findById(listId)
+                .map(list -> canAccessBoard(list.getBoard().getId(), authentication))
+                .orElse(false);
+    }
+
+    private boolean canAccessBoardByCardId(Long cardId, Authentication authentication) {
+        if (cardId == null) {
+            return false;
+        }
+
+        return cardRepository.findById(cardId)
+                .map(card -> canAccessBoard(card.getList().getBoard().getId(), authentication))
+                .orElse(false);
+    }
+
+    private boolean canAccessBoardByTaskId(Long taskId, Authentication authentication) {
+        if (taskId == null) {
+            return false;
+        }
+
+        return taskRepository.findById(taskId)
+                .map(task -> canAccessBoard(task.getCard().getList().getBoard().getId(), authentication))
                 .orElse(false);
     }
 

@@ -38,7 +38,6 @@ public class CardService {
     private final ListRepository listRepository;
     private final UserRepository userRepository;
     private final CardMapper cardMapper;
-    //    private final WebSocketService webSocketService;
     private final ApplicationEventPublisher eventPublisher;
 
 //    @Transactional()
