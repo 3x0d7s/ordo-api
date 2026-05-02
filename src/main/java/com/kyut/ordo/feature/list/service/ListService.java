@@ -9,6 +9,7 @@ import com.kyut.ordo.feature.list.event.ListUpdatedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +19,6 @@ import com.kyut.ordo.feature.board.entity.BoardEntity;
 import com.kyut.ordo.feature.board.exception.BoardNotFoundException;
 import com.kyut.ordo.feature.board.exception.InsufficientBoardPermissionsException;
 import com.kyut.ordo.feature.board.repository.BoardRepository;
-import com.kyut.ordo.feature.board.service.BoardPermissionService;
 import com.kyut.ordo.feature.list.dto.ListCreate;
 import com.kyut.ordo.feature.list.exception.ListNotFoundException;
 import com.kyut.ordo.feature.list.mapper.ListMapper;
@@ -32,20 +32,16 @@ import lombok.RequiredArgsConstructor;
 public class ListService {
     private final ListRepository listRepository;
     private final BoardRepository boardRepository;
-    private final BoardPermissionService boardPermissionService;
     private final ListMapper listMapper;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
+    @PreAuthorize("@featureAuthService.canAccessBoard(#p1, authentication)")
     public List<ListRead> findAllByBoard(UserEntity user, Long boardId)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
         BoardEntity board = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
-        
-//        if (!boardPermissionService.hasPermission(boardId, user.getId(), "EDIT")) {
-//            throw new InsufficientBoardPermissionsException("User does not have permission to view lists in this board");
-//        }
-        
+
         List<ListEntity> lists = listRepository.findAllByBoardOrderByPosition(board);
         return lists.stream()
             .map(listMapper::toDto)
@@ -53,41 +49,32 @@ public class ListService {
     }
     
     @Transactional(readOnly = true)
+    @PreAuthorize("@featureAuthService.canAccessBoard(#p1, authentication)")
     public Page<ListRead> findAllByBoard(UserEntity user, Long boardId, Pageable pageable)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
         BoardEntity board = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
-        
-//        if (!boardPermissionService.hasPermission(boardId, user.getId(), "EDIT")) {
-//            throw new InsufficientBoardPermissionsException("User does not have permission to view lists in this board");
-//        }
-        
+
         return listRepository.findAllByBoard(board, pageable)
             .map(listMapper::toDto);
     }
     
     @Transactional(readOnly = true)
+    @PreAuthorize("@featureAuthService.canViewListCards(#p1, authentication)")
     public ListRead findById(UserEntity user, Long id)
             throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListEntity taskList = listRepository.findById(id)
             .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + id));
-        
-        if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to view this list");
-        }
-        
+
         return listMapper.toDto(taskList);
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canCreateLists(#p1.boardId, authentication)")
     public ListRead createTaskList(UserEntity user, ListCreate dto)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
         BoardEntity board = boardRepository.findById(dto.getBoardId())
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + dto.getBoardId()));
-        
-        if (!boardPermissionService.hasPermission(dto.getBoardId(), user.getId(), "CREATE_LISTS")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to create lists in this board");
-        }
 
         if (dto.getTitle().isBlank()) {
             throw new IllegalArgumentException("Title cannot be blank");
@@ -114,15 +101,12 @@ public class ListService {
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canViewListCards(#p1, authentication)")
     public ListRead updateTaskList(UserEntity user, Long id, ListCreate dto)
             throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListEntity taskList = listRepository.findById(id)
             .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + id));
-        
-        if (!boardPermissionService.hasPermission(taskList.getBoard().getId(), user.getId(), "EDIT")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to edit this list");
-        }
-        
+
         // Don't allow changing the board
         if (dto.getBoardId() != null && !dto.getBoardId().equals(taskList.getBoard().getId())) {
             throw new IllegalArgumentException("Cannot change the board of a task list");
@@ -143,15 +127,12 @@ public class ListService {
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canEditBoard(#p1, authentication)")
     public void updateListPositions(UserEntity user, Long boardId, List<Long> listIds) 
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        BoardEntity board = boardRepository.findById(boardId)
+        boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
-        
-        if (!boardPermissionService.hasPermission(boardId, user.getId(), "EDIT")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to update list positions");
-        }
-        
+
         for (int i = 0; i < listIds.size(); i++) {
             Long listId = listIds.get(i);
             ListEntity list = listRepository.findById(listId).orElse(null);
@@ -166,15 +147,13 @@ public class ListService {
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canViewListCards(#p1, authentication)")
     public ListRead deleteList(UserEntity user, Long id)
             throws ListNotFoundException, InsufficientBoardPermissionsException {
         ListEntity list = listRepository.findById(id)
             .orElseThrow(() -> new ListNotFoundException("Task list not found with id: " + id));
-        
+
         Long boardId = list.getBoard().getId();
-        if (!boardPermissionService.hasPermission(boardId, user.getId(), "EDIT")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to delete this list");
-        }
 
         listRepository.deleteTasksByCardsOfList(id);
         listRepository.deleteCommentsByCardsOfList(id);
