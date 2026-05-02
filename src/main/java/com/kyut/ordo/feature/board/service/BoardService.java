@@ -3,6 +3,7 @@ package com.kyut.ordo.feature.board.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,6 @@ import com.kyut.ordo.feature.board.repository.BoardRepository;
 import com.kyut.ordo.feature.board.repository.BoardRoleRepository;
 import com.kyut.ordo.feature.user.entity.UserEntity;
 import com.kyut.ordo.feature.user.repository.UserRepository;
-import com.kyut.ordo.feature.workspace.entity.WorkspaceMemberEntity;
 import com.kyut.ordo.feature.workspace.repository.WorkspaceMemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -82,19 +82,17 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("@featureAuthService.canAccessBoard(#p1, authentication)")
     public BoardRead findById(UserEntity user, Long id)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
         BoardEntity board = boardRepository.findById(id)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + id));
 
-        if (!canUserAccessBoard(user, board)) {
-            throw new InsufficientBoardPermissionsException("User does not have access to this board");
-        }
-
         return boardMapper.toDto(board);
     }
 
     @Transactional
+    @PreAuthorize("@featureAuthService.canCreateBoard(#p1.workspaceId, authentication)")
     public BoardRead createBoard(UserEntity user, BoardCreate dto)
             throws InsufficientBoardPermissionsException {
         WorkspaceEntity workspace = null;
@@ -103,17 +101,6 @@ public class BoardService {
             workspace = workspaceRepository.findById(dto.getWorkspaceId())
                 .orElseThrow(() -> new InsufficientBoardPermissionsException(
                     "Workspace not found with id: " + dto.getWorkspaceId()));
-
-            WorkspaceMemberEntity workspaceMember = workspaceMemberRepository.findByWorkspaceIdAndUserId(
-                    dto.getWorkspaceId(),
-                            user.getId())
-                .orElseThrow(() -> new InsufficientBoardPermissionsException(
-                    "User does not have access to this workspace"));
-
-            if (!workspaceMember.getRole().isAbleToManageContent()) {
-                throw new InsufficientBoardPermissionsException(
-                    "User does not have permission to create boards in this workspace");
-            }
         }
 
         BoardEntity board = boardMapper.toEntity(dto, workspace);
@@ -126,15 +113,12 @@ public class BoardService {
     }
 
     @Transactional
+    @PreAuthorize("@featureAuthService.canEditBoard(#p1, authentication)")
     public BoardRead updateBoard(UserEntity user,
                                  Long id,
                                  BoardCreate dto) throws InsufficientBoardPermissionsException {
         BoardEntity board = boardRepository.findById(id)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + id));
-
-        if (!boardPermissionService.hasPermission(id, user.getId(), "EDIT")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to edit this board");
-        }
 
         boardMapper.updateEntityFromDto(dto, board);
         board = boardRepository.save(board);
@@ -142,15 +126,12 @@ public class BoardService {
         return boardMapper.toDto(board);
     }
 
+    @PreAuthorize("@featureAuthService.canDeleteBoard(#p1, authentication)")
     public BoardRead deleteBoard(UserEntity user, Long id)
             throws InsufficientBoardPermissionsException {
         BoardEntity board = boardRepository
                 .findById(id)
                 .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + id));
-
-        if (!boardPermissionService.hasPermission(id, user.getId(), "DELETE")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to delete this board");
-        }
 
         boardRepository.delete(board);
 
@@ -158,15 +139,12 @@ public class BoardService {
     }
 
     @Transactional
+    @PreAuthorize("@featureAuthService.canInviteBoardMembers(#p1, authentication)")
     public void addMember(UserEntity user,
                           Long boardId,
                           Long newUserId,
                           Long roleId)
             throws InsufficientBoardPermissionsException {
-        if (!boardPermissionService.hasPermission(boardId, user.getId(), "INVITE")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to add members");
-        }
-
         BoardEntity board = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
 
@@ -180,14 +158,11 @@ public class BoardService {
     }
 
     @Transactional
+    @PreAuthorize("@featureAuthService.canManageBoardRoles(#p1, authentication)")
     public void updateMemberRole(UserEntity user,
                                  Long boardId,
                                  Long memberId,
                                  Long newRoleId) throws InsufficientBoardPermissionsException {
-        if (!boardPermissionService.hasPermission(boardId, user.getId(), "MANAGE_ROLES")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to manage roles");
-        }
-
         boardPermissionService.updateMemberRole(boardId, memberId, newRoleId);
     }
 
@@ -209,45 +184,36 @@ public class BoardService {
     }
     
     @Transactional(readOnly = true)
+    @PreAuthorize("@featureAuthService.canAccessBoard(#p1, authentication)")
     public Page<BoardRoleRead> findRolesByBoardId(UserEntity user, Long boardId, Pageable pageable) 
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
         BoardEntity board = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
-            
-        if (!canUserAccessBoard(user, board)) {
-            throw new InsufficientBoardPermissionsException("User does not have access to this board");
-        }
-        
+
         return boardRoleRepository
                 .findAllByBoard(board, pageable)
                 .map(boardRoleMapper::toDto);
     }
     
     @Transactional(readOnly = true)
+    @PreAuthorize("@featureAuthService.canAccessBoard(#p1, authentication)")
     public Page<BoardMemberRead> findMembersByBoardId(UserEntity user, Long boardId, Pageable pageable)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
         BoardEntity board = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
-            
-        if (!canUserAccessBoard(user, board)) {
-            throw new InsufficientBoardPermissionsException("User does not have access to this board");
-        }
-        
+
         return boardMemberRepository
                 .findAllByBoard(board, pageable)
                 .map(boardMemberMapper::toDto);
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canManageBoardRoles(#p1.boardId, authentication)")
     public BoardRoleRead createRole(UserEntity user, BoardRoleCreate dto)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
         BoardEntity board = boardRepository.findById(dto.getBoardId())
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + dto.getBoardId()));
-            
-        if (!boardPermissionService.hasPermission(dto.getBoardId(), user.getId(), "MANAGE_ROLES")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to manage roles");
-        }
-        
+
         BoardRoleEntity role = boardRoleMapper.toEntity(dto);
         role.setBoard(board);
         
@@ -255,24 +221,23 @@ public class BoardService {
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canManageBoardRolesByRoleId(#p1, authentication)")
     public BoardRoleRead updateRole(UserEntity user, Long roleId, BoardRoleUpdate dto)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
         BoardRoleEntity role = boardRoleRepository.findById(roleId)
             .orElseThrow(() -> new BoardNotFoundException("Board role not found with id: " + roleId));
-            
-        if (!boardPermissionService.hasPermission(role.getBoard().getId(), user.getId(), "MANAGE_ROLES")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to manage roles");
-        }
-        
+
         boardRoleMapper.updateEntityFromDto(dto, role);
         
         return boardRoleMapper.toDto(boardRoleRepository.save(role));
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canAccessBoard(#p1, authentication)")
     public BoardRoleRead getMyRole(UserEntity user, Long boardId)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        BoardEntity board = findBoardAndVerifyAccess(user, boardId);
+        BoardEntity board = boardRepository.findById(boardId)
+            .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
         
         // Return existing role if user is already a member
         BoardMemberEntity existingMember = boardMemberRepository
@@ -288,21 +253,6 @@ public class BoardService {
         createBoardMembership(board, user, role);
         
         return boardRoleMapper.toDto(role);
-    }
-    
-    /**
-     * Finds board by ID and verifies user has access to it
-     */
-    private BoardEntity findBoardAndVerifyAccess(UserEntity user, Long boardId) 
-            throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        BoardEntity board = boardRepository.findById(boardId)
-            .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
-            
-        if (!canUserAccessBoard(user, board)) {
-            throw new InsufficientBoardPermissionsException("User does not have access to this board");
-        }
-        
-        return board;
     }
     
     /**
@@ -369,15 +319,12 @@ public class BoardService {
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canInviteBoardMembers(#p1, authentication)")
     public BoardMemberRead createMember(UserEntity user, Long boardId, BoardMemberCreate dto)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
         BoardEntity board = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFoundException("Board not found with id: " + boardId));
-            
-        if (!boardPermissionService.hasPermission(boardId, user.getId(), "INVITE")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to invite members");
-        }
-        
+
         UserEntity newUser = userRepository.findById(dto.getUserId())
             .orElseThrow(() -> new BoardNotFoundException("User not found with id: " + dto.getUserId()));
             
@@ -395,12 +342,9 @@ public class BoardService {
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canManageBoardRoles(#p1, authentication)")
     public BoardMemberRead updateMember(UserEntity user, Long boardId, Long memberId, BoardMemberUpdate dto)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        if (!boardPermissionService.hasPermission(boardId, user.getId(), "MANAGE_ROLES")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to manage roles");
-        }
-        
         BoardMemberEntity member = boardMemberRepository.findById(memberId)
             .orElseThrow(() -> new BoardNotFoundException("Board member not found with id: " + memberId));
             
@@ -417,12 +361,9 @@ public class BoardService {
     }
     
     @Transactional
+    @PreAuthorize("@featureAuthService.canInviteBoardMembers(#p1, authentication)")
     public BoardMemberRead deleteMember(UserEntity user, Long boardId, Long memberId)
             throws BoardNotFoundException, InsufficientBoardPermissionsException {
-        if (!boardPermissionService.hasPermission(boardId, user.getId(), "INVITE")) {
-            throw new InsufficientBoardPermissionsException("User does not have permission to manage members");
-        }
-        
         BoardMemberEntity member = boardMemberRepository.findById(memberId)
             .orElseThrow(() -> new BoardNotFoundException("Board member not found with id: " + memberId));
             
