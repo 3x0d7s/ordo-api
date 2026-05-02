@@ -18,7 +18,7 @@ import com.kyut.ordo.feature.workspace.repository.WorkspaceRoleRepository;
 import com.kyut.ordo.feature.workspace.repository.WorkspaceMemberRepository;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +44,7 @@ public class WorkspaceInviteService {
     }
 
     @Transactional
+    @PreAuthorize("@featureAuthService.canManageWorkspaceSettings(#p1.workspaceId, authentication)")
     public WorkspaceInviteRead createInvite(UserEntity user, WorkspaceInviteCreate dto) 
             throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
         WorkspaceEntity workspace = workspaceRepository
@@ -54,15 +55,7 @@ public class WorkspaceInviteService {
                 .findById(dto.getRoleId())
                 .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceRole not found"));
 
-        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
-                .findByWorkspaceAndUser(workspace, user)
-                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
-
-        if (!workspaceMember.getRole().isAbleToManageSettings()) {
-            throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to delete this workspace");
-        }
-
-        String token = RandomStringUtils.randomAlphanumeric(32);
+        String token = generateSecureToken(24);
         LocalDateTime expiresAt = LocalDateTime.now().plusDays(dto.getExpiresInDays());
 
         WorkspaceInviteEntity invite = WorkspaceInviteEntity.builder()

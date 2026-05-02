@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -109,25 +110,19 @@ public class WorkspaceService {
                 .map(workspaceMemberMapper::toDto);
     }
 
+    @PreAuthorize("@featureAuthService.canManageWorkspaceSettings(#p1, authentication)")
     public WorkspaceRead deleteWorkspace(UserEntity user, Long id)
             throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
         WorkspaceEntity workspace = workspaceRepository
                 .findById(id)
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
 
-        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository.findByWorkspaceAndUser(workspace, user)
-                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
-        WorkspaceRoleEntity role = workspaceMember.getRole();
-
-        if (!role.isAbleToManageSettings()) {
-            throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to delete this workspace");
-        }
-
         workspaceRepository.delete(workspace);
 
         return workspaceMapper.toDto(workspace);
     }
 
+    @PreAuthorize("@featureAuthService.canManageWorkspaceSettings(#p1, authentication)")
     public WorkspaceRead updateWorkspace(
             UserEntity user,
             Long id,
@@ -136,14 +131,6 @@ public class WorkspaceService {
                 .findById(id)
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
 
-        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository.findByWorkspaceAndUser(workspace, user)
-                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
-        WorkspaceRoleEntity role = workspaceMember.getRole();
-
-        if (!role.isAbleToManageSettings()) {
-            throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to update this workspace");
-        }
-
         workspaceMapper.updateEntityFromDto(dto, workspace);
         workspace = workspaceRepository.save(workspace);
 
@@ -151,22 +138,15 @@ public class WorkspaceService {
     }
 
     @Transactional
+    @PreAuthorize("@featureAuthService.canManageWorkspaceSettings(#p1, authentication)")
     public WorkspaceMemberRead updateMember(UserEntity user,
                                       Long workspaceId,
                                       Long userId,
                                       WorkspaceMemberUpdate dto) throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
 
-        WorkspaceEntity workspace = workspaceRepository
+        workspaceRepository
                 .findById(workspaceId)
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
-
-        WorkspaceMemberEntity currentUserMember = workspaceMemberRepository
-                .findByWorkspaceAndUser(workspace, user)
-                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
-
-        if (!currentUserMember.getRole().isAbleToManageSettings()) {
-            throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to update roles in this workspace");
-        }
 
         WorkspaceMemberEntity memberToUpdate = workspaceMemberRepository
                 .findByWorkspaceIdAndUserId(workspaceId, userId)
@@ -183,21 +163,14 @@ public class WorkspaceService {
         return workspaceMemberMapper.toDto(savedMember);
     }
 
+    @PreAuthorize("@featureAuthService.canManageWorkspaceSettingsOrSelf(#p1, #p2, authentication)")
     public WorkspaceMemberRead deleteMember(UserEntity user,
                                       Long workspaceId,
                                       Long userId) throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
 
-        WorkspaceEntity workspace = workspaceRepository
+        workspaceRepository
                 .findById(workspaceId)
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
-
-        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
-                .findByWorkspaceAndUser(workspace, user)
-                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
-
-        if (!user.getId().equals(userId) && !workspaceMember.getRole().isAbleToManageSettings()) {
-            throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to delete members in this workspace");
-        }
 
         WorkspaceMemberEntity member = workspaceMemberRepository
                 .findByWorkspaceIdAndUserId(workspaceId, userId)
@@ -222,6 +195,7 @@ public class WorkspaceService {
     }
 
     @Transactional
+    @PreAuthorize("@featureAuthService.canManageWorkspaceSettings(#p1, authentication)")
     public WorkspaceMemberRead createMember(UserEntity user,
                                       Long workspaceId,
                                       WorkspaceMemberCreate dto)
@@ -230,14 +204,6 @@ public class WorkspaceService {
         WorkspaceEntity workspace = workspaceRepository
                 .findById(workspaceId)
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
-
-        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
-                .findByWorkspaceAndUser(workspace, user)
-                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
-
-        if (!workspaceMember.getRole().isAbleToManageSettings()) {
-            throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to create members in this workspace");
-        }
 
         WorkspaceRoleEntity role = workspaceRoleRepository
                 .findById(dto.getWorkspaceRoleId())
@@ -265,6 +231,7 @@ public class WorkspaceService {
         return workspaceMemberMapper.toDto(savedMember);
     }
 
+    @PreAuthorize("@featureAuthService.canManageWorkspaceSettings(#p1.workspaceId, authentication)")
     public WorkspaceRoleRead createRole(UserEntity user,
                                         WorkspaceRoleCreate dto)
             throws WorkspaceNotFoundException, WorkspaceRoleInsuficientRightsExceptions {
@@ -273,20 +240,13 @@ public class WorkspaceService {
                 .findById(dto.getWorkspaceId())
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
 
-        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
-                .findByWorkspaceAndUser(workspace, user)
-                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
-
-        if (!workspaceMember.getRole().isAbleToManageSettings()) {
-            throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to create roles in this workspace");
-        }
-
         WorkspaceRoleEntity role = workspaceRoleMapper.toEntity(dto);
         role.setWorkspace(workspace);
 
         return workspaceRoleMapper.toDto(workspaceRoleRepository.save(role));
     }
 
+    @PreAuthorize("@featureAuthService.canManageWorkspaceSettingsByRoleId(#p1, authentication)")
     public WorkspaceRoleRead updateRole(UserEntity user,
                                         Long id,
                                         WorkspaceRoleUpdate dto)
@@ -294,18 +254,6 @@ public class WorkspaceService {
         WorkspaceRoleEntity role = workspaceRoleRepository
                 .findById(id)
                 .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceRole not found by this id"));
-
-        WorkspaceEntity workspace = workspaceRepository
-                .findById(role.getWorkspace().getId())
-                .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found by this id"));
-
-        WorkspaceMemberEntity workspaceMember = workspaceMemberRepository
-                .findByWorkspaceAndUser(workspace, user)
-                .orElseThrow(() -> new WorkspaceNotFoundException("WorkspaceMember not found by this id"));
-
-        if (!workspaceMember.getRole().isAbleToManageSettings()) {
-            throw new WorkspaceRoleInsuficientRightsExceptions("You don't have permission to create roles in this workspace");
-        }
 
         workspaceRoleMapper.updateEntityFromDto(dto, role);
         workspaceRoleRepository.save(role);
