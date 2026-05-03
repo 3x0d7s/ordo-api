@@ -65,3 +65,8 @@ springdoc:
     path: /swagger-ui
   api-docs:
     path: /api-docs
+
+ordo:
+  dsl:
+    enabled: true
+    rules-path: classpath:rules/ordo-rules.dsl
