@@ -70,3 +70,5 @@ ordo:
   dsl:
     enabled: true
     rules-path: classpath:rules/ordo-rules.dsl
+    execution-logging:
+      enabled: true
