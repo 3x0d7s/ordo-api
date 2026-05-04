@@ -31,6 +31,7 @@ public class WebSocketMessage<T> {
         TASK_CREATED,
         TASK_UPDATED,
         TASK_DELETED,
+        DSL_RULE_TRIGGERED,
         USER_JOINED,
         USER_LEFT
     }
