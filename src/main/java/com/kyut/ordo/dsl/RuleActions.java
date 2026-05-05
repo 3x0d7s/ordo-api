@@ -11,7 +11,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class OrdoRuleActions {
+public class RuleActions {
     private final WebSocketService webSocketService;
 
     public void logTaskCreated(Number taskId, String taskTitle) {

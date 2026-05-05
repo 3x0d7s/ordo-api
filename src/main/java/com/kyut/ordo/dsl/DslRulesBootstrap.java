@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class OrdoDslRulesBootstrap {
+public class DslRulesBootstrap {
     private final RuleSetManager ruleSetManager;
     private final ResourceLoader resourceLoader;
 

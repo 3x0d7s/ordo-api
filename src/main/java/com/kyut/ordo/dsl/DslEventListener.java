@@ -16,7 +16,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class OrdoDslEventListener {
+public class DslEventListener {
     private final RuleEngine ruleEngine;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
