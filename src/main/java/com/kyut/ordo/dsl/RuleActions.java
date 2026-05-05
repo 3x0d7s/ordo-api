@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
@@ -35,13 +36,14 @@ public class RuleActions {
         if (cardId == null) {
             return;
         }
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("ruleName", ruleName);
+        payload.put("taskTitle", taskTitle);
+
         WebSocketMessage<Map<String, Object>> message = WebSocketMessage.<Map<String, Object>>builder()
                 .type(WebSocketMessage.WebSocketMessageType.DSL_RULE_TRIGGERED)
                 .entityId(String.valueOf(cardId.longValue()))
-                .payload(Map.of(
-                        "ruleName", ruleName,
-                        "taskTitle", taskTitle
-                ))
+                .payload(payload)
                 .build();
         webSocketService.sendCardMessage(cardId.longValue(), message);
     }
@@ -50,13 +52,14 @@ public class RuleActions {
         if (boardId == null) {
             return;
         }
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("ruleName", ruleName);
+        payload.put("cardTitle", cardTitle);
+
         WebSocketMessage<Map<String, Object>> message = WebSocketMessage.<Map<String, Object>>builder()
                 .type(WebSocketMessage.WebSocketMessageType.DSL_RULE_TRIGGERED)
                 .entityId(String.valueOf(boardId.longValue()))
-                .payload(Map.of(
-                        "ruleName", ruleName,
-                        "cardTitle", cardTitle
-                ))
+                .payload(payload)
                 .build();
         webSocketService.sendBoardMessage(boardId.longValue(), message);
     }
